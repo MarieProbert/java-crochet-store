@@ -1,0 +1,10 @@
+tables\Product.class
+tables\Order.class
+dao\ClientDAO.class
+tables\Admin.class
+tables\Client.class
+util\DatabaseConnection.class
+dao\ProductDAO.class
+main\Main.class
+interface_appli\MainApp.class
+tables\Person.class

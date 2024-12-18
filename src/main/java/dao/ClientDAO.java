@@ -18,7 +18,13 @@ public class ClientDAO {
             while (rs.next()) {
                 int clientID = rs.getInt("clientID");
                 String email = rs.getString("email");
+                String password = rs.getString("password");
                 String firstName = rs.getString("firstName");
+            	String lastName = rs.getString("lastName");
+            	String address = rs.getString("address");
+            	String city = rs.getString("city");
+            	int postCode = rs.getInt("postCode");
+            	String country = rs.getString("country");
 
                 System.out.println("ID: " + clientID + ", Email: " + email + ", First Name: " + firstName);
             }
