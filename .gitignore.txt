@@ -1,0 +1,18 @@
+# Ignorer les fichiers générés
+*.class
+*.log
+*.jar
+
+# Ignorer les dossiers générés
+/target/
+/bin/
+
+# Ignorer les fichiers système
+.DS_Store
+Thumbs.db
+
+# Ignorer les fichiers IntelliJ ou Eclipse
+.idea/
+*.iml
+.classpath
+.project
