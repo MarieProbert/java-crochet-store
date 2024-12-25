@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AccountCreationController" spacing="10" >
+    <Label text="Register" layoutX="150" layoutY="50" />
+    <Button text="Return" onAction="#handleReturn" />
+    <TextField fx:id="usernameField" promptText="Username" maxWidth="200" />
+    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200" />
+    <TextField fx:id="firstNameField" promptText="First Name" maxWidth="200"/>
+    <TextField fx:id="lastNameField" promptText="Last Name" maxWidth="200"/>
+    <TextField fx:id="addressField" promptText="Address" maxWidth="200"/>
+    <TextField fx:id="cityField" promptText="City" maxWidth="200"/>
+    <TextField fx:id="postCodeField" promptText="Post Code" maxWidth="200"/>
+    <TextField fx:id="countryField" promptText="Country" maxWidth="200"/>
+    <Button text="Register" onAction="#handleSubmit" />
+    
+</VBox>

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import tables.Client;
 import util.DatabaseConnection;
 
 public class ClientDAO {
@@ -27,10 +28,36 @@ public class ClientDAO {
             	String country = rs.getString("country");
 
                 System.out.println("ID: " + clientID + ", Email: " + email + ", First Name: " + firstName);
-            }
+         }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+	
+	public boolean isLoginValid(String testEmail, String testPassword) {
+		String query = "SELECT * FROM Client";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+                
+                System.out.println(testEmail + " " + testPassword);
+                System.out.println(email + " " + password);
+
+                if ((testEmail.equals(email)) && (testPassword.equals(password))){
+                	return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+		
+	}
 }
