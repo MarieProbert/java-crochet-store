@@ -10,6 +10,10 @@ public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/crochet_store"; // URL de la base de données
     private static final String USER = "root"; // Nom d'utilisateur de la base de données
     private static final String PASSWORD = "admin"; // Mot de passe
+    
+    private static Connection connection;
+
+    private DatabaseConnection() {} // Empêche l'instanciation externe
 
     // Connexion à la base de données
     public static Connection getConnection() throws SQLException {

@@ -9,24 +9,29 @@ import util.DatabaseConnection;
 
 public class ProductDAO {
 
-    public void getAllProducts() {
-    	/*
-        String query = "SELECT * FROM Client";
+	public void getAllProducts() {
+        String query = "SELECT * FROM Product";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                int clientID = rs.getInt("clientID");
-                String email = rs.getString("email");
-                String firstName = rs.getString("firstName");
+                int productID = rs.getInt("productID");
+                String name = rs.getString("name");
+                String creator = rs.getString("creator");
+                int price = rs.getInt("price");
+            	String description = rs.getString("description");
+            	String color = rs.getString("color");
+            	int stock = rs.getInt("stock");
+            	String size = rs.getString("size");
+            	String theme = rs.getString("theme");
+            	String imagePath = rs.getString("imagePath");
+            	String category = rs.getString("category");
 
-                System.out.println("ID: " + clientID + ", Email: " + email + ", First Name: " + firstName);
-            }
+           }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        */
     }
 }

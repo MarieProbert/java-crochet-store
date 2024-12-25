@@ -19,6 +19,11 @@ public class Client extends Person {
 		this.country = country;
 		
 	}
+	
+	public Client(String email, String password) {
+		super(email, password);
+		
+	}
 
 	public String getFirstName() {
 		return firstName;

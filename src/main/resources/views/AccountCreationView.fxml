@@ -6,8 +6,8 @@
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AccountCreationController" spacing="10" >
     <Label text="Register" layoutX="150" layoutY="50" />
     <Button text="Return" onAction="#handleReturn" />
-    <TextField fx:id="usernameField" promptText="Username" maxWidth="200" />
-    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200" />
+    <TextField fx:id="emailField" promptText="Email *" maxWidth="200" />
+    <PasswordField fx:id="passwordField" promptText="Password *" maxWidth="200" />
     <TextField fx:id="firstNameField" promptText="First Name" maxWidth="200"/>
     <TextField fx:id="lastNameField" promptText="Last Name" maxWidth="200"/>
     <TextField fx:id="addressField" promptText="Address" maxWidth="200"/>

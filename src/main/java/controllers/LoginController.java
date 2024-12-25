@@ -26,11 +26,11 @@ public class LoginController {
     private void handleLogin() {
         String username = emailField.getText();
         String password = passwordField.getText();
-        if (clientDAO.isLoginValid(username, password)) {
-            System.out.println("Login successful");
-            // Charger l'écran du catalogue
+        if (!clientDAO.isLoginValid(username, password)) {
+        	System.out.println("Invalid username or password.");
         } else {
-            System.out.println("Invalid username or password.");
+            System.out.println("Login successful");
+            goToCatalog();
         }
     }
     
@@ -47,6 +47,22 @@ public class LoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    @FXML
+    private void goToCatalog() {
+    	try {
+            // Charger le fichier FXML pour Création de compte
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CatalogView.fxml"));
+            Parent root = loader.load();
+
+            // Remplacer la scène actuelle
+            Stage stage = (Stage) emailField.getScene().getWindow(); // Récupérer la fenêtre actuelle
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
     }
 
 }

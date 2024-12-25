@@ -35,6 +35,24 @@ public class ClientDAO {
         }
     }
 	
+	public void insertClient(Client client) {
+		 String sql = "INSERT INTO client (email, password) VALUES (?, ?)";
+		    
+		 try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+		        stmt.setString(1, client.getEmail());
+		        stmt.setString(2, client.getPassword());
+
+		        stmt.executeUpdate();
+		        System.out.println("Client inséré avec succès !");
+		    
+		 } catch (SQLException e) {
+		        e.printStackTrace();
+		    
+		 }
+    }
+	
 	public boolean isLoginValid(String testEmail, String testPassword) {
 		String query = "SELECT * FROM Client";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -44,9 +62,7 @@ public class ClientDAO {
             while (rs.next()) {
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                
-                System.out.println(testEmail + " " + testPassword);
-                System.out.println(email + " " + password);
+               
 
                 if ((testEmail.equals(email)) && (testPassword.equals(password))){
                 	return true;
