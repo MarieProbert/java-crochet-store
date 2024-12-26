@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import managers.CatalogManager;
 
 public class MainApp extends Application {
    
@@ -22,6 +23,8 @@ public class MainApp extends Application {
 	    }
 
 	    public static void main(String[] args) {
+	    	CatalogManager catalogManagement = new CatalogManager();
+	    	
 	        launch(args);
 	    }
 }
