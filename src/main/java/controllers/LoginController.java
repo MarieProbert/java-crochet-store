@@ -4,6 +4,7 @@ import dao.ClientDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import util.DatabaseConnection;
 import javafx.scene.Parent;
@@ -16,6 +17,11 @@ public class LoginController extends BaseController {
     @FXML private PasswordField passwordField;
     
     private ClientDAO clientDAO;
+    
+    @FXML
+    public void initialize() {
+    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    }
 
     public LoginController() {
         // Initialisation du ClientDAO avec une connexion à la base de données
@@ -64,5 +70,10 @@ public class LoginController extends BaseController {
         }
     
     }
+    
+    @FXML
+    private void handleGuest() {
+    }
+    
 
 }

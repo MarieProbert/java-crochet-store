@@ -10,13 +10,19 @@
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.CatalogController" stylesheets="@../style.css">
 
-    <!-- Image à gauche -->
     <top>
-        <ImageView fx:id="bannerImage" fitWidth="500" fitHeight="200" preserveRatio="true"/>
+        <VBox alignment="CENTER">
+            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
+            <HBox styleClass="banner">
+                <Label text="Delivery under two weeks" styleClass="delivery" />
+            </HBox>
+            
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+        </VBox>
     </top>
     
     <left>
-        <VBox alignment="TOP_LEFT" spacing="20">
+        <VBox styleClass="left-padding">
         
         	<!-- Barre de recherche -->
             <TextField fx:id="searchField" promptText="Rechercher un produit..." />

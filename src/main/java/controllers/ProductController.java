@@ -12,25 +12,20 @@ import tables.Product;
 
 public class ProductController extends BaseController {
 	
+    @FXML private ImageView productImage;
+    @FXML private Label productName;
+    @FXML private Label productPrice;
+    @FXML private TextArea productDescription;
+    @FXML private Button addToCartButton;
+    
     @FXML
-    private ImageView productImage;
-
-    @FXML
-    private Label productName;
-
-    @FXML
-    private Label productPrice;
-
-    @FXML
-    private TextArea productDescription;
-
-    @FXML
-    private Button addToCartButton;
+    public void initialize() {
+    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    }
 
 
 	public void setProduct(Product product) {
-		String defaultImagePath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg";
-	       
+
 		VBox vbox = new VBox(5);
         vbox.setPadding(new Insets(10));
         

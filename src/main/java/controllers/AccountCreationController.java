@@ -20,6 +20,10 @@ public class AccountCreationController extends BaseController {
     @FXML private TextField postCodeField;
     @FXML private TextField countryField;
     
+    @FXML
+    public void initialize() {
+    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    }
 
     @FXML
     private void handleSubmit() {

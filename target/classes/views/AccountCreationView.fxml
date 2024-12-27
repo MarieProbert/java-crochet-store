@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AccountCreationController" spacing="10" stylesheets="@../style.css" >
-    <Button text="Return" onAction="#handleReturn" />
-    <TextField fx:id="emailField" promptText="Email *" maxWidth="200" />
-    <PasswordField fx:id="passwordField" promptText="Password *" maxWidth="200" />
-    <TextField fx:id="firstNameField" promptText="First Name" maxWidth="200"/>
-    <TextField fx:id="lastNameField" promptText="Last Name" maxWidth="200"/>
-    <TextField fx:id="addressField" promptText="Address" maxWidth="200"/>
-    <TextField fx:id="cityField" promptText="City" maxWidth="200"/>
-    <TextField fx:id="postCodeField" promptText="Post Code" maxWidth="200"/>
-    <TextField fx:id="countryField" promptText="Country" maxWidth="200"/>
-    <Button text="Register" onAction="#handleSubmit" />
-    
-</VBox>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AccountCreationController" stylesheets="@../style.css">
+
+    <top>
+        <VBox alignment="CENTER">
+            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
+            <HBox styleClass="banner">
+                <Label text="Delivery under two weeks" styleClass="delivery" />
+            </HBox>
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+        </VBox>
+    </top>
+
+
+    <!-- Grille de produits au centre -->
+    <center>
+    	<VBox  alignment="CENTER">
+
+		    <TextField fx:id="emailField" promptText="Email *" maxWidth="200" />
+		    <PasswordField fx:id="passwordField" promptText="Password *" maxWidth="200" />
+		    
+		    <Label text="Name : " />
+		    <HBox  alignment="CENTER">
+		    	<TextField fx:id="firstNameField" promptText="First Name" maxWidth="200"/>
+		   		<TextField fx:id="lastNameField" promptText="Last Name" maxWidth="200"/>
+		    </HBox>		    
+		    
+		    <Label text="Address : " />
+		    <HBox  alignment="CENTER">
+		        <TextField fx:id="addressField" promptText="Address" maxWidth="200"/>
+		    	<TextField fx:id="cityField" promptText="City" maxWidth="200"/>
+		    </HBox>		    
+		    <HBox  alignment="CENTER">
+		        <TextField fx:id="postCodeField" promptText="Post Code" maxWidth="200"/>
+		    	<TextField fx:id="countryField" promptText="Country" maxWidth="200"/>
+		    </HBox>		
+			
+			<HBox  alignment="CENTER">
+			    <Button text="Register" onAction="#handleSubmit" />
+			    <Button text="Return" onAction="#handleReturn" />
+		    </HBox>		
+
+		    
+	    </VBox>
+    </center>
+
+
+</BorderPane>

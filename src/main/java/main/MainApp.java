@@ -18,7 +18,7 @@ public class MainApp extends Application {
 	        primaryStage.setScene(scene);
 	        primaryStage.setWidth(800);           
 	        primaryStage.setHeight(600); 
-	        primaryStage.setTitle("Login");
+	        primaryStage.setTitle("Crochet Store");
 	        primaryStage.show();
 	    }
 

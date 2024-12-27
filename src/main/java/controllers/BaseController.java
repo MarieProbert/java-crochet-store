@@ -13,7 +13,10 @@ import tables.Product;
 
 public abstract class BaseController {
 	
-	 @FXML protected ImageView bannerImage;
+	protected String defaultImagePath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg";
+	protected String bannerPath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/banniere.jpg";
+	@FXML protected ImageView bannerImage;
+	
 
     // Utilisateur actuellement connecté (partagé entre tous les contrôleurs)
     protected static Person currentUser;

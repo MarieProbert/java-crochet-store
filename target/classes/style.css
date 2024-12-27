@@ -1,14 +1,4 @@
-/* Police globale */
-* {
-    -fx-font-family: 'Arial', sans-serif;  /* Changez cette police selon vos préférences */
-}
-
-/* Style pour les Labels (textes) */
-.label {
-    -fx-font-size: 14px; /* Taille de police un peu plus grande pour les labels */
-    -fx-color: #333333; /* Couleur sombre pour une meilleure lisibilité */
-}
-
+/* Styles généraux */
 .button {
     -fx-background-color: #ffb0be;
     -fx-text-fill: white;
@@ -17,38 +7,56 @@
 
 /* Pour les champs de texte */
 .textfield {
-    -fx-background-color: #f9f9f9;  /* Couleur de fond claire */
+    -fx-background-color: #f9f9f9;
     -fx-padding: 10px;
     -fx-border-radius: 5px;
 }
 
 /* Changer la couleur au survol */
 .button:hover {
-    -fx-background-color: #45a049;  /* Couleur au survol */
+    -fx-background-color: #45a049;
 }
 
-/* Pour la VBox et les éléments à l'intérieur */
+/* Style global pour VBox */
 VBox {
-    -fx-background-color: #fcfcfc; 
-    -fx-padding: 20px;
+    -fx-background-color: #fcfcfc;
     -fx-border-radius: 10px;
+    -fx-spacing: 10px;
 }
 
-/* Pour la HBox et les éléments à l'intérieur */
+/* Style global pour HBox */
 HBox {
     -fx-background-color: #fcfcfc;
     -fx-border-radius: 10px;
+    -fx-spacing: 10px;
 }
 
 /* Pour la HBox et les éléments à l'intérieur */
 GridPane {
-    -fx-background-color: #fcfcfc; 
+    -fx-background-color: #fcfcfc;
     -fx-padding: 20px;
     -fx-border-radius: 10px;
 }
 
-/* Pour la HBox et les éléments à l'intérieur */
 BorderPane {
-    -fx-background-color: #fcfcfc; 
-    -fx-border-radius: 10px;
+    -fx-background-color: #fcfcfc;
+}
+
+.left-padding {
+    -fx-padding: 0 0 0 20px; /* Padding à gauche de 20px */
+}
+
+/* Style pour la bannière */
+.banner {
+    -fx-background-color: #ffb0be;  /* Couleur d'arrière-plan de la bannière */
+    -fx-padding: 5px;              /* Ajout de marges internes */
+    -fx-pref-width: 100%;           /* S'assure que le fond s'étend sur toute la largeur */
+    -fx-alignment: center;          /* Centrer le contenu de la bannière */
+}
+
+/* Style du texte dans la bannière */
+.delivery {
+    -fx-text-fill: white;           /* Couleur du texte */
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
 }

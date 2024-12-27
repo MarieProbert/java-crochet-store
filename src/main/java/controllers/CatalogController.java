@@ -33,7 +33,7 @@ public class CatalogController extends BaseController {
 
     private List<Product> products;
     private CatalogManager catalogManager;
-    private static final int PRODUCTS_PER_PAGE = 4;
+    private static int PRODUCTS_PER_PAGE = 4;
     
     
     private ProductDAO productDAO;
@@ -43,28 +43,76 @@ public class CatalogController extends BaseController {
         this.catalogManager = productDAO.getCatalogManager();
     }
 
+
     @FXML
     public void initialize() {
-    	productDAO.getAllProducts();
-        // Initialiser les produits (exemple d'initialisation)
-    	
-    	bannerImage.setImage(loadImage( "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg", "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg"));
+        productGrid.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                // La scène est maintenant attachée, on peut accéder à ses dimensions
+                newScene.widthProperty().addListener((obs, oldWidth, newWidth) -> updateGrid());
+                newScene.heightProperty().addListener((obs, oldHeight, newHeight) -> updateGrid());
+                
+                // Afficher les produits pour la première fois après l'attachement de la scène
+                afficherProduits(pagination.getCurrentPageIndex());
+            }
+        });
+        
+        productDAO.getAllProducts(); // do I need it ? 
+    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
     	products = catalogManager.getProducts();
-    	pagination.setPageCount((int) Math.ceil((double) products.size() / PRODUCTS_PER_PAGE));
+
+        // Configurer la pagination
+        pagination.setPageCount((int) Math.ceil((double) products.size() / PRODUCTS_PER_PAGE));
         pagination.setCurrentPageIndex(0);
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> afficherProduits(newIndex.intValue()));
-
-        afficherProduits(0);
+    
+    
     }
 
-    private void afficherProduits(int pageIndex) {
-        productGrid.getChildren().clear();
-        int startIndex = pageIndex * PRODUCTS_PER_PAGE;
-        int endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, products.size());
-        String defaultImagePath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg";
         
+    
+    private void updateGrid() {
+        // Taille de la fenêtre
+        double gridWidth = productGrid.getScene().getWidth() - 200;
+        double gridHeight = productGrid.getScene().getHeight() - 200;
+
+        // Dimensions d'un produit (estimation)
+        double productWidth = 200; // Largeur estimée d'un produit
+        double productHeight = 200; // Hauteur estimée d'un produit
+
+        // Calculer le nombre de colonnes et de lignes
+        int cols = Math.max(1, (int) (gridWidth / productWidth));
+        int rows = Math.max(1, (int) (gridHeight / productHeight));
+
+        // Mettre à jour le nombre de produits par page
+        PRODUCTS_PER_PAGE = cols * rows;
+        pagination.setPageCount((int) Math.ceil((double) products.size() / PRODUCTS_PER_PAGE));
+
+        // Recharger les produits pour la page actuelle
+        afficherProduits(pagination.getCurrentPageIndex());
+    }
+    
+    
+    private void afficherProduits(int pageIndex) {
+        if (productGrid.getScene() == null) {
+            return; // La scène n'est pas encore prête
+        }
+
+        double sceneWidth = productGrid.getScene().getWidth() - 200; //corriger l'effet bannière et filtre
+        double sceneHeight = productGrid.getScene().getHeight() - 200; //corriger l'effet bannière et filtre
+
+        // Votre logique actuelle pour calculer les colonnes/lignes en fonction de la taille de la scène
+        int cols = Math.max(1, (int) (sceneWidth / 200)); // Exemple : 300px par produit
+        int rows = Math.max(1, (int) (sceneHeight / 200)); // Exemple : 400px par produit
+        int produitsParPage = cols * rows;
+
+        // Logique pour afficher les produits (comme dans votre code initial)
+        productGrid.getChildren().clear();
+        int startIndex = pageIndex * produitsParPage;
+        int endIndex = Math.min(startIndex + produitsParPage, products.size());
 
         for (int i = startIndex; i < endIndex; i++) {
+           
             Product product = products.get(i);
 
             VBox vbox = new VBox(5);
@@ -74,7 +122,7 @@ public class CatalogController extends BaseController {
 
             // Configuration de l'ImageView
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(200);  // Ajustez la largeur
+            imageView.setFitWidth(150);  // Ajustez la largeur
             imageView.setPreserveRatio(true); // Conserver le ratio
             imageView.setSmooth(true); // Activer le lissage
             
@@ -94,11 +142,12 @@ public class CatalogController extends BaseController {
             addToCartButton.setOnAction(e -> handleAddToCart(product));
             vbox.getChildren().add(addToCartButton);
 
-            int colIndex = (i - startIndex) % 2;
-            int rowIndex = (i - startIndex) / 2;
+            int colIndex = (i - startIndex) % cols;
+            int rowIndex = (i - startIndex) / cols;
             productGrid.add(vbox, colIndex, rowIndex);
         }
     }
+
     
     
     private void openProductPage(Product product) {
