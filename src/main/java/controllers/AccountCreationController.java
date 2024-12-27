@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tables.Client;
 
-public class AccountCreationController {
+public class AccountCreationController extends BaseController {
 	@FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private TextField firstNameField;

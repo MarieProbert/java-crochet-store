@@ -18,6 +18,12 @@ public class ProductDAO {
     public ProductDAO() {
         this.catalogManager = new CatalogManager();  // Crée une instance du gestionnaire de catalogue
     }
+    
+
+	public CatalogManager getCatalogManager() {
+		return catalogManager;
+	}
+
 
 	public void getAllProducts() {
         String query = "SELECT * FROM Product";
@@ -30,9 +36,10 @@ public class ProductDAO {
                 Product product = new Product(productID);
                 product.setName(rs.getString("name"));
                 product.setCreator(rs.getString("creator"));
-                product.setPrice(rs.getInt("price"));
+                product.setPrice(rs.getDouble("price"));
                 product.setDescription(rs.getString("description"));
                 product.setColorFromString(rs.getString("color"));
+                product.setFabricFromString(rs.getString("fabric"));
                 product.setStock( rs.getInt("stock"));
                 product.setSizeFromString(rs.getString("size"));
                 product.setThemeFromString(rs.getString("theme"));

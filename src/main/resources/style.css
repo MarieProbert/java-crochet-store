@@ -1,0 +1,54 @@
+/* Police globale */
+* {
+    -fx-font-family: 'Arial', sans-serif;  /* Changez cette police selon vos préférences */
+}
+
+/* Style pour les Labels (textes) */
+.label {
+    -fx-font-size: 14px; /* Taille de police un peu plus grande pour les labels */
+    -fx-color: #333333; /* Couleur sombre pour une meilleure lisibilité */
+}
+
+.button {
+    -fx-background-color: #ffb0be;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Pour les champs de texte */
+.textfield {
+    -fx-background-color: #f9f9f9;  /* Couleur de fond claire */
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+}
+
+/* Changer la couleur au survol */
+.button:hover {
+    -fx-background-color: #45a049;  /* Couleur au survol */
+}
+
+/* Pour la VBox et les éléments à l'intérieur */
+VBox {
+    -fx-background-color: #fcfcfc; 
+    -fx-padding: 20px;
+    -fx-border-radius: 10px;
+}
+
+/* Pour la HBox et les éléments à l'intérieur */
+HBox {
+    -fx-background-color: #fcfcfc;
+    -fx-border-radius: 10px;
+}
+
+/* Pour la HBox et les éléments à l'intérieur */
+GridPane {
+    -fx-background-color: #fcfcfc; 
+    -fx-padding: 20px;
+    -fx-border-radius: 10px;
+}
+
+/* Pour la HBox et les éléments à l'intérieur */
+BorderPane {
+    -fx-background-color: #fcfcfc; 
+    -fx-border-radius: 10px;
+}

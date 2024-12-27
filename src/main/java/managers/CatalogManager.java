@@ -1,5 +1,7 @@
 package managers;
 
+import java.util.List;
+
 import tables.Catalog;
 import tables.Product;
 
@@ -13,6 +15,10 @@ public class CatalogManager {
 	
 	public void addToCatalog(Product product) {
 		catalog.addProduct(product);
+	}
+	
+	public List<Product> getProducts() {
+		return catalog.getProducts();
 	}
 	
 	@Override

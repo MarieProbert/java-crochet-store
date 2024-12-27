@@ -33,6 +33,7 @@ public class Catalog {
     	products.add(product);
     }
     
+    
     @Override
     public String toString() {
     	StringBuilder sb = new StringBuilder();

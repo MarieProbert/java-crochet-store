@@ -5,14 +5,26 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.LoginController" spacing="10">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.LoginController" spacing="10" stylesheets="@../style.css">
     <Label text="Login" />
-    <TextField fx:id="emailField" promptText="Email" maxWidth="200"/>
-    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200" />
+    
+    <HBox spacing="10">
+        <Label text="Email : " />
+        <TextField fx:id="emailField" promptText="Email" maxWidth="200" styleClass="textfield"/>
+    </HBox>
+    
+    
+    <HBox spacing="5">
+        <Label text="Password : " />
+        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200" styleClass="textfield"/>
+    </HBox>
     
     
     <HBox spacing="10">
-        <Button text="Login" onAction="#handleLogin" />
-    	<Button text="Register" onAction="#handleRegister" />
+        <Button text="Login" onAction="#handleLogin" styleClass="button"/>
+        <Button text="Register" onAction="#handleRegister" styleClass="button"/>
     </HBox>
 </VBox>
+
+
+

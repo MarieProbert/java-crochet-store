@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ProductController">
+
+    <!-- Image à gauche -->
+    <left>
+        <ImageView fx:id="productImage" fitWidth="300" preserveRatio="true"/>
+    </left>
+
+    <!-- Détails à droite -->
+    <right>
+        <VBox spacing="10" alignment="TOP_LEFT">
+            <Label text="Nom du produit :" />
+            <Label fx:id="productName"/>
+
+            <Label text="Prix :" />
+            <Label fx:id="productPrice" />
+
+            <Label text="Description :" />
+            <TextArea fx:id="productDescription" wrapText="true" editable="false" prefHeight="150"/>
+
+            <Button fx:id="addToCartButton" text="Add to Cart" />
+        </VBox>
+    </right>
+
+</BorderPane>
