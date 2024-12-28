@@ -23,14 +23,30 @@
     <!-- Détails à droite -->
     <right>
         <VBox spacing="10" alignment="TOP_LEFT">
-            <Label text="Nom du produit :" />
             <Label fx:id="productName"/>
 
-            <Label text="Prix :" />
-            <Label fx:id="productPrice" />
+			<HBox >
+	            <Label text="Price :" />
+	            <Label fx:id="productPrice" />
+		    </HBox>	
+		    
+		    <HBox >
+	            <Label fx:id="creatorLabel" text="Creator :" />
+	            <Label fx:id="productCreator" />
+		    </HBox>	
+		    
+		    <HBox >
+	            <Label fx:id="colorLabel" text="Color :" />
+	            <Label fx:id="productColor" />
+		    </HBox>	
 
-            <Label text="Description :" />
-            <TextArea fx:id="productDescription" wrapText="true" editable="false" prefHeight="150"/>
+		    <HBox >
+	            <Label fx:id="sizeLabel" text="Size :" />
+	            <Label fx:id="productSize" />
+		    </HBox>	
+
+            <Label fx:id="descriptionLabel" text="Description :" />
+            <TextArea fx:id="productDescription" wrapText="true" editable="false" prefHeight="50"/>
 
             <Button fx:id="addToCartButton" text="Add to Cart" />
         </VBox>

@@ -1,12 +1,12 @@
 package enums;
 
 public enum Size {
-	XS("xs"),
-	S("s"),
-	M("m"),
-	L("l"),
-	XL("xl"),
-	ONESIZE("one size"),
+	XS("XS"),
+	S("S"),
+	M("M"),
+	L("L"),
+	XL("XL"),
+	ONESIZE("One Size"),
 	NA("N/A");
 	
 	private final String value;

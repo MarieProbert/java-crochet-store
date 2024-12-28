@@ -16,20 +16,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import managers.CatalogManager;
 import tables.Product;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-
-import dao.ClientDAO;
 import dao.ProductDAO;
-import enums.Color;
 
 public class CatalogController extends BaseController {
     @FXML private GridPane productGrid;
     @FXML private Pagination pagination;
     @FXML private TextField searchField;
     @FXML private Button searchButton;
+    @FXML private Button searchCart;
 
     private List<Product> products;
     private CatalogManager catalogManager;
@@ -57,7 +52,7 @@ public class CatalogController extends BaseController {
             }
         });
         
-        productDAO.getAllProducts(); // do I need it ? 
+        productDAO.getAllProducts(); 
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
     	products = catalogManager.getProducts();
 
@@ -66,7 +61,7 @@ public class CatalogController extends BaseController {
         pagination.setCurrentPageIndex(0);
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> afficherProduits(newIndex.intValue()));
     
-    
+        
     }
 
         
@@ -134,7 +129,7 @@ public class CatalogController extends BaseController {
             nomLabel.setOnMouseClicked(e -> openProductPage(product));
             
             // Adding price
-            Label prixLabel = new Label(product.getPrice() + " €");
+            Label prixLabel = new Label(String.format("%.2f €", product.getPrice()));
             vbox.getChildren().addAll(nomLabel, prixLabel);
             
             // Adding button 'Add to cart'
@@ -172,6 +167,11 @@ public class CatalogController extends BaseController {
 
     
     private static void handleAddToCart(Product product) {
+    	
+    }
+    
+    @FXML
+    private void handleCart() {
     	
     }
     

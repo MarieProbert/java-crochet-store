@@ -19,6 +19,7 @@
         <VBox alignment="CENTER">
             <VBox alignment="CENTER">
                 <Label text="Login"/>
+                <Label fx:id="errorLabel" text="" styleClass="error-label" />
             </VBox>
             <HBox alignment="CENTER">
                 <Label text="Email : " />

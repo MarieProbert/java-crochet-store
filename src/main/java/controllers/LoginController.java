@@ -9,12 +9,14 @@ import javafx.stage.Stage;
 import util.DatabaseConnection;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 
 
 public class LoginController extends BaseController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
+    @FXML private Label errorLabel;
     
     private ClientDAO clientDAO;
     
@@ -32,16 +34,18 @@ public class LoginController extends BaseController {
     private void handleLogin() {
         String username = emailField.getText();
         String password = passwordField.getText();
+        errorLabel.setText(""); 
+        
         if (!clientDAO.isLoginValid(username, password)) {
-        	System.out.println("Invalid username or password.");
+        	errorLabel.setText("Invalid username or password.");
         } else {
-            System.out.println("Login successful");
             goToCatalog();
         }
     }
     
     @FXML
     private void handleRegister() {
+    	errorLabel.setText(""); 
         try {
             // Charger le fichier FXML pour Création de compte
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AccountCreationView.fxml"));
@@ -51,12 +55,14 @@ public class LoginController extends BaseController {
             Stage stage = (Stage) emailField.getScene().getWindow(); // Récupérer la fenêtre actuelle
             stage.setScene(new Scene(root));
         } catch (Exception e) {
-            e.printStackTrace();
+        	e.printStackTrace();
+        	errorLabel.setText("There was an issue with the registration. Please restart the app or continue as a guest.");;
         }
     }
     
     @FXML
     private void goToCatalog() {
+    	errorLabel.setText(""); 
     	try {
             // Charger le fichier FXML pour Création de compte
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CatalogView.fxml"));
@@ -67,6 +73,7 @@ public class LoginController extends BaseController {
             stage.setScene(new Scene(root));
         } catch (Exception e) {
             e.printStackTrace();
+            errorLabel.setText("There was an issue, please restart the app.");  
         }
     
     }

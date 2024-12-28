@@ -18,6 +18,13 @@
             </HBox>
             
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+            
+            <HBox alignment="BOTTOM_RIGHT">
+        
+        		<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
+        
+        	</HBox>
+            
         </VBox>
     </top>
     

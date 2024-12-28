@@ -5,6 +5,8 @@ import java.io.File;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -17,7 +19,6 @@ public abstract class BaseController {
 	protected String bannerPath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/banniere.jpg";
 	@FXML protected ImageView bannerImage;
 	
-
     // Utilisateur actuellement connecté (partagé entre tous les contrôleurs)
     protected static Person currentUser;
 
@@ -42,6 +43,8 @@ public abstract class BaseController {
     protected boolean hasPermission(String permission) {
         return currentUser != null && currentUser.getPermissions().contains(permission);
     }*/
+    
+    
     
     // Récupérer une image à partir de l'URL
     protected Image loadImage(String imagePath, String defaultPath) {

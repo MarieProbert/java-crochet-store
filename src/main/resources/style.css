@@ -46,6 +46,7 @@ BorderPane {
     -fx-padding: 0 0 0 20px; /* Padding à gauche de 20px */
 }
 
+
 /* Style pour la bannière */
 .banner {
     -fx-background-color: #ffb0be;  /* Couleur d'arrière-plan de la bannière */
@@ -56,7 +57,13 @@ BorderPane {
 
 /* Style du texte dans la bannière */
 .delivery {
-    -fx-text-fill: white;           /* Couleur du texte */
+    -fx-text-fill: #ffffff;           /* Couleur du texte */
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+}
+
+.error-label {
+	-fx-text-fill: #f70000;
+    -fx-font-size: 12px;
+    -fx-padding: 10px;
 }

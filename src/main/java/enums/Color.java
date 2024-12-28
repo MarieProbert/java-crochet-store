@@ -1,18 +1,18 @@
 package enums;
 
 public enum Color {
-	RED("red"), 
-	BLUE("blue"), 
-	GREEN("green"), 
-	YELLOW("yellow"),
-	PINK("pink"),
-	PURPLE("purple"),
-	BEIGE("beige"),
-	ORANGE("orange"),
-	GREY("grey"),
-	WHITE("white"), 
-	BLACK("black"), 
-	BROWN("brown");
+	RED("Red"), 
+	BLUE("Blue"), 
+	GREEN("Green"), 
+	YELLOW("Yellow"),
+	PINK("Pink"),
+	PURPLE("Purple"),
+	BEIGE("Beige"),
+	ORANGE("Orange"),
+	GREY("Grey"),
+	WHITE("White"), 
+	BLACK("Black"), 
+	BROWN("Brown");
 	
 	private final String value;
 	

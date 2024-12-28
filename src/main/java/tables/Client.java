@@ -4,16 +4,27 @@ public class Client extends Person {
 	
 	private String firstName;
 	private String lastName;
-	private String address;
+	private String street;
 	private String city;
 	private int postCode;
 	private String country;
 	
-	public Client(int id, String email, String password, String firstName, String lastName, String address, String city, int postCode, String country) {
+	public Client(int id, String email, String password, String firstName, String lastName, String street, String city, int postCode, String country) {
 		super(id, email, password);
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.address = address;
+		this.street = street;
+		this.city = city;
+		this.postCode = postCode;
+		this.country = country;
+		
+	}
+	
+	public Client( String email, String password, String firstName, String lastName, String street, String city, int postCode, String country) {
+		super(email, password);
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.street = street;
 		this.city = city;
 		this.postCode = postCode;
 		this.country = country;
@@ -41,12 +52,12 @@ public class Client extends Person {
 		this.lastName = lastName;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setStreet(String street) {
+		this.street = street;
 	}
 
 	public String getCity() {

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import tables.Client;
 import util.DatabaseConnection;
@@ -22,7 +23,7 @@ public class ClientDAO {
                 String password = rs.getString("password");
                 String firstName = rs.getString("firstName");
             	String lastName = rs.getString("lastName");
-            	String address = rs.getString("address");
+            	String street = rs.getString("street");
             	String city = rs.getString("city");
             	int postCode = rs.getInt("postCode");
             	String country = rs.getString("country");
@@ -35,22 +36,44 @@ public class ClientDAO {
         }
     }
 	
-	public void insertClient(Client client) {
-		 String sql = "INSERT INTO client (email, password) VALUES (?, ?)";
-		    
+
+	public int insertClient(Client client) {
+		 String sql = "INSERT INTO client (email, password, firstName, lastName, street, city, postCode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		 int generatedID = -1;   
+		 
 		 try (Connection conn = DatabaseConnection.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
+		         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
 		        stmt.setString(1, client.getEmail());
 		        stmt.setString(2, client.getPassword());
+		        stmt.setString(3, client.getFirstName());
+		        stmt.setString(4, client.getLastName());
+		        stmt.setString(5, client.getStreet());
+		        stmt.setString(6, client.getCity());
+		        stmt.setInt(7, client.getPostCode());
+		        stmt.setString(8, client.getCountry());
 
-		        stmt.executeUpdate();
-		        System.out.println("Client inséré avec succès !");
+	            // Exécuter la requête
+	            int affectedRows = stmt.executeUpdate();
+
+	            if (affectedRows > 0) {
+	                // Récupérer l'ID généré
+	                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+	                    if (generatedKeys.next()) {
+	                        generatedID = generatedKeys.getInt(1);
+	                    }
+	                }
+	            } else {
+	                throw new SQLException("L'insertion du client a échoué, aucune ligne affectée.");
+	            }
+
 		    
 		 } catch (SQLException e) {
 		        e.printStackTrace();
 		    
 		 }
+		 
+		 return generatedID; // Retourner l'ID généré
     }
 	
 	public boolean isLoginValid(String testEmail, String testPassword) {
