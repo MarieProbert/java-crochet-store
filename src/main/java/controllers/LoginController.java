@@ -30,6 +30,7 @@ public class LoginController extends BaseController {
         this.clientDAO = new ClientDAO(); // Assure-toi d'avoir une classe DBConnection qui gère la connexion
     }
 
+    // Vérifie si le login est bon, si c'est le cas créé le Client dans java (à modifier pour faire admin aussi)
     @FXML
     private void handleLogin() {
         String username = emailField.getText();
@@ -39,9 +40,16 @@ public class LoginController extends BaseController {
         if (!clientDAO.isLoginValid(username, password)) {
         	errorLabel.setText("Invalid username or password.");
         } else {
+        	userManagement.setUser(clientDAO.setClient(username));
             goToCatalog();
         }
     }
+    
+    @FXML
+    private void handleGuest() {
+    	goToCatalog();
+    }
+    
     
     @FXML
     private void handleRegister() {
@@ -77,10 +85,6 @@ public class LoginController extends BaseController {
         }
     
     }
-    
-    @FXML
-    private void handleGuest() {
-    }
-    
+   
 
 }

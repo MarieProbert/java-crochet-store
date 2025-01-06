@@ -6,11 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import managers.UserManager;
 import tables.Client;
 import util.DatabaseConnection;
 
 public class ClientDAO {
 
+	// Permet d'afficher tous les clients de la base
 	public void getAllClients() {
         String query = "SELECT * FROM Client";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -36,7 +38,7 @@ public class ClientDAO {
         }
     }
 	
-
+	//Permet l'ajout d'un client dans la base de données
 	public int insertClient(Client client) {
 		 String sql = "INSERT INTO client (email, password, firstName, lastName, street, city, postCode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		 int generatedID = -1;   
@@ -76,6 +78,7 @@ public class ClientDAO {
 		 return generatedID; // Retourner l'ID généré
     }
 	
+	// Teste si à partir d'un email et d'un mot de passe le login fonctionne
 	public boolean isLoginValid(String testEmail, String testPassword) {
 		String query = "SELECT * FROM Client";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -97,6 +100,39 @@ public class ClientDAO {
         }
         
         return false;
+		
+	}
+	
+	// A partir d'un email, récupère les informations d'un client dans la BDD et les stocke sous forme d'un Client dans Java
+	public Client setClient(String email) {
+		String query = "SELECT * FROM Client";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String emailDB = rs.getString("email");
+
+                if (email.equals(emailDB)){
+                    int clientID = rs.getInt("clientID");
+                    String password = rs.getString("password");
+                    String firstName = rs.getString("firstName");
+                	String lastName = rs.getString("lastName");
+                	String street = rs.getString("street");
+                	String city = rs.getString("city");
+                	int postCode = rs.getInt("postCode");
+                	String country = rs.getString("country");   
+                	
+                	return new Client(clientID, emailDB, password, firstName, lastName, street, city, postCode, country);
+      
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
 		
 	}
 }

@@ -168,6 +168,7 @@ public class CatalogController extends BaseController {
     
     private static void handleAddToCart(Product product) {
     	
+    	
     }
     
     @FXML

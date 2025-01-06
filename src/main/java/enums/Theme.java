@@ -6,7 +6,7 @@ public enum Theme {
     AUTUMN("autumn"),
     WINTER("winter"),
     FANTASY("fantasy"),
-    GAMES("games"),
+    GAMING("gaming"),
     MOVIES("movies"),
     MUSIC("music"),
     ANIMAL("animal"),

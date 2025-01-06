@@ -10,40 +10,24 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import tables.Person;
+import managers.CatalogManager;
+import managers.UserManager;
+import tables.User;
 import tables.Product;
 
-public abstract class BaseController {
+public class BaseController {
 	
 	protected String defaultImagePath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg";
 	protected String bannerPath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/banniere.jpg";
 	@FXML protected ImageView bannerImage;
-	
-    // Utilisateur actuellement connecté (partagé entre tous les contrôleurs)
-    protected static Person currentUser;
 
-    // Définir l'utilisateur connecté
-    public static void setCurrentUser(Person user) {
-        currentUser = user;
-    }
-
-    // Récupérer l'utilisateur connecté
-    public static Person getCurrentUser() {
-        return currentUser;
-    }
-
-    // Vérifier si un utilisateur est connecté
-    protected boolean isUserLoggedIn() {
-        return currentUser != null;
-    }
-
-    /*
+	public static CatalogManager catalogManagement;
+	public static UserManager userManagement;
     
-    // Exemple : Vérifier si l'utilisateur a une permission spécifique
-    protected boolean hasPermission(String permission) {
-        return currentUser != null && currentUser.getPermissions().contains(permission);
-    }*/
-    
+	public BaseController() {
+    	catalogManagement = new CatalogManager();
+    	userManagement = new UserManager();
+	}
     
     
     // Récupérer une image à partir de l'URL
@@ -58,3 +42,4 @@ public abstract class BaseController {
         return new Image("file:" + defaultPath);
     }
 }
+

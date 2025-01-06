@@ -1,5 +1,6 @@
 package main;
 
+import controllers.BaseController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 
@@ -8,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import managers.CatalogManager;
+import managers.UserManager;
 
 public class MainApp extends Application {
    
@@ -17,14 +19,13 @@ public class MainApp extends Application {
 	        Scene scene = new Scene(loader.load());
 	        primaryStage.setScene(scene);
 	        primaryStage.setWidth(800);           
-	        primaryStage.setHeight(600); 
+	        primaryStage.setHeight(700); 
 	        primaryStage.setTitle("Crochet Store");
 	        primaryStage.show();
 	    }
 
 	    public static void main(String[] args) {
-	    	CatalogManager catalogManagement = new CatalogManager();
-	    	
+	    	BaseController bc = new BaseController();
 	        launch(args);
 	    }
 }
