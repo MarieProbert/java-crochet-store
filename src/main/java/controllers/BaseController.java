@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import managers.CatalogManager;
 import managers.UserManager;
 import tables.User;
+import tables.Order;
 import tables.Product;
 
 public class BaseController {
@@ -21,12 +22,16 @@ public class BaseController {
 	protected String bannerPath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/banniere.jpg";
 	@FXML protected ImageView bannerImage;
 
-	public static CatalogManager catalogManagement;
-	public static UserManager userManagement;
+	protected static CatalogManager catalogManagement;
+	protected static UserManager userManagement;
+	protected static Order order;
+	// Eventuellement separer les controllers pour avoir ceux clients, ceux admins et ceux partagés
+	// En effet, on ne crée la commande vide que si c'est un client
     
 	public BaseController() {
     	catalogManagement = new CatalogManager();
     	userManagement = new UserManager();
+    	order = new Order();
 	}
     
     

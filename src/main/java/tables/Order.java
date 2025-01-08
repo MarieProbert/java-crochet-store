@@ -21,8 +21,17 @@ public class Order {
     private Status status;
 
     /** Map storing product references and their quantities. */
-    private Map<Integer, Integer> map = new HashMap<>();
+    private Map<Integer, Integer> cart;
 
+    // Debut de commande quand on n'a aucune informations de panier précédent en cours à récupérer
+    // Et qu'on ne sait pas forcément qui est le client
+    public Order() {
+    	orderID = -1;
+    	clientID = -1;
+    	status = Status.INPROGRESS;
+    	cart = new HashMap<>();
+    }
+    
     /**
      * Returns the unique order ID.
      *
@@ -91,8 +100,8 @@ public class Order {
      *
      * @return A map with product references as keys and quantities as values.
      */
-    public Map<Integer, Integer> getMap() {
-        return map;
+    public Map<Integer, Integer> getCart() {
+        return cart;
     }
 
     /**
@@ -100,7 +109,29 @@ public class Order {
      *
      * @param map A map with product references as keys and quantities as values.
      */
-    public void setMap(Map<Integer, Integer> map) {
-        this.map = map;
+    public void setCart(Map<Integer, Integer> cart) {
+        this.cart = cart;
     }
+    
+    public void addToCart(Product product, int quantity) {
+
+    	int currentStock = product.getStock();
+
+        if (currentStock == 0) {
+            System.out.println("Error : There is no stock.");
+            return;
+        }
+
+        if (currentStock - quantity < 0) {
+            System.out.println("Error : There is not enough stock for this quantity.");
+            return;
+        }
+
+        cart.put(product.getProductID(), cart.getOrDefault(product.getProductID(), 0) + quantity);
+
+        product.setStock(currentStock - quantity);
+
+        System.out.println("Produit added to cart : " + product.getName() + " Quantity : " + quantity);
+    }
+    
 }

@@ -9,12 +9,30 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import managers.CatalogManager;
+import managers.SceneManager;
 import managers.UserManager;
 
 public class MainApp extends Application {
    
 	 @Override
 	    public void start(Stage primaryStage) throws Exception {
+		 
+	        primaryStage.setWidth(800);           
+	        primaryStage.setHeight(700); 
+	        primaryStage.setTitle("Crochet Store");
+	        
+		 	SceneManager sceneManager = SceneManager.getInstance();
+	        sceneManager.setStage(primaryStage);
+	        // Charger toutes les scènes nécessaires au lancement
+	        sceneManager.loadScene("Login", "/views/LoginView.fxml");
+	        sceneManager.loadScene("Catalog", "/views/CatalogView.fxml");
+	        sceneManager.loadScene("Cart", "/views/CartView.fxml");
+	        
+	        
+	        // Montrer la scène de Login
+	        sceneManager.showScene("Login");
+	        
+	        /*
 		 	FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoginView.fxml"));
 	        Scene scene = new Scene(loader.load());
 	        primaryStage.setScene(scene);
@@ -22,6 +40,7 @@ public class MainApp extends Application {
 	        primaryStage.setHeight(700); 
 	        primaryStage.setTitle("Crochet Store");
 	        primaryStage.show();
+	        */
 	    }
 
 	    public static void main(String[] args) {

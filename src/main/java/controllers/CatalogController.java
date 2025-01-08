@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import managers.CatalogManager;
+import managers.SceneManager;
 import tables.Product;
 import java.util.List;
 import dao.ProductDAO;
@@ -126,7 +127,7 @@ public class CatalogController extends BaseController {
             // Adding name
             Label nomLabel = new Label(product.getName());
             nomLabel.setStyle("-fx-underline: true;"); // Style pour indiquer un lien
-            nomLabel.setOnMouseClicked(e -> openProductPage(product));
+            nomLabel.setOnMouseClicked(e -> SceneManager.getInstance().showProductScene(product));
             
             // Adding price
             Label prixLabel = new Label(String.format("%.2f €", product.getPrice()));
@@ -134,7 +135,7 @@ public class CatalogController extends BaseController {
             
             // Adding button 'Add to cart'
             Button addToCartButton = new Button("Add to cart");
-            addToCartButton.setOnAction(e -> handleAddToCart(product));
+            addToCartButton.setOnAction(e -> order.addToCart(product, 1));
             vbox.getChildren().add(addToCartButton);
 
             int colIndex = (i - startIndex) % cols;
@@ -162,18 +163,20 @@ public class CatalogController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+    	
+
     }
 
     
-    private static void handleAddToCart(Product product) {
-    	
-    	
-    }
-    
     @FXML
     private void handleCart() {
-    	
+    	try {
+            SceneManager.getInstance().showScene("Cart");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
     
     

@@ -29,9 +29,6 @@ public class Product {
     /** Color of the product. */
     private Color color;
 
-    /** Fabric type of the product. */
-    private Fabric fabric;
-
     /** Number of items available in stock. */
     private int stock;
 
@@ -54,6 +51,14 @@ public class Product {
      */
     public Product(int productID) {
         this.productID = productID;
+    }
+    
+    public int getProductID() {
+    	return productID;
+    }
+    
+    public void setProductID(int productID) {
+    	this.productID = productID;
     }
 
     /**
@@ -164,23 +169,6 @@ public class Product {
         this.color = Color.fromStringToColor(color);
     }
 
-    /**
-     * Returns the product's fabric.
-     * 
-     * @return The fabric of the product.
-     */
-    public Fabric getFabric() {
-        return fabric;
-    }
-
-    /**
-     * Sets the product's fabric from a string.
-     * 
-     * @param fabric The fabric string to be converted.
-     */
-    public void setFabricFromString(String fabric) {
-        this.fabric = Fabric.fromStringToFabric(fabric);
-    }
 
     /**
      * Returns the product's stock quantity.
@@ -268,7 +256,6 @@ public class Product {
         sb.append("Price: ").append(price).append("; ");
         sb.append("Description: ").append(description).append("; ");
         sb.append("Color: ").append(color != null ? color.toString() : "N/A").append("; ");
-        sb.append("Fabric: ").append(fabric != null ? fabric.toString() : "N/A").append("; ");
         sb.append("Stock: ").append(stock).append("; ");
         sb.append("Size: ").append(size != null ? size.toString() : "N/A").append("; ");
         sb.append("Theme: ").append(theme != null ? theme.toString() : "N/A").append("; ");

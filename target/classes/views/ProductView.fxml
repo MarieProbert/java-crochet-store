@@ -12,7 +12,15 @@
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+ 
+        <HBox alignment="BOTTOM_RIGHT">
+        
+        	<Button text="Catalog" fx:id="searchCatalog" onAction="#handleCatalog"/>
+        
+        </HBox>           
+            
         </VBox>
+        
     </top>
 
     <!-- Image à gauche -->

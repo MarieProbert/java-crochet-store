@@ -18,14 +18,15 @@
             </HBox>
             
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
-            
-            <HBox alignment="BOTTOM_RIGHT">
+   
+        <HBox alignment="BOTTOM_RIGHT">
         
-        		<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
+        	<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
         
-        	</HBox>
+        </HBox>         
             
         </VBox>
+              
     </top>
     
     <left>
@@ -42,9 +43,13 @@
         </VBox>
     </left>
 
-    <!-- Grille de produits au centre -->
+    <!-- Grille de produits au centre avec ScrollPane -->
     <center>
-        <GridPane fx:id="productGrid" hgap="10" vgap="10" />
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <content>
+                <GridPane fx:id="productGrid" hgap="10" vgap="10" />
+            </content>
+        </ScrollPane>
     </center>
 
     <!-- Pagination en bas -->

@@ -3,12 +3,17 @@ package controllers;
 import enums.Color;
 import enums.Size;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import managers.SceneManager;
 import tables.Product;
 
 public class ProductController extends BaseController {
@@ -16,7 +21,8 @@ public class ProductController extends BaseController {
     @FXML private ImageView productImage;
     @FXML private Label productName;
     @FXML private Label productPrice;
-    @FXML private Button addToCartButton;
+    @FXML private Button addToCartButton;   
+    @FXML private Button searchCatalog;
    
     @FXML private Label creatorLabel;
     @FXML private Label productCreator;
@@ -89,8 +95,6 @@ public class ProductController extends BaseController {
 
     
 	public void setProduct(Product product) {
-
-		VBox vbox = new VBox(5);
         
 		Image image = loadImage(product.getImagePath(), defaultImagePath);
 
@@ -104,11 +108,17 @@ public class ProductController extends BaseController {
         displayProductSize(product.getSize());
 
         // Ajouter l'action du bouton
-        addToCartButton.setOnAction(e -> handleAddToCart(product));
+        addToCartButton.setOnAction(e -> order.addToCart(product, 1));
 	}
 	
-	private static void handleAddToCart(Product product) {
-    	
-    }
+	@FXML
+	public void handleCatalog() {
+    	try {
+            SceneManager.getInstance().showScene("Catalog");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+	}
 
 }

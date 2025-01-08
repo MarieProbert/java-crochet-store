@@ -11,6 +11,7 @@ public enum Theme {
     MUSIC("music"),
     ANIMAL("animal"),
     FLOWER("flower"),
+    DINOSAUR("dinosaur"),
     MYTHOLOGY("mythology"),
     NATURE("nature"),
     OTHER("other");

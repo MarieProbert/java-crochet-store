@@ -39,7 +39,6 @@ public class ProductDAO {
                 product.setPrice(rs.getDouble("price"));
                 product.setDescription(rs.getString("description"));
                 product.setColorFromString(rs.getString("color"));
-                product.setFabricFromString(rs.getString("fabric"));
                 product.setStock( rs.getInt("stock"));
                 product.setSizeFromString(rs.getString("size"));
                 product.setThemeFromString(rs.getString("theme"));

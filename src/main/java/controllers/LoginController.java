@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import managers.SceneManager;
 import util.DatabaseConnection;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,13 +42,13 @@ public class LoginController extends BaseController {
         	errorLabel.setText("Invalid username or password.");
         } else {
         	userManagement.setUser(clientDAO.setClient(username));
-            goToCatalog();
+        	SceneManager.getInstance().showScene("Catalog");
         }
     }
     
     @FXML
     private void handleGuest() {
-    	goToCatalog();
+    	SceneManager.getInstance().showScene("Catalog");
     }
     
     

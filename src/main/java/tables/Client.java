@@ -48,7 +48,7 @@ public class Client extends User {
     }
 
     /**
-     * Constructor without ID.
+     * Constructor without ID. It is only useful for inserting a client in the database
      *
      * @param email     The client's email address.
      * @param password  The client's password.

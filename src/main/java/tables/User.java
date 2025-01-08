@@ -34,6 +34,7 @@ public abstract class User {
      * @param password The user's password.
      */
     public User(String email, String password) {
+    	this.id = -1;
         this.email = email;
         this.password = password;
     }
@@ -43,6 +44,7 @@ public abstract class User {
      * Email is set to "Guest" and password is null.
      */
     public User() {
+    	this.id = -1;
         this.email = "Guest";
         this.password = null;
     }
