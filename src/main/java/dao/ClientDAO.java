@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import managers.UserManager;
 import tables.Client;
 import util.DatabaseConnection;
 
@@ -22,13 +21,15 @@ public class ClientDAO {
             while (rs.next()) {
                 int clientID = rs.getInt("clientID");
                 String email = rs.getString("email");
-                String password = rs.getString("password");
                 String firstName = rs.getString("firstName");
+                /*
+                String password = rs.getString("password");
             	String lastName = rs.getString("lastName");
             	String street = rs.getString("street");
             	String city = rs.getString("city");
             	int postCode = rs.getInt("postCode");
             	String country = rs.getString("country");
+            	*/
 
                 System.out.println("ID: " + clientID + ", Email: " + email + ", First Name: " + firstName);
          }

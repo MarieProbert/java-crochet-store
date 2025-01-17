@@ -5,23 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import managers.CatalogManager;
 import tables.Catalog;
 import tables.Product;
 import util.DatabaseConnection;
 
 public class ProductDAO {
 	
-	private CatalogManager catalogManager;
+	private Catalog catalog;
 
-    // Constructeur qui initialise le CatalogManager
+    // Constructeur qui initialise le Catalog
     public ProductDAO() {
-        this.catalogManager = new CatalogManager();  // Crée une instance du gestionnaire de catalogue
+        this.catalog = Catalog.getInstance(); 
     }
     
 
-	public CatalogManager getCatalogManager() {
-		return catalogManager;
+	public Catalog getCatalog() {
+		return catalog;
 	}
 
 
@@ -45,10 +44,10 @@ public class ProductDAO {
                 product.setImagePath(rs.getString("imagePath"));
                 product.setCategoryFromString(rs.getString("category"));
  
-                catalogManager.addToCatalog(product);
+                catalog.addProduct(product);
 
            }
-           System.out.println(catalogManager.toString());
+           System.out.println(catalog.toString());
 
         } catch (SQLException e) {
             e.printStackTrace();

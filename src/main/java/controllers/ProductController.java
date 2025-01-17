@@ -3,16 +3,11 @@ package controllers;
 import enums.Color;
 import enums.Size;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import managers.SceneManager;
 import tables.Product;
 
@@ -23,6 +18,9 @@ public class ProductController extends BaseController {
     @FXML private Label productPrice;
     @FXML private Button addToCartButton;   
     @FXML private Button searchCatalog;
+    @FXML private Button searchCart;
+    @FXML private Button searchAccount;
+
    
     @FXML private Label creatorLabel;
     @FXML private Label productCreator;
@@ -38,6 +36,7 @@ public class ProductController extends BaseController {
     
     @FXML
     public void initialize() {
+
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
     }
     
@@ -120,5 +119,33 @@ public class ProductController extends BaseController {
         }
     
 	}
+	
+    @FXML
+    private void handleCart() {
+    	try {
+    		System.out.println("4");
+            SceneManager.getInstance().showScene("Cart");
+
+            System.out.println("5");
+            
+        } catch (Exception e) {
+        	System.out.println("erreur");
+            e.printStackTrace();
+        }
+
+    }
+    
+    
+    @FXML
+    private void handleAccount() {
+    	if (userManager.getUser().getId() == -1) {
+    		try {
+                SceneManager.getInstance().showScene("Login");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    	}
+    	// faire un else qui affiche les infos du user qu'il peut modifier
+    }
 
 }

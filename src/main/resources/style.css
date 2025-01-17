@@ -42,6 +42,10 @@ BorderPane {
     -fx-background-color: #fcfcfc;
 }
 
+Label {
+	-fx-text-background-color : #000000;
+}
+
 .left-padding {
     -fx-padding: 0 0 0 20px; /* Padding à gauche de 20px */
 }

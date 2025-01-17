@@ -13,7 +13,7 @@ public class UserManager<T extends User> {
 
     public void setUser(T user) {
         // Remplace l'utilisateur actuel par un nouvel utilisateur
-        this.user = (T) user; // Cast pour garantir que 'T' accepte 'Client'
+        this.user = user; // Cast pour garantir que 'T' accepte 'Client'
     }
     
     public T getUser() {

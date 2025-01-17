@@ -3,13 +3,16 @@ package tables;
 import java.util.HashMap;
 import java.util.Map;
 
-import enums.Color;
 import enums.Status;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * Represents an order placed by a client, including its ID, client information, and a list of purchased products.
  */
 public class Order {
+	
+	private BooleanProperty isUpdated;
 
     /** Unique identifier for the order (primary key). */
     private int orderID;
@@ -21,7 +24,7 @@ public class Order {
     private Status status;
 
     /** Map storing product references and their quantities. */
-    private Map<Integer, Integer> cart;
+    private Map<Product, Integer> cart;
 
     // Debut de commande quand on n'a aucune informations de panier précédent en cours à récupérer
     // Et qu'on ne sait pas forcément qui est le client
@@ -30,6 +33,19 @@ public class Order {
     	clientID = -1;
     	status = Status.INPROGRESS;
     	cart = new HashMap<>();
+    	isUpdated = new SimpleBooleanProperty(true);
+    }
+    
+    public BooleanProperty isUpdatedProperty() {
+        return isUpdated;
+    }
+
+    public boolean isUpdated() {
+        return isUpdated.get();
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated.set(updated);
     }
     
     /**
@@ -100,7 +116,7 @@ public class Order {
      *
      * @return A map with product references as keys and quantities as values.
      */
-    public Map<Integer, Integer> getCart() {
+    public Map<Product, Integer> getCart() {
         return cart;
     }
 
@@ -109,8 +125,23 @@ public class Order {
      *
      * @param map A map with product references as keys and quantities as values.
      */
-    public void setCart(Map<Integer, Integer> cart) {
+    public void setCart(Map<Product, Integer> cart) {
         this.cart = cart;
+    }
+    
+    public void deleteFromCart(Product product, int quantity) {
+    	int currentStock = product.getStock();
+         
+        cart.put(product, cart.get(product) - quantity);
+        
+        if (cart.get(product) <= 0) {
+        	cart.remove(product);
+        }
+        setUpdated(false);
+        
+        product.setStock(currentStock + quantity);
+
+        setUpdated(true);
     }
     
     public void addToCart(Product product, int quantity) {
@@ -127,11 +158,16 @@ public class Order {
             return;
         }
 
-        cart.put(product.getProductID(), cart.getOrDefault(product.getProductID(), 0) + quantity);
-
+         
+        cart.put(product, cart.getOrDefault(product, 0) + quantity);
+        setUpdated(false);
+        System.out.println(isUpdated);
+        
         product.setStock(currentStock - quantity);
 
         System.out.println("Produit added to cart : " + product.getName() + " Quantity : " + quantity);
+        setUpdated(true);
+        System.out.println(isUpdated);
     }
     
 }

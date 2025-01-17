@@ -2,7 +2,6 @@ package tables;
 
 import enums.Category;
 import enums.Color;
-import enums.Fabric;
 import enums.Size;
 import enums.Theme;
 

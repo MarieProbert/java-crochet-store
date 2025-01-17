@@ -1,10 +1,7 @@
 package controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
@@ -13,12 +10,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import managers.CatalogManager;
 import managers.SceneManager;
 import tables.Product;
 import java.util.List;
-import dao.ProductDAO;
 
 public class CatalogController extends BaseController {
     @FXML private GridPane productGrid;
@@ -26,17 +20,13 @@ public class CatalogController extends BaseController {
     @FXML private TextField searchField;
     @FXML private Button searchButton;
     @FXML private Button searchCart;
+    @FXML private Button searchAccount;
 
     private List<Product> products;
-    private CatalogManager catalogManager;
     private static int PRODUCTS_PER_PAGE = 4;
     
-    
-    private ProductDAO productDAO;
-
+   
     public CatalogController() {
-        this.productDAO = new ProductDAO(); 
-        this.catalogManager = productDAO.getCatalogManager();
     }
 
 
@@ -55,7 +45,7 @@ public class CatalogController extends BaseController {
         
         productDAO.getAllProducts(); 
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
-    	products = catalogManager.getProducts();
+    	products = catalog.getProducts();
 
         // Configurer la pagination
         pagination.setPageCount((int) Math.ceil((double) products.size() / PRODUCTS_PER_PAGE));
@@ -145,40 +135,33 @@ public class CatalogController extends BaseController {
     }
 
     
-    
-    private void openProductPage(Product product) {
-        
-    	try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ProductView.fxml"));
-            Parent productPage = loader.load();
-
-            // Passer le produit au contrôleur de la page produit
-            ProductController productController = loader.getController();
-            productController.setProduct(product);
-
-            Stage stage = (Stage) productGrid.getScene().getWindow(); // Récupérer la fenêtre actuelle
-            stage.setScene(new Scene(productPage));
-            stage.show();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    	
-
-    }
-
-    
     @FXML
     private void handleCart() {
     	try {
+    		System.out.println("4");
             SceneManager.getInstance().showScene("Cart");
+
+            System.out.println("5");
             
         } catch (Exception e) {
+        	System.out.println("erreur");
             e.printStackTrace();
         }
 
     }
     
+    
+    @FXML
+    private void handleAccount() {
+    	if (userManager.getUser().getId() == -1) {
+    		try {
+                SceneManager.getInstance().showScene("Login");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    	}
+    	// faire un else qui affiche les infos du user qu'il peut modifier
+    }
     
     // Méthode appelée lors du clic sur le bouton de recherche
     @FXML

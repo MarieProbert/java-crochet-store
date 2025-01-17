@@ -3,18 +3,14 @@ package controllers;
 
 import java.io.File;
 
+import dao.ClientDAO;
+import dao.ProductDAO;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import managers.CatalogManager;
 import managers.UserManager;
-import tables.User;
+import tables.Catalog;
 import tables.Order;
-import tables.Product;
 
 public class BaseController {
 	
@@ -22,16 +18,21 @@ public class BaseController {
 	protected String bannerPath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/banniere.jpg";
 	@FXML protected ImageView bannerImage;
 
-	protected static CatalogManager catalogManagement;
-	protected static UserManager userManagement;
+	protected static Catalog catalog;
+	protected static UserManager userManager;
 	protected static Order order;
+	protected static ProductDAO productDAO;
+	protected static ClientDAO clientDAO;
+	
 	// Eventuellement separer les controllers pour avoir ceux clients, ceux admins et ceux partagés
 	// En effet, on ne crée la commande vide que si c'est un client
     
 	public BaseController() {
-    	catalogManagement = new CatalogManager();
-    	userManagement = new UserManager();
+    	userManager = new UserManager();
     	order = new Order();
+        productDAO = new ProductDAO(); 
+        clientDAO = new ClientDAO();
+        catalog = productDAO.getCatalog();
 	}
     
     

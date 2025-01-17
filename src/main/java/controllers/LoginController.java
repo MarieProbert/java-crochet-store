@@ -1,13 +1,10 @@
 package controllers;
 
-import dao.ClientDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import managers.SceneManager;
-import util.DatabaseConnection;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -19,29 +16,23 @@ public class LoginController extends BaseController {
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
     
-    private ClientDAO clientDAO;
-    
     @FXML
     public void initialize() {
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
     }
 
-    public LoginController() {
-        // Initialisation du ClientDAO avec une connexion à la base de données
-        this.clientDAO = new ClientDAO(); // Assure-toi d'avoir une classe DBConnection qui gère la connexion
-    }
-
     // Vérifie si le login est bon, si c'est le cas créé le Client dans java (à modifier pour faire admin aussi)
     @FXML
     private void handleLogin() {
-        String username = emailField.getText();
+        String email = emailField.getText();
         String password = passwordField.getText();
         errorLabel.setText(""); 
         
-        if (!clientDAO.isLoginValid(username, password)) {
+        if (!clientDAO.isLoginValid(email, password)) {
         	errorLabel.setText("Invalid username or password.");
         } else {
-        	userManagement.setUser(clientDAO.setClient(username));
+        	userManager.setUser(clientDAO.setClient(email));
+        	order.setClientID(userManager.getUser().getId());
         	SceneManager.getInstance().showScene("Catalog");
         }
     }
@@ -67,24 +58,6 @@ public class LoginController extends BaseController {
         	e.printStackTrace();
         	errorLabel.setText("There was an issue with the registration. Please restart the app or continue as a guest.");;
         }
-    }
-    
-    @FXML
-    private void goToCatalog() {
-    	errorLabel.setText(""); 
-    	try {
-            // Charger le fichier FXML pour Création de compte
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CatalogView.fxml"));
-            Parent root = loader.load();
-
-            // Remplacer la scène actuelle
-            Stage stage = (Stage) emailField.getScene().getWindow(); // Récupérer la fenêtre actuelle
-            stage.setScene(new Scene(root));
-        } catch (Exception e) {
-            e.printStackTrace();
-            errorLabel.setText("There was an issue, please restart the app.");  
-        }
-    
     }
    
 

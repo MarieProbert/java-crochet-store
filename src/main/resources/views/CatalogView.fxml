@@ -22,6 +22,7 @@
         <HBox alignment="BOTTOM_RIGHT">
         
         	<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
+        	<Button text="Account" fx:id="searchAccount" onAction="#handleAccount"/>
         
         </HBox>         
             

@@ -63,6 +63,7 @@ public class Catalog {
      */
     @Override
     public String toString() {
+    	System.out.println("Items in the catalog : ");
         StringBuilder sb = new StringBuilder();
         for (Product p : products) {
             sb.append(p.toString());
