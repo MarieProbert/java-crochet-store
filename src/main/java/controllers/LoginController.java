@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import managers.SceneManager;
+import managers.UserSession;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -31,9 +32,13 @@ public class LoginController extends BaseController {
         if (!clientDAO.isLoginValid(email, password)) {
         	errorLabel.setText("Invalid username or password.");
         } else {
-        	userManager.setUser(clientDAO.setClient(email));
-        	order.setClientID(userManager.getUser().getId());
-        	SceneManager.getInstance().showScene("Catalog");
+        	UserSession.getInstance().getUserManager().setUser(clientDAO.setClient(email));
+        	UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUserManager().getUser().getId());
+        	
+        	SceneManager.getInstance().showScene(
+        		    UserSession.getInstance().isValidate() ? "OrderSummary" : "Catalog"
+        	);
+
         }
     }
     
@@ -45,19 +50,7 @@ public class LoginController extends BaseController {
     
     @FXML
     private void handleRegister() {
-    	errorLabel.setText(""); 
-        try {
-            // Charger le fichier FXML pour Création de compte
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AccountCreationView.fxml"));
-            Parent root = loader.load();
-
-            // Remplacer la scène actuelle
-            Stage stage = (Stage) emailField.getScene().getWindow(); // Récupérer la fenêtre actuelle
-            stage.setScene(new Scene(root));
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	errorLabel.setText("There was an issue with the registration. Please restart the app or continue as a guest.");;
-        }
+    	SceneManager.getInstance().showScene("AccountCreation");
     }
    
 

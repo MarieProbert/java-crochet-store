@@ -6,6 +6,7 @@ import java.util.Map;
 import enums.Status;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import managers.SceneManager;
 
 /**
  * Represents an order placed by a client, including its ID, client information, and a list of purchased products.
@@ -160,14 +161,16 @@ public class Order {
 
          
         cart.put(product, cart.getOrDefault(product, 0) + quantity);
-        setUpdated(false);
-        System.out.println(isUpdated);
+        //setUpdated(false);
+        //System.out.println(isUpdated);
         
         product.setStock(currentStock - quantity);
 
         System.out.println("Produit added to cart : " + product.getName() + " Quantity : " + quantity);
-        setUpdated(true);
-        System.out.println(isUpdated);
+        
+        System.out.println(getCart().keySet());
+        //setUpdated(true);
+        //System.out.println(isUpdated);
     }
     
 }

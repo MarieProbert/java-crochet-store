@@ -58,7 +58,7 @@
             <Label fx:id="descriptionLabel" text="Description :" />
             <TextArea fx:id="productDescription" wrapText="true" editable="false" prefHeight="50"/>
 
-            <Button fx:id="addToCartButton" text="Add to Cart" />
+            <Button fx:id="addToCartButton" text="Add to Cart" onAction="#handleAddToCart" />
         </VBox>
     </right>
 

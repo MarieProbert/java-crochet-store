@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.OrderSummaryController" stylesheets="@../style.css">
+
+    <top>
+        <VBox alignment="CENTER">
+            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
+            <HBox styleClass="banner">
+                <Label text="Delivery under two weeks" styleClass="delivery" />
+            </HBox>
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+            
+            
+           <HBox alignment="BOTTOM_RIGHT">
+        
+        	<Button text="Return" fx:id="back" onAction="#handleReturn"/>
+        
+        </HBox> 
+        
+        </VBox>
+           
+    </top>
+
+
+    <!-- Grille de produits au centre -->
+    <center>
+    	<VBox  alignment="CENTER">
+    		<Label fx:id="errorLabel" text="" styleClass="error-label" />
+			
+			<HBox  alignment="CENTER">
+				<Label text="Email : "/>
+			    <TextField fx:id="emailField" maxWidth="200" />
+			</HBox>	
+		    
+		    <HBox  alignment="CENTER">
+				<Label text="Last Name : "/>
+			    <TextField fx:id="lastNameField" maxWidth="200" />
+			</HBox>	
+			
+			<HBox  alignment="CENTER">
+				<Label text="First Name : "/>
+			    <TextField fx:id="firstNameField" maxWidth="200" />
+			</HBox>	
+			
+			<HBox  alignment="CENTER">
+				<Label text="Street : "/>
+			    <TextField fx:id="streetField" maxWidth="200" />
+			</HBox>	
+			
+			<HBox  alignment="CENTER">
+				<Label text="City"/>
+			    <TextField fx:id="cityField" maxWidth="200" />
+			</HBox>	
+			
+			<HBox  alignment="CENTER">
+				<Label text="Post Code : "/>
+			    <TextField fx:id="postCodeField" maxWidth="200" />
+			</HBox>
+			
+			<HBox  alignment="CENTER">
+				<Label text="Country : "/>
+			    <TextField fx:id="countryField" maxWidth="200" />
+			</HBox>
+
+			<Button text="Save" onAction="#handleSave" />
+		    
+	    </VBox>
+    </center>
+
+
+</BorderPane>

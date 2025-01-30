@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import managers.SceneManager;
+import managers.UserSession;
 import tables.Product;
 import java.util.List;
 
@@ -83,6 +84,7 @@ public class CatalogController extends BaseController {
         if (productGrid.getScene() == null) {
             return; // La scène n'est pas encore prête
         }
+        
 
         double sceneWidth = productGrid.getScene().getWidth() - 200; //corriger l'effet bannière et filtre
         double sceneHeight = productGrid.getScene().getHeight() - 200; //corriger l'effet bannière et filtre
@@ -92,7 +94,6 @@ public class CatalogController extends BaseController {
         int rows = Math.max(1, (int) (sceneHeight / 200)); // Exemple : 400px par produit
         int produitsParPage = cols * rows;
 
-        // Logique pour afficher les produits (comme dans votre code initial)
         productGrid.getChildren().clear();
         int startIndex = pageIndex * produitsParPage;
         int endIndex = Math.min(startIndex + produitsParPage, products.size());
@@ -125,7 +126,11 @@ public class CatalogController extends BaseController {
             
             // Adding button 'Add to cart'
             Button addToCartButton = new Button("Add to cart");
-            addToCartButton.setOnAction(e -> order.addToCart(product, 1));
+            //addToCartButton.setOnAction(e -> order.addToCart(product, 1));
+            addToCartButton.setOnAction(e -> {
+                UserSession.getInstance().getOrder().addToCart(product, 1);
+                System.out.println(UserSession.getInstance().getOrder().getCart().keySet());
+            });
             vbox.getChildren().add(addToCartButton);
 
             int colIndex = (i - startIndex) % cols;
@@ -134,6 +139,9 @@ public class CatalogController extends BaseController {
         }
     }
 
+    
+    //methode qui rajoute au panier et si la modif s'est bien faite (true), modif la page du panier
+    
     
     @FXML
     private void handleCart() {
@@ -153,15 +161,17 @@ public class CatalogController extends BaseController {
     
     @FXML
     private void handleAccount() {
-    	if (userManager.getUser().getId() == -1) {
-    		try {
-                SceneManager.getInstance().showScene("Login");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    	// faire un else qui affiche les infos du user qu'il peut modifier
+        String sceneToShow = UserSession.getInstance().getUserManager().getUser().getId() == -1 
+                             ? "Login" 
+                             : "Account";
+        
+        try {
+            SceneManager.getInstance().showScene(sceneToShow);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
     
     // Méthode appelée lors du clic sur le bouton de recherche
     @FXML

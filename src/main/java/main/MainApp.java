@@ -4,6 +4,7 @@ import controllers.BaseController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import managers.SceneManager;
+import managers.UserSession;
 
 public class MainApp extends Application {
    
@@ -15,15 +16,11 @@ public class MainApp extends Application {
 	        primaryStage.setTitle("Crochet Store");
 	        
 		 	SceneManager sceneManager = SceneManager.getInstance();
+		 	UserSession userSession = UserSession.getInstance();
 	        sceneManager.setStage(primaryStage);
-	        // Charger toutes les scènes nécessaires au lancement
-	        sceneManager.loadScene("Login", "/views/LoginView.fxml");
-	        sceneManager.loadScene("Catalog", "/views/CatalogView.fxml");
-	        sceneManager.loadScene("Cart", "/views/CartView.fxml");
-	        
 	        
 	        // Montrer la scène de Login
-	        sceneManager.showScene("Login");
+	        sceneManager.showScene("Catalog");
 
 	    }
 

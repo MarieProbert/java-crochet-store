@@ -19,8 +19,6 @@ public class BaseController {
 	@FXML protected ImageView bannerImage;
 
 	protected static Catalog catalog;
-	protected static UserManager userManager;
-	protected static Order order;
 	protected static ProductDAO productDAO;
 	protected static ClientDAO clientDAO;
 	
@@ -28,8 +26,6 @@ public class BaseController {
 	// En effet, on ne crée la commande vide que si c'est un client
     
 	public BaseController() {
-    	userManager = new UserManager();
-    	order = new Order();
         productDAO = new ProductDAO(); 
         clientDAO = new ClientDAO();
         catalog = productDAO.getCatalog();

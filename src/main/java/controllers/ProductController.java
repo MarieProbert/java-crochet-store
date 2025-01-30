@@ -9,9 +9,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import managers.SceneManager;
+import managers.UserSession;
 import tables.Product;
 
 public class ProductController extends BaseController {
+	
+	private Product product;
 	
     @FXML private ImageView productImage;
     @FXML private Label productName;
@@ -95,7 +98,10 @@ public class ProductController extends BaseController {
     
 	public void setProduct(Product product) {
         
+		this.product = product;
+		
 		Image image = loadImage(product.getImagePath(), defaultImagePath);
+		
 
         // Affichage des informations du produit
 		displayProductName(product.getName());
@@ -107,7 +113,12 @@ public class ProductController extends BaseController {
         displayProductSize(product.getSize());
 
         // Ajouter l'action du bouton
-        addToCartButton.setOnAction(e -> order.addToCart(product, 1));
+        //addToCartButton.setOnAction(e -> order.addToCart(product, 1));
+	}
+	
+	@FXML
+	public void handleAddToCart() {
+		UserSession.getInstance().getOrder().addToCart(product, 1);
 	}
 	
 	@FXML
@@ -138,14 +149,19 @@ public class ProductController extends BaseController {
     
     @FXML
     private void handleAccount() {
-    	if (userManager.getUser().getId() == -1) {
+    	if (UserSession.getInstance().getUserManager().getUser().getId() == -1) {
     		try {
                 SceneManager.getInstance().showScene("Login");
             } catch (Exception e) {
                 e.printStackTrace();
             }
     	}
-    	// faire un else qui affiche les infos du user qu'il peut modifier
+    	else {
+    		try {
+                SceneManager.getInstance().showScene("Account");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    	}
     }
-
 }
