@@ -8,9 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import managers.SceneManager;
-import managers.UserSession;
 import tables.Product;
+import util.SceneManager;
+import util.UserSession;
 
 public class ProductController extends BaseController {
 	
@@ -149,7 +149,7 @@ public class ProductController extends BaseController {
     
     @FXML
     private void handleAccount() {
-    	if (UserSession.getInstance().getUserManager().getUser().getId() == -1) {
+    	if (UserSession.getInstance().getUser().getId() == -1) {
     		try {
                 SceneManager.getInstance().showScene("Login");
             } catch (Exception e) {

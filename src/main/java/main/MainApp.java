@@ -3,8 +3,9 @@ package main;
 import controllers.BaseController;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import managers.SceneManager;
-import managers.UserSession;
+import util.DataSingleton;
+import util.SceneManager;
+import util.UserSession;
 
 public class MainApp extends Application {
    
@@ -17,6 +18,7 @@ public class MainApp extends Application {
 	        
 		 	SceneManager sceneManager = SceneManager.getInstance();
 		 	UserSession userSession = UserSession.getInstance();
+		 	DataSingleton dataSingleton = DataSingleton.getInstance();
 	        sceneManager.setStage(primaryStage);
 	        
 	        // Montrer la scène de Login

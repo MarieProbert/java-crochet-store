@@ -5,9 +5,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import managers.SceneManager;
-import managers.UserSession;
 import tables.Client;
+import util.SceneManager;
+import util.UserSession;
 
 public class AccountController extends BaseController {
 
@@ -30,8 +30,9 @@ public class AccountController extends BaseController {
 
     @FXML
     public void initialize() {
+    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
         // Récupérer l'utilisateur connecté
-        c = (Client) UserSession.getInstance().getUserManager().getUser();
+        c = (Client) UserSession.getInstance().getUser();
 
         // Afficher les valeurs actuelles dans les champs
         emailField.setText(c.getEmail());
@@ -92,7 +93,7 @@ public class AccountController extends BaseController {
     
     @FXML
     private void handleAccount() {
-    	if (UserSession.getInstance().getUserManager().getUser().getId() == -1) {
+    	if (UserSession.getInstance().getUser().getId() == -1) {
     		try {
                 SceneManager.getInstance().showScene("Login");
             } catch (Exception e) {

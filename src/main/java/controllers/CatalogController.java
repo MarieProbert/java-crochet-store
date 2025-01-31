@@ -10,9 +10,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
-import managers.SceneManager;
-import managers.UserSession;
 import tables.Product;
+import util.DataSingleton;
+import util.SceneManager;
+import util.UserSession;
+
 import java.util.List;
 
 public class CatalogController extends BaseController {
@@ -44,9 +46,8 @@ public class CatalogController extends BaseController {
             }
         });
         
-        productDAO.getAllProducts(); 
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
-    	products = catalog.getProducts();
+    	products = DataSingleton.getInstance().getCatalog().getProducts();
 
         // Configurer la pagination
         pagination.setPageCount((int) Math.ceil((double) products.size() / PRODUCTS_PER_PAGE));
@@ -100,7 +101,7 @@ public class CatalogController extends BaseController {
 
         for (int i = startIndex; i < endIndex; i++) {
            
-            Product product = products.get(i);
+            Product product = DataSingleton.getInstance().getCatalog().getProducts().get(i);
 
             VBox vbox = new VBox(5);
             vbox.setPadding(new Insets(10));
@@ -161,7 +162,7 @@ public class CatalogController extends BaseController {
     
     @FXML
     private void handleAccount() {
-        String sceneToShow = UserSession.getInstance().getUserManager().getUser().getId() == -1 
+        String sceneToShow = UserSession.getInstance().getUser().getId() == -1 
                              ? "Login" 
                              : "Account";
         

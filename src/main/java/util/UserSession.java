@@ -1,21 +1,23 @@
-package managers;
+package util;
 
 
 
+import tables.Client;
 import tables.Order;
+import tables.User;
 
-public class UserSession {
+public class UserSession<T extends User> {
     private static UserSession instance;
 
     // Variables pour l'utilisateur et son panier
-    private UserManager userManager;
+    private T user;
     private Order order;
     private boolean validate;
 
     // Constructeur privé pour empêcher l'instanciation extérieure
     private UserSession() {
         order = new Order();
-        userManager = new UserManager();
+        user = (T) new Client();
         validate = false;
     }
 
@@ -26,14 +28,16 @@ public class UserSession {
         }
         return instance;
     }
+    
+    public void setUser(T user) {
+        // Remplace l'utilisateur actuel par un nouvel utilisateur
+        this.user = user; // Cast pour garantir que 'T' accepte 'Client'
+    }
+    
+    public T getUser() {
+        return user;
+    }
 
-	public UserManager getUserManager() {
-		return userManager;
-	}
-
-	public void setUserManager(UserManager userManager) {
-		this.userManager = userManager;
-	}
 
 	public Order getOrder() {
 		return order;

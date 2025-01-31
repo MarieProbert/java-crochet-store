@@ -10,21 +10,10 @@ import tables.Product;
 import util.DatabaseConnection;
 
 public class ProductDAO {
-	
-	private Catalog catalog;
-
-    // Constructeur qui initialise le Catalog
-    public ProductDAO() {
-        this.catalog = Catalog.getInstance(); 
-    }
-    
-
-	public Catalog getCatalog() {
-		return catalog;
-	}
 
 
-	public void getAllProducts() {
+	public Catalog getAllProducts() {
+		Catalog catalog = new Catalog();
         String query = "SELECT * FROM Product";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -52,5 +41,6 @@ public class ProductDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+		return catalog;
     }
 }

@@ -4,8 +4,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import managers.SceneManager;
-import managers.UserSession;
+import util.DataSingleton;
+import util.SceneManager;
+import util.UserSession;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -29,11 +30,11 @@ public class LoginController extends BaseController {
         String password = passwordField.getText();
         errorLabel.setText(""); 
         
-        if (!clientDAO.isLoginValid(email, password)) {
+        if (!DataSingleton.getInstance().getClientDAO().isLoginValid(email, password)) {
         	errorLabel.setText("Invalid username or password.");
         } else {
-        	UserSession.getInstance().getUserManager().setUser(clientDAO.setClient(email));
-        	UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUserManager().getUser().getId());
+        	UserSession.getInstance().setUser(DataSingleton.getInstance().getClientDAO().setClient(email));
+        	UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUser().getId());
         	
         	SceneManager.getInstance().showScene(
         		    UserSession.getInstance().isValidate() ? "OrderSummary" : "Catalog"

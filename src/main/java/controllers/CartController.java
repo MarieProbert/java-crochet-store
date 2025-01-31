@@ -10,9 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import managers.SceneManager;
-import managers.UserSession;
 import tables.Product;
+import util.SceneManager;
+import util.UserSession;
 
 public class CartController extends BaseController {
     @FXML private GridPane productGrid;
@@ -107,7 +107,7 @@ public class CartController extends BaseController {
     
     @FXML
     private void handleAccount() {
-    	if (UserSession.getInstance().getUserManager().getUser().getId() == -1) {
+    	if (UserSession.getInstance().getUser().getId() == -1) {
     		try {
                 SceneManager.getInstance().showScene("Login");
             } catch (Exception e) {
@@ -131,7 +131,7 @@ public class CartController extends BaseController {
     	// Fixer le booleen qui indique qu'on veut passer à la validation à true
     	UserSession.getInstance().setValidate(true);
     	
-        String sceneToShow = UserSession.getInstance().getUserManager().getUser().getId() == -1 
+        String sceneToShow = UserSession.getInstance().getUser().getId() == -1 
                 ? "Login" 
                 : "OrderSummary";
 

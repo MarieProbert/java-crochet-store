@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ValidOrderController" stylesheets="@../style.css">
+
+    <top>
+        <VBox alignment="CENTER">
+            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
+            <HBox styleClass="banner">
+                <Label text="Delivery under two weeks" styleClass="delivery" />
+            </HBox>
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+        </VBox>
+    </top>
+
+
+    <center>
+        <VBox alignment="CENTER" spacing="10">
+            <Label wrapText="true" text="Thank you for ordering! Your order has been validated. You can see it in your order history.\n\nYou can download your invoice here or return to the catalog." maxWidth="400" />
+            
+            <HBox alignment="CENTER" spacing="20">
+                <Button text="Download Invoice" fx:id="invoiceButton" onAction="#handleDownloadInvoice" />
+                <Button text="Return to Catalog" fx:id="catalogButton" onAction="#handleReturnToCatalog" />
+            </HBox>
+        </VBox>
+    </center>
+
+
+</BorderPane>
