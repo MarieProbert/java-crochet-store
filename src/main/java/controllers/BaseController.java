@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import tables.Catalog;
 import tables.Order;
+import util.SceneManager;
+import util.UserSession;
 
 public class BaseController {
 	
@@ -28,5 +30,43 @@ public class BaseController {
         }
         return new Image("file:" + defaultPath);
     }
+    
+    @FXML
+    private void handleCart() {
+    	try {
+            SceneManager.getInstance().showScene("Cart");
+
+            
+        } catch (Exception e) {
+        	System.out.println("erreur");
+            e.printStackTrace();
+        }
+
+    }
+    
+    @FXML
+    private void handleAccount() {
+        String sceneToShow = UserSession.getInstance().getUser().getId() == -1 
+                             ? "Login" 
+                             : "Account";
+        
+        try {
+            SceneManager.getInstance().showScene(sceneToShow);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+	@FXML
+	public void handleCatalog() {
+    	try {
+            SceneManager.getInstance().showScene("Catalog");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+	}
+    
+    
 }
 

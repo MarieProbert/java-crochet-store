@@ -17,19 +17,13 @@ import util.UserSession;
 public class CartController extends BaseController {
     @FXML private GridPane productGrid;
     @FXML private Pagination pagination; 
-    @FXML private Button searchCatalog;
-    @FXML private Button searchAccount;
-    @FXML private Button checkout;
     
     @FXML
     public void initialize() {
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
 
-
-        System.out.println("hello");
         // Display the existing products in the cart
         displayCartItems();
-        System.out.println("end");
     }
 
     
@@ -96,32 +90,6 @@ public class CartController extends BaseController {
         }
     }
 
-    @FXML
-    public void handleCatalog() {
-    	try {
-            SceneManager.getInstance().showScene("Catalog");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    @FXML
-    private void handleAccount() {
-    	if (UserSession.getInstance().getUser().getId() == -1) {
-    		try {
-                SceneManager.getInstance().showScene("Login");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    	else {
-    		try {
-                SceneManager.getInstance().showScene("Account");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    }
     
     @FXML
     private void handleValidate() {

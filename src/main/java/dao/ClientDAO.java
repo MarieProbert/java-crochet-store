@@ -136,4 +136,32 @@ public class ClientDAO {
         return null;
 		
 	}
+	
+	
+	// Met à jour les informations d'un client existant dans la base de données
+	public boolean updateClient(Client client) {
+	    String query = "UPDATE Client SET email = ?, password = ?, firstName = ?, lastName = ?, street = ?, city = ?, postCode = ?, country = ? WHERE clientID = ?";
+
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(query)) {
+
+	        stmt.setString(1, client.getEmail());
+	        stmt.setString(2, client.getPassword());
+	        stmt.setString(3, client.getFirstName());
+	        stmt.setString(4, client.getLastName());
+	        stmt.setString(5, client.getStreet());
+	        stmt.setString(6, client.getCity());
+	        stmt.setInt(7, client.getPostCode());
+	        stmt.setString(8, client.getCountry());
+	        stmt.setInt(9, client.getId()); // Identifier le client à mettre à jour
+
+	        int affectedRows = stmt.executeUpdate();
+	        return affectedRows > 0; // Retourne vrai si la mise à jour a réussi
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 }

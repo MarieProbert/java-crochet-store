@@ -11,13 +11,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import tables.Client;
+import tables.Order;
 import tables.Product;
+import util.DataSingleton;
 import util.SceneManager;
 import util.UserSession;
+import util.ValidationUtils;
 
 public class OrderSummaryController extends BaseController {
-
-    @FXML private Button back;
     @FXML private GridPane productGrid;
     
     @FXML private Label price;
@@ -110,10 +111,71 @@ public class OrderSummaryController extends BaseController {
     @FXML
     public void handleCheckout() {
     	
-    	// If infos valides :
-    	// Sauvegarder les infos client dans la bdd
-    	// Sauvegarder l'info de commande dans la bdd
-    	// passer à la fenêtre de validation de commande
-    	
+ 	    String firstName = firstNameField.getText();
+ 	    String lastName = lastNameField.getText();
+ 	    String street = streetField.getText();
+ 	    String city = cityField.getText();
+ 	    String postCode = postCodeField.getText();
+ 	    String country = countryField.getText();
+
+ 	    // Vérification des modifications
+ 	    String errorMessage = ValidationUtils.verifyModifications(firstName, lastName, street, city, postCode, country);
+
+ 	    // Si une erreur est détectée, on l'affiche et on arrête l'exécution
+ 	    if (errorMessage != null) {
+ 	        errorLabel.setText(errorMessage);
+ 	        return;
+ 	    }
+
+ 	    // Effacer le message d'erreur si tout est valide
+ 	    errorLabel.setText("");
+
+ 	    // --- Mise à jour des informations du client ---
+ 	    c.setFirstName(firstName);
+ 	    c.setLastName(lastName);
+ 	    c.setStreet(street);
+ 	    c.setCity(city);
+
+ 	    // Vérifier si postCode est un entier valide avant de l'enregistrer
+ 	    try {
+ 	        int numericPostCode = Integer.parseInt(postCode);
+ 	        c.setPostCode(numericPostCode);
+ 	    } catch (NumberFormatException e) {
+ 	        errorLabel.setText("PostCode doit être un nombre valide !");
+ 	        return;
+ 	    }
+ 	    
+ 	    c.setCountry(country);
+ 	
+ 	// --- Mise à jour des informations du client et de la commande ---
+ 	   boolean updateSuccess = true;  // Variable pour suivre le succès global
+
+ 	   // Mise à jour du client
+ 	   updateSuccess &= DataSingleton.getInstance().getClientDAO().updateClient(c);  // On utilise &= pour s'assurer que toutes les étapes réussissent
+
+ 	   // Insertion de la commande
+ 	   updateSuccess &= DataSingleton.getInstance().getOrderDAO().insertOrder(UserSession.getInstance().getOrder());
+
+ 	   // Vérification de succès
+ 	   if (updateSuccess) {
+ 	       System.out.println("Les modifications du Client et de la commande ont été enregistrées avec succès !");
+ 	       
+ 	       // Commande terminée donc nouveau panier vide
+ 	       UserSession.getInstance().setOrder(new Order());
+ 	       
+ 	       // Passage à la scène suivante uniquement si tout a réussi
+ 	       try {
+ 	           SceneManager.getInstance().showScene("ValidOrder");
+ 	       } catch (Exception e) {
+ 	           e.printStackTrace();
+ 	       }
+ 	   } else {
+ 	       // Affichage d'un message d'erreur générique si l'une des étapes a échoué
+ 	       errorLabel.setText("Erreur lors de la mise à jour du compte ou de l'insertion de la commande !");
+ 	   }
+ 	    
+ 	
     }
+    	
+    
 }

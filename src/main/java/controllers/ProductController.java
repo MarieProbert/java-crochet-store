@@ -19,10 +19,7 @@ public class ProductController extends BaseController {
     @FXML private ImageView productImage;
     @FXML private Label productName;
     @FXML private Label productPrice;
-    @FXML private Button addToCartButton;   
-    @FXML private Button searchCatalog;
-    @FXML private Button searchCart;
-    @FXML private Button searchAccount;
+    @FXML private Button addToCartButton;
 
    
     @FXML private Label creatorLabel;
@@ -120,48 +117,7 @@ public class ProductController extends BaseController {
 	public void handleAddToCart() {
 		UserSession.getInstance().getOrder().addToCart(product, 1);
 	}
-	
-	@FXML
-	public void handleCatalog() {
-    	try {
-            SceneManager.getInstance().showScene("Catalog");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    
-	}
-	
-    @FXML
-    private void handleCart() {
-    	try {
-    		System.out.println("4");
-            SceneManager.getInstance().showScene("Cart");
 
-            System.out.println("5");
-            
-        } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
-        }
 
-    }
     
-    
-    @FXML
-    private void handleAccount() {
-    	if (UserSession.getInstance().getUser().getId() == -1) {
-    		try {
-                SceneManager.getInstance().showScene("Login");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    	else {
-    		try {
-                SceneManager.getInstance().showScene("Account");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    }
 }

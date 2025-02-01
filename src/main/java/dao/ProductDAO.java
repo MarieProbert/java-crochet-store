@@ -43,4 +43,21 @@ public class ProductDAO {
         }
 		return catalog;
     }
+	
+    public boolean updateStock(int productID, int quantity) {
+        String query = "UPDATE Product SET stock = stock - ? WHERE productID = ? AND stock >= ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+             
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, productID);
+            stmt.setInt(3, quantity);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;  // True si le stock a bien été mis à jour
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

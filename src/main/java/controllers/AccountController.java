@@ -6,18 +6,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import tables.Client;
+import util.DataSingleton;
 import util.SceneManager;
 import util.UserSession;
+import util.ValidationUtils;
 
 public class AccountController extends BaseController {
 
-	
-    @FXML private Button searchCatalog;
-    @FXML private Button searchCart;
-    @FXML private Button searchAccount;
+
     
     @FXML private TextField emailField;
-    //@FXML private PasswordField passwordField;
+    @FXML private PasswordField passwordField;
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
     @FXML private TextField streetField;
@@ -36,7 +35,6 @@ public class AccountController extends BaseController {
 
         // Afficher les valeurs actuelles dans les champs
         emailField.setText(c.getEmail());
-        //passwordField.setText(c.getPassword());
         firstNameField.setText(c.getFirstName());
         lastNameField.setText(c.getLastName());
         streetField.setText(c.getStreet());
@@ -47,65 +45,59 @@ public class AccountController extends BaseController {
 
     @FXML
     public void handleSave() {
-        // Mettre à jour les informations du client avec les nouvelles valeurs saisies
-        c.setEmail(emailField.getText());
-        //c.setPassword(passwordField.getText());
-        c.setFirstName(firstNameField.getText());
-        c.setLastName(lastNameField.getText());
-        c.setStreet(streetField.getText());
-        c.setCity(cityField.getText());
-        // Vérifier si postCode est un entier valide avant de l'enregistrer
-        try {
-            int postCode = Integer.parseInt(postCodeField.getText());
-            c.setPostCode(postCode);
-        } catch (NumberFormatException e) {
-            errorLabel.setText("PostCode doit être un nombre valide !");
-        }
-        c.setCountry(countryField.getText());
-    }
-    
-    
-	@FXML
-	public void handleCatalog() {
-    	try {
-            SceneManager.getInstance().showScene("Catalog");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    
-	}
-	
-    @FXML
-    private void handleCart() {
-    	try {
-    		System.out.println("4");
-            SceneManager.getInstance().showScene("Cart");
+    	
+    	 String email = emailField.getText();
+    	    String password = passwordField.getText(); // Peut être vide
+    	    String firstName = firstNameField.getText();
+    	    String lastName = lastNameField.getText();
+    	    String street = streetField.getText();
+    	    String city = cityField.getText();
+    	    String postCode = postCodeField.getText();
+    	    String country = countryField.getText();
 
-            System.out.println("5");
-            
-        } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
-        }
+    	    // Vérification des modifications
+    	    String errorMessage = ValidationUtils.verifyModifications(email, password, firstName, lastName, street, city, postCode, country);
 
+    	    // Si une erreur est détectée, on l'affiche et on arrête l'exécution
+    	    if (errorMessage != null) {
+    	        errorLabel.setText(errorMessage);
+    	        return;
+    	    }
+
+    	    // Effacer le message d'erreur si tout est valide
+    	    errorLabel.setText("");
+
+    	    // --- Mise à jour des informations du client ---
+    	    c.setEmail(email);
+    	    if (!password.isEmpty()) { // Mettre à jour le mot de passe seulement s'il est renseigné
+    	        c.setPassword(password);
+    	    }
+    	    c.setFirstName(firstName);
+    	    c.setLastName(lastName);
+    	    c.setStreet(street);
+    	    c.setCity(city);
+
+    	    // Vérifier si postCode est un entier valide avant de l'enregistrer
+    	    try {
+    	        int numericPostCode = Integer.parseInt(postCode);
+    	        c.setPostCode(numericPostCode);
+    	    } catch (NumberFormatException e) {
+    	        errorLabel.setText("PostCode doit être un nombre valide !");
+    	        return;
+    	    }
+    	    
+    	    c.setCountry(country);
+    	
+    	    // --- Mise à jour des informations du client ---
+    	    boolean updateSuccess = DataSingleton.getInstance().getClientDAO().updateClient(c);
+
+    	    if (updateSuccess) {
+    	        System.out.println("Les modifications ont été enregistrées avec succès !");
+    	    } else {
+    	        errorLabel.setText("Erreur lors de la mise à jour du compte !");
+    	    }
+    	
     }
-    
-    
-    @FXML
-    private void handleAccount() {
-    	if (UserSession.getInstance().getUser().getId() == -1) {
-    		try {
-                SceneManager.getInstance().showScene("Login");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    	else {
-    		try {
-                SceneManager.getInstance().showScene("Account");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	}
-    }
+   
+
 }

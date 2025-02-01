@@ -21,8 +21,17 @@
    
         <HBox alignment="BOTTOM_RIGHT">
         
-        	<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
-        	<Button text="Account" fx:id="searchAccount" onAction="#handleAccount"/>
+        	<Button text="Cart" onAction="#handleCart"/>
+        	
+
+<ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true" />
+
+    
+    <!-- Barre affichée au survol de l'icône -->
+    <VBox fx:id="tooltipBox" visible="false" spacing="10" alignment="CENTER">
+        <Button text="Account" onAction="#handleAccount"/>
+        <Button text="Past Orders" onAction="#handleAccount"/>
+    </VBox>
         
         </HBox>         
             

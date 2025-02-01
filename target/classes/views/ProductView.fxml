@@ -15,9 +15,9 @@
  
         <HBox alignment="BOTTOM_RIGHT">
         
-        	<Button text="Catalog" fx:id="searchCatalog" onAction="#handleCatalog"/>
-        	<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
-        	<Button text="Account" fx:id="searchAccount" onAction="#handleAccount"/>
+        	<Button text="Catalog" onAction="#handleCatalog"/>
+        	<Button text="Cart" onAction="#handleCart"/>
+        	<Button text="Account" onAction="#handleAccount"/>
         
         </HBox>           
             
@@ -58,7 +58,7 @@
             <Label fx:id="descriptionLabel" text="Description :" />
             <TextArea fx:id="productDescription" wrapText="true" editable="false" prefHeight="50"/>
 
-            <Button fx:id="addToCartButton" text="Add to Cart" onAction="#handleAddToCart" />
+            <Button text="Add to Cart" onAction="#handleAddToCart" />
         </VBox>
     </right>
 

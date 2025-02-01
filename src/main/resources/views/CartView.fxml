@@ -17,8 +17,8 @@
             
             <HBox alignment="BOTTOM_RIGHT">
         
-        		<Button text="Catalog" fx:id="searchCatalog" onAction="#handleCatalog"/>
-        		<Button text="Account" fx:id="searchAccount" onAction="#handleAccount"/>
+        		<Button text="Catalog" onAction="#handleCatalog"/>
+        		<Button text="Account" onAction="#handleAccount"/>
         
         	</HBox>
             
@@ -39,7 +39,7 @@
     </center>
     
     <bottom> 
-    	<Button text="Proceed to checkout" fx:id="checkout" onAction="#handleValidate"/>
+    	<Button text="Proceed to checkout" onAction="#handleValidate"/>
     </bottom>
 
 </BorderPane>

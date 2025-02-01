@@ -13,7 +13,7 @@
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
             
             <HBox alignment="BOTTOM_RIGHT">
-                <Button text="Return" fx:id="back" onAction="#handleReturn"/>
+                <Button text="Return" onAction="#handleReturn"/>
             </HBox>
         </VBox>
     </top>

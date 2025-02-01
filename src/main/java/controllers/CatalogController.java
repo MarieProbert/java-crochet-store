@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -7,9 +8,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import tables.Product;
 import util.DataSingleton;
 import util.SceneManager;
@@ -21,10 +24,12 @@ public class CatalogController extends BaseController {
     @FXML private GridPane productGrid;
     @FXML private Pagination pagination;
     @FXML private TextField searchField;
-    @FXML private Button searchButton;
-    @FXML private Button searchCart;
-    @FXML private Button searchAccount;
 
+    @FXML private ImageView personIcon;
+    @FXML private VBox tooltipBox;
+    
+    private PauseTransition hideTooltipDelay;
+    
     private List<Product> products;
     private static int PRODUCTS_PER_PAGE = 4;
     
@@ -47,6 +52,33 @@ public class CatalogController extends BaseController {
         });
         
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	personIcon.setImage(loadImage("C:/Users/marie/eclipse-workspace/projet-java/pictures/others/user_icon.png", defaultImagePath));
+    	
+    	// Configurer le délai pour masquer la barre d'outils
+        hideTooltipDelay = new PauseTransition(Duration.seconds(0.5)); // Délai de 0.5 seconde
+        hideTooltipDelay.setOnFinished(event -> tooltipBox.setVisible(false));
+
+        // Gestionnaire d'événements pour le survol de l'image
+        personIcon.setOnMouseEntered(event -> {
+            tooltipBox.setVisible(true); // Afficher la barre d'outils
+            hideTooltipDelay.stop(); // Arrêter le délai de masquage
+        });
+
+        // Gestionnaire d'événements pour la sortie de l'image
+        personIcon.setOnMouseExited(event -> {
+            hideTooltipDelay.play(); // Démarrer le délai de masquage
+        });
+
+        // Gestionnaire d'événements pour le survol de la barre d'outils
+        tooltipBox.setOnMouseEntered(event -> {
+            hideTooltipDelay.stop(); // Arrêter le délai de masquage
+        });
+        
+     // Gestionnaire d'événements pour la sortie de la barre d'outils
+        tooltipBox.setOnMouseExited(event -> {
+            hideTooltipDelay.play(); // Démarrer le délai de masquage
+        });
+        
     	products = DataSingleton.getInstance().getCatalog().getProducts();
 
         // Configurer la pagination
@@ -140,38 +172,6 @@ public class CatalogController extends BaseController {
         }
     }
 
-    
-    //methode qui rajoute au panier et si la modif s'est bien faite (true), modif la page du panier
-    
-    
-    @FXML
-    private void handleCart() {
-    	try {
-    		System.out.println("4");
-            SceneManager.getInstance().showScene("Cart");
-
-            System.out.println("5");
-            
-        } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
-        }
-
-    }
-    
-    
-    @FXML
-    private void handleAccount() {
-        String sceneToShow = UserSession.getInstance().getUser().getId() == -1 
-                             ? "Login" 
-                             : "Account";
-        
-        try {
-            SceneManager.getInstance().showScene(sceneToShow);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     
     // Méthode appelée lors du clic sur le bouton de recherche

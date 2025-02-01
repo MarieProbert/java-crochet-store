@@ -17,9 +17,8 @@
             
            <HBox alignment="BOTTOM_RIGHT">
         
-        	<Button text="Catalog" fx:id="searchCatalog" onAction="#handleCatalog"/>
-        	<Button text="Cart" fx:id="searchCart" onAction="#handleCart"/>
-        	<Button text="Account" fx:id="searchAccount" onAction="#handleAccount"/>
+        	<Button text="Catalog" onAction="#handleCatalog"/>
+        	<Button text="Cart" onAction="#handleCart"/>
         
         </HBox> 
         
@@ -37,6 +36,11 @@
 				<Label text="Email : "/>
 			    <TextField fx:id="emailField" maxWidth="200" />
 			</HBox>	
+			
+			<HBox  alignment="CENTER">
+				<Label text="Password : "/>
+			    <PasswordField fx:id="passwordField" maxWidth="200" />
+			</HBox>			
 		    
 		    <HBox  alignment="CENTER">
 				<Label text="Last Name : "/>

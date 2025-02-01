@@ -2,7 +2,6 @@ package controllers;
 
 import java.util.regex.Pattern;
 
-import dao.ClientDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +11,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tables.Client;
+import util.DataSingleton;
+import util.ValidationUtils;
 
 public class AccountCreationController extends BaseController {
 	@FXML private TextField emailField;
@@ -30,65 +31,36 @@ public class AccountCreationController extends BaseController {
     	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
     }
 
+    
     @FXML
     private void handleSubmit() {
-    	String email = emailField.getText();
+        String email = emailField.getText();
         String password = passwordField.getText();
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String street = streetField.getText();
         String city = cityField.getText();
-        int postCode;
+        String postCode = postCodeField.getText();
         String country = countryField.getText();
 
-        // Initialize the error message as empty
-        errorLabel.setText(""); 
+        // Appel de la méthode verifySubmission et récupération du message d'erreur
+        String errorMessage = ValidationUtils.verifySubmission(email, password, firstName, lastName, street, city, postCode, country);
 
-        // Verify if there are empty fields
-        if (email.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
-            street.isEmpty() || city.isEmpty() || postCodeField.getText().isEmpty() || country.isEmpty()) {
-            errorLabel.setText("All the fields must be filled !");
-            return;
-        }
-        
-        // Verify the validity of an email
-        String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-            
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(regexPattern);
-        java.util.regex.Matcher m = p.matcher(email);
-        
-        if (!m.matches()) {
-            errorLabel.setText("The email format is invalid !");
+        // Si une erreur est détectée, on l'affiche et on arrête l'exécution
+        if (errorMessage != null) {
+            errorLabel.setText(errorMessage);
             return;
         }
 
-        // Verify the length of a password
-        if (password.length() <= 8) {
-            errorLabel.setText("The password must be longer than 8 characters !");
-            return;
-        }
+        // Effacer le message d'erreur si tout est valide
+        errorLabel.setText("");
         
-        // Verify and convert the postcode
-        try {
-            postCode = Integer.parseInt(postCodeField.getText());
-        } catch (NumberFormatException e) {
-            errorLabel.setText("The postcode must be a number !");
-            return;
-        }
-       
-
+        int intPostCode = Integer.parseInt(postCodeField.getText());
         // Add the client to the database
-        Client client = new Client(email, password, firstName, lastName, street, city, postCode, country);
-        ClientDAO clientDAO = new ClientDAO();
-        clientDAO.insertClient(client);
+        Client client = new Client(email, password, firstName, lastName, street, city, intPostCode, country);
+        DataSingleton.getInstance().getClientDAO().insertClient(client);
         handleReturn();
-    }
-    
-    public static boolean patternMatches(String emailAddress, String regexPattern) {
-        return Pattern.compile(regexPattern)
-          .matcher(emailAddress)
-          .matches();
+        
     }
     
     
