@@ -193,4 +193,24 @@ public class Order {
         System.out.println(getCart().keySet());
     }
     
+    
+    public double calculateCartTotal() {
+    	double total = 0;
+    	
+        // Parcourir chaque entrée du panier
+        for (Map.Entry<Product, Integer> entry : cart.entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+
+            // Calculer le coût pour ce produit (prix * quantité)
+            double productPrice = product.getPrice(); // Supposons que getPrice() retourne un BigDecimal
+            double lineTotal = productPrice * quantity;
+
+            // Ajouter au total
+            total += lineTotal;
+        }
+
+        return total;
+    }
+    
 }

@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import tables.Client;
+import tables.Invoice;
 import tables.Order;
 import tables.Product;
 import util.DataSingleton;
@@ -145,15 +146,19 @@ public class OrderSummaryController extends BaseController {
  	   updateSuccess &= DataSingleton.getInstance().getClientDAO().updateClient(c);  // On utilise &= pour s'assurer que toutes les étapes réussissent
 
  	   // Insertion de la commande
- 	   updateSuccess &= DataSingleton.getInstance().getOrderDAO().insertOrder(UserSession.getInstance().getOrder());
+ 	   int orderID = DataSingleton.getInstance().getOrderDAO().insertOrder(UserSession.getInstance().getOrder());
 
  	   // Vérification de succès
- 	   if (updateSuccess) {
+ 	   if (updateSuccess && orderID != -1) {
  	       System.out.println("Les modifications du Client et de la commande ont été enregistrées avec succès !");
- 	       
- 	       // Commande terminée donc nouveau panier vide
- 	       UserSession.getInstance().setOrder(new Order());
- 	       
+ 	      UserSession.getInstance().getOrder().setOrderID(orderID);
+
+ 	      Invoice invoice = new Invoice(UserSession.getInstance().getOrder().getOrderID(), UserSession.getInstance().getOrder().getClientID(), UserSession.getInstance().getOrder().getPurchaseDate(), UserSession.getInstance().getOrder().calculateCartTotal());
+ 	      int invoiceID = DataSingleton.getInstance().getInvoiceDAO().insertInvoice(invoice);
+ 	      
+ 	      invoice.setInvoiceID(invoiceID);
+ 	      UserSession.getInstance().setInvoice(invoice);
+ 	      
  	       // Passage à la scène suivante uniquement si tout a réussi
  	       try {
  	           SceneManager.getInstance().showScene("ValidOrder");

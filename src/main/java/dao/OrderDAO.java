@@ -9,11 +9,12 @@ import tables.Order;
 import tables.Product;
 import util.DataSingleton;
 import util.DatabaseConnection;
+import util.UserSession;
 
 public class OrderDAO {
 
-    public boolean insertOrder(Order order) {
-        String insertOrderQuery = "INSERT INTO `order` (clientID, status) VALUES (?, ?)";
+	public int insertOrder(Order order) {
+        String insertOrderQuery = "INSERT INTO `order` (clientID, status, purchaseDate) VALUES (?, ?, ?)";
         String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity) VALUES (?, ?, ?)";
 
         Connection conn = null;
@@ -25,10 +26,15 @@ public class OrderDAO {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false); // Démarrer une transaction
 
-            // 🔹 Étape 1 : Insérer la commande
-            orderStmt = conn.prepareStatement(insertOrderQuery, Statement.RETURN_GENERATED_KEYS);
+            // 🔹 Étape 1 : Mettre à jour la date d'achat dans UserSession
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+            UserSession.getInstance().getOrder().setPurchaseDate(currentTimestamp);
+
+            // 🔹 Étape 2 : Insérer la commande
+            orderStmt = conn.prepareStatement(insertOrderQuery, PreparedStatement.RETURN_GENERATED_KEYS);
             orderStmt.setInt(1, order.getClientID());
-            orderStmt.setString(2, "In progress"); // Quand on insère une commande elle est forcément en progrès
+            orderStmt.setString(2, order.getStatus().toString()); 
+            orderStmt.setTimestamp(3, currentTimestamp); // Date d'achat
 
             int affectedRows = orderStmt.executeUpdate();
 
@@ -36,9 +42,9 @@ public class OrderDAO {
                 throw new SQLException("Échec de l'insertion de la commande, aucune ligne affectée.");
             }
 
-            // 🔹 Étape 2 : Récupérer l'ID de la commande créée
+            // 🔹 Étape 3 : Récupérer l'ID de la commande créée
             generatedKeys = orderStmt.getGeneratedKeys();
-            int orderId;
+            int orderId = -1; // Initialiser à -1 par défaut
             if (generatedKeys.next()) {
                 orderId = generatedKeys.getInt(1);
                 order.setOrderID(orderId); // Mettre à jour l'objet Order
@@ -46,7 +52,7 @@ public class OrderDAO {
                 throw new SQLException("Échec de l'obtention de l'ID de la commande.");
             }
 
-            // 🔹 Étape 3 : Insérer chaque produit dans `orderxproduct`
+            // 🔹 Étape 4 : Insérer chaque produit dans `orderxproduct`
             orderXProductStmt = conn.prepareStatement(insertOrderXProductQuery);
 
             for (Map.Entry<Product, Integer> entry : order.getCart().entrySet()) {
@@ -57,19 +63,19 @@ public class OrderDAO {
                 orderXProductStmt.setInt(2, product.getProductID());
                 orderXProductStmt.setInt(3, quantity);
                 orderXProductStmt.addBatch();
-                
+
                 // Mettre à jour le stock
                 boolean stockUpdated = DataSingleton.getInstance().getProductDAO().updateStock(product.getProductID(), quantity);
                 if (!stockUpdated) {
                     conn.rollback();  // Annuler la transaction si stock insuffisant
-                    return false;
+                    return -1; // Retourner -1 si le stock n'a pas pu être mis à jour
                 }
             }
 
             orderXProductStmt.executeBatch(); // Exécuter toutes les requêtes `orderxproduct` d’un coup
 
             conn.commit(); // Valider la transaction
-            return true;
+            return orderId; // Retourner l'ID de la commande générée
 
         } catch (SQLException e) {
             if (conn != null) {
@@ -80,7 +86,7 @@ public class OrderDAO {
                 }
             }
             e.printStackTrace();
-            return false;
+            return -1; // Retourner -1 en cas d'erreur
 
         } finally {
             // Fermer les ressources proprement
@@ -95,8 +101,6 @@ public class OrderDAO {
             }
         }
     }
-    
-    
     
     public List<Order> getOrdersByClientId(int clientId) {
         List<Order> orders = new ArrayList<>();

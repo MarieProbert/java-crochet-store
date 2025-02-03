@@ -11,6 +11,9 @@ public class Invoice {
     private Timestamp invoiceDate;
     private double totalAmount;
 
+    public Invoice() {
+    	
+    }
     // Constructeur sans ID de facture, utile lors de la création de nouvelles factures
     public Invoice(int orderID, int clientID, Timestamp invoiceDate, double totalAmount) {
         this.orderID = orderID;

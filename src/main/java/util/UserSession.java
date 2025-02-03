@@ -3,6 +3,7 @@ package util;
 
 
 import tables.Client;
+import tables.Invoice;
 import tables.Order;
 import tables.User;
 
@@ -12,6 +13,7 @@ public class UserSession<T extends User> {
     // Variables pour l'utilisateur et son panier
     private T user;
     private Order order;
+    private Invoice invoice;
     private boolean validate;
 
     // Constructeur privé pour empêcher l'instanciation extérieure
@@ -19,6 +21,7 @@ public class UserSession<T extends User> {
         order = new Order();
         user = (T) new Client();
         validate = false;
+        invoice = new Invoice();
     }
 
     // Méthode pour récupérer l'instance unique de UserSession (Singleton)
@@ -54,6 +57,14 @@ public class UserSession<T extends User> {
 
 	public void setValidate(boolean validate) {
 		this.validate = validate;
+	}
+
+	public Invoice getInvoice() {
+		return invoice;
+	}
+
+	public void setInvoice(Invoice invoice) {
+		this.invoice = invoice;
 	}
 	
 	
