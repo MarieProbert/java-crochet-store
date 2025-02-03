@@ -5,24 +5,27 @@
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ProductController" stylesheets="@../style.css">
 
-	<top>
+    <top>
         <VBox alignment="CENTER">
             <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
+            
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
- 
+   
         <HBox alignment="BOTTOM_RIGHT">
         
-        	<Button text="Catalog" onAction="#handleCatalog"/>
         	<Button text="Cart" onAction="#handleCart"/>
-        	<Button text="Account" onAction="#handleAccount"/>
-        
-        </HBox>           
+        	<Button text="Catalog" onAction="#handleCatalog"/>
+        	
+        <!-- Icône de profil -->
+        <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
+
+        </HBox>         
             
         </VBox>
-        
+              
     </top>
 
     <!-- Image à gauche -->

@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import tables.Order;
 import util.DataSingleton;
 import util.SceneManager;
 import util.UserSession;
@@ -20,7 +21,7 @@ public class LoginController extends BaseController {
     
     @FXML
     public void initialize() {
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	super.initialize();
     }
 
     // Vérifie si le login est bon, si c'est le cas créé le Client dans java (à modifier pour faire admin aussi)
@@ -35,6 +36,17 @@ public class LoginController extends BaseController {
         } else {
         	UserSession.getInstance().setUser(DataSingleton.getInstance().getClientDAO().setClient(email));
         	UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUser().getId());
+        	
+        	/*
+        	Order o = DataSingleton.getInstance().getOrderDAO().getInProgressOrderByClientID(UserSession.getInstance().getUser().getId());
+        	System.out.println("is it good ?");
+        	System.out.println(o.getCart().toString());
+        	if (o != null) {
+        		System.out.println("yeah");
+        		UserSession.getInstance().setOrder(o);
+        		System.out.println(UserSession.getInstance().getOrder().getCart().toString());
+        	}
+        	*/
         	
         	SceneManager.getInstance().showScene(
         		    UserSession.getInstance().isValidate() ? "OrderSummary" : "Catalog"

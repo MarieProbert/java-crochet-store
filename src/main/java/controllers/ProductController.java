@@ -37,7 +37,7 @@ public class ProductController extends BaseController {
     @FXML
     public void initialize() {
 
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	super.initialize();
     }
     
     public void displayProductName(String name) {

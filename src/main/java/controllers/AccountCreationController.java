@@ -28,7 +28,7 @@ public class AccountCreationController extends BaseController {
     
     @FXML
     public void initialize() {
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	super.initialize();
     }
 
     

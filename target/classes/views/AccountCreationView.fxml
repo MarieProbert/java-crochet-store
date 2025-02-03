@@ -12,10 +12,22 @@
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
+            
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
-        </VBox>
-    </top>
+   
+        <HBox alignment="BOTTOM_RIGHT">
+        
+        	<Button text="Cart" onAction="#handleCart"/>
+        	<Button text="Catalog" onAction="#handleCatalog"/>
+        	
+        <!-- Icône de profil -->
+        <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
+        </HBox>         
+            
+        </VBox>
+              
+    </top>
 
     <!-- Grille de produits au centre -->
     <center>

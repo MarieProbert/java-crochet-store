@@ -4,10 +4,10 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.CartController" stylesheets="@../style.css">
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.OrderHistoryController" stylesheets="@../style.css">
     
     
-        <top>
+     <top>
         <VBox alignment="CENTER">
             <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
             <HBox styleClass="banner">
@@ -33,13 +33,9 @@
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true">
             <content>
-                <GridPane fx:id="productGrid" hgap="10" vgap="10" />
+                <GridPane fx:id="orderGrid" hgap="10" vgap="10" />
             </content>
         </ScrollPane>
     </center>
     
-    <bottom> 
-    	<Button text="Proceed to checkout" onAction="#handleValidate"/>
-    </bottom>
-
 </BorderPane>

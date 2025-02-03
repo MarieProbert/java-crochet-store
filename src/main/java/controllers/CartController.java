@@ -20,7 +20,7 @@ public class CartController extends BaseController {
     
     @FXML
     public void initialize() {
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	super.initialize();
 
         // Display the existing products in the cart
         displayCartItems();

@@ -29,7 +29,7 @@ public class AccountController extends BaseController {
 
     @FXML
     public void initialize() {
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	super.initialize();
         // Récupérer l'utilisateur connecté
         c = (Client) UserSession.getInstance().getUser();
 

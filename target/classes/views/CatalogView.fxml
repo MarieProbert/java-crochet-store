@@ -23,16 +23,9 @@
         
         	<Button text="Cart" onAction="#handleCart"/>
         	
+        <!-- Icône de profil -->
+        <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
-<ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true" />
-
-    
-    <!-- Barre affichée au survol de l'icône -->
-    <VBox fx:id="tooltipBox" visible="false" spacing="10" alignment="CENTER">
-        <Button text="Account" onAction="#handleAccount"/>
-        <Button text="Past Orders" onAction="#handleAccount"/>
-    </VBox>
-        
         </HBox>         
             
         </VBox>

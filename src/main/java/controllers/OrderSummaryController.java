@@ -37,7 +37,7 @@ public class OrderSummaryController extends BaseController {
     
     @FXML
     public void initialize() {
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
+    	super.initialize();
     	
     	c = (Client) UserSession.getInstance().getUser();
     	
@@ -95,18 +95,7 @@ public class OrderSummaryController extends BaseController {
         }
         price.setText(String.format("%.2f €", totalprice));
     }
-    
-    
-    @FXML
-    public void handleReturn() {
-    	UserSession.getInstance().setValidate(false);
-    	
-    	try {
-            SceneManager.getInstance().showScene("Cart");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
     
     @FXML
     public void handleCheckout() {
@@ -150,6 +139,8 @@ public class OrderSummaryController extends BaseController {
  	// --- Mise à jour des informations du client et de la commande ---
  	   boolean updateSuccess = true;  // Variable pour suivre le succès global
 
+ 	   UserSession.getInstance().getOrder().setStatusFromString("Confirmed");
+ 	   System.out.println(UserSession.getInstance().getOrder().getStatus());
  	   // Mise à jour du client
  	   updateSuccess &= DataSingleton.getInstance().getClientDAO().updateClient(c);  // On utilise &= pour s'assurer que toutes les étapes réussissent
 

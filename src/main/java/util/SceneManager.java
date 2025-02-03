@@ -27,6 +27,7 @@ public class SceneManager {
         put("AccountCreation", "/views/AccountCreationView.fxml");
         put("OrderSummary", "/views/OrderSummaryView.fxml");
         put("ValidOrder", "/views/ValidOrderView.fxml");
+        put("OrderHistory", "/views/OrderHistoryView.fxml");
     }};
 
     

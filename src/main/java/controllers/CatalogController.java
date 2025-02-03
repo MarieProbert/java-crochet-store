@@ -12,6 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import tables.Product;
 import util.DataSingleton;
@@ -25,21 +27,13 @@ public class CatalogController extends BaseController {
     @FXML private Pagination pagination;
     @FXML private TextField searchField;
 
-    @FXML private ImageView personIcon;
-    @FXML private VBox tooltipBox;
-    
-    private PauseTransition hideTooltipDelay;
-    
     private List<Product> products;
     private static int PRODUCTS_PER_PAGE = 4;
-    
-   
-    public CatalogController() {
-    }
-
 
     @FXML
     public void initialize() {
+    	super.initialize();
+    	
         productGrid.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 // La scène est maintenant attachée, on peut accéder à ses dimensions
@@ -51,42 +45,12 @@ public class CatalogController extends BaseController {
             }
         });
         
-    	bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
-    	personIcon.setImage(loadImage("C:/Users/marie/eclipse-workspace/projet-java/pictures/others/user_icon.png", defaultImagePath));
-    	
-    	// Configurer le délai pour masquer la barre d'outils
-        hideTooltipDelay = new PauseTransition(Duration.seconds(0.5)); // Délai de 0.5 seconde
-        hideTooltipDelay.setOnFinished(event -> tooltipBox.setVisible(false));
-
-        // Gestionnaire d'événements pour le survol de l'image
-        personIcon.setOnMouseEntered(event -> {
-            tooltipBox.setVisible(true); // Afficher la barre d'outils
-            hideTooltipDelay.stop(); // Arrêter le délai de masquage
-        });
-
-        // Gestionnaire d'événements pour la sortie de l'image
-        personIcon.setOnMouseExited(event -> {
-            hideTooltipDelay.play(); // Démarrer le délai de masquage
-        });
-
-        // Gestionnaire d'événements pour le survol de la barre d'outils
-        tooltipBox.setOnMouseEntered(event -> {
-            hideTooltipDelay.stop(); // Arrêter le délai de masquage
-        });
-        
-     // Gestionnaire d'événements pour la sortie de la barre d'outils
-        tooltipBox.setOnMouseExited(event -> {
-            hideTooltipDelay.play(); // Démarrer le délai de masquage
-        });
-        
-    	products = DataSingleton.getInstance().getCatalog().getProducts();
+        products = DataSingleton.getInstance().getCatalog().getProducts();
 
         // Configurer la pagination
         pagination.setPageCount((int) Math.ceil((double) products.size() / PRODUCTS_PER_PAGE));
         pagination.setCurrentPageIndex(0);
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> afficherProduits(newIndex.intValue()));
-    
-        
     }
 
         

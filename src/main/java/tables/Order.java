@@ -1,5 +1,7 @@
 package tables;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,9 @@ public class Order {
 
     /** Status of the order (e.g., in-progress, confirmed, delivered). */
     private Status status;
+    
+    private Timestamp purchaseDate; 
+    private Timestamp deliveryDate; 
 
     /** Map storing product references and their quantities. */
     private Map<Product, Integer> cart;
@@ -35,6 +40,8 @@ public class Order {
     	status = Status.INPROGRESS;
     	cart = new HashMap<>();
     	isUpdated = new SimpleBooleanProperty(true);
+    	purchaseDate = null;
+    	deliveryDate = null;
     }
     
     public BooleanProperty isUpdatedProperty() {
@@ -110,6 +117,23 @@ public class Order {
      */
     public void setStatusFromString(String status) {
         this.status = Status.fromStringToStatus(status);
+    }
+    
+    
+    public Timestamp getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Timestamp purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    public Timestamp getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(Timestamp deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     /**

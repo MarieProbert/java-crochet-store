@@ -1,7 +1,7 @@
 package enums;
 
 public enum Status {
-	INPROGRESS("in-progress"), CONFIRMED("confirmed"), DELIVERED("delivered");
+	INPROGRESS("In progress"), CONFIRMED("Confirmed"), DELIVERED("Delivered");
 	
 	private final String value;
 	
