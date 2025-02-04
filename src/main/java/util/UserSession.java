@@ -1,17 +1,15 @@
 package util;
 
 
-
-import tables.Client;
 import tables.Invoice;
 import tables.Order;
 import tables.User;
 
-public class UserSession<T extends User> {
+public class UserSession {
     private static UserSession instance;
 
     // Variables pour l'utilisateur et son panier
-    private T user;
+    private User user;
     private Order order;
     private Invoice invoice;
     private boolean validate;
@@ -19,7 +17,7 @@ public class UserSession<T extends User> {
     // Constructeur privé pour empêcher l'instanciation extérieure
     private UserSession() {
         order = new Order();
-        user = (T) new Client();
+        user = new User();
         validate = false;
         invoice = new Invoice();
     }
@@ -32,12 +30,12 @@ public class UserSession<T extends User> {
         return instance;
     }
     
-    public void setUser(T user) {
+    public void setUser(User user) {
         // Remplace l'utilisateur actuel par un nouvel utilisateur
-        this.user = user; // Cast pour garantir que 'T' accepte 'Client'
+        this.user = user; 
     }
     
-    public T getUser() {
+    public User getUser() {
         return user;
     }
 

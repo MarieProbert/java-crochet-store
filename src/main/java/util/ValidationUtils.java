@@ -124,20 +124,7 @@ public class ValidationUtils {
     }
 
     public static String verifyPostCode(String postCode) {
-        if (postCode.isEmpty()) {
-            return "All the fields must be filled!";
-        }
-
-        try {
-            int numericPostCode = Integer.parseInt(postCode);
-            if (numericPostCode <= 0) {
-                return "Invalid postcode!";
-            }
-        } catch (NumberFormatException e) {
-            return "The postcode must be a number!";
-        }
-
-        return null;
+    	return postCode.isEmpty() ? "All the fields must be filled!" : null;
     }
 
     public static String verifyCountry(String country) {

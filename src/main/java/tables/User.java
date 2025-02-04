@@ -1,10 +1,9 @@
 package tables;
 
 /**
- * Abstract class representing a generic user.
  * It is used as a base for different types of users (Client, Admin)
  */
-public abstract class User {
+public class User {
     /** Unique identifier of the user. */
     private int id;
 
@@ -13,6 +12,12 @@ public abstract class User {
 
     /** Password of the user. */
     private String password;
+    
+    private String firstName;
+    private String lastName;
+    private String role;
+
+    private Address address;
 
     /**
      * Constructor with ID, email, and password.
@@ -43,13 +48,33 @@ public abstract class User {
      * Default constructor for creating a guest user.
      * Email is set to "Guest" and password is null.
      */
+    // Utilisé
     public User() {
     	this.id = -1;
         this.email = "Guest";
         this.password = null;
     }
 
-    /**
+    // Utilisé
+    public User(int id, String email, String password, String firstName, String lastName, String role) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+	}
+    
+    // Utilisé
+    public User(String email, String password, String firstName, String lastName, String role) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+	}
+
+	/**
      * Returns the user's unique identifier.
      *
      * @return The user's ID.
@@ -102,4 +127,58 @@ public abstract class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    /**
+     * Returns the client's first name.
+     *
+     * @return The client's first name.
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    /**
+     * Sets the client's first name.
+     *
+     * @param firstName The new first name for the client.
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    /**
+     * Returns the client's last name.
+     *
+     * @return The client's last name.
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * Sets the client's last name.
+     *
+     * @param lastName The new last name for the client.
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+    
+    
 }

@@ -10,10 +10,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import tables.Client;
 import tables.Invoice;
 import tables.Order;
 import tables.Product;
+import tables.User;
 import util.DataSingleton;
 import util.SceneManager;
 import util.UserSession;
@@ -34,21 +34,34 @@ public class OrderSummaryController extends BaseController {
     @FXML private TextField countryField;
     @FXML private Label errorLabel;
     
-    private Client c;
+    private User user;
     
     @FXML
     public void initialize() {
     	super.initialize();
     	
-    	c = (Client) UserSession.getInstance().getUser();
+    	user = UserSession.getInstance().getUser();
     	
-    	emailField.setText(c.getEmail());
-        lastNameField.setText(c.getLastName());
-        firstNameField.setText(c.getFirstName());
-        streetField.setText(c.getStreet());
-        cityField.setText(c.getCity());
-        postCodeField.setText(String.valueOf(c.getPostCode())); // Convertir int en String
-        countryField.setText(c.getCountry());
+        // Afficher les valeurs actuelles dans les champs
+        emailField.setText(user.getEmail());
+        firstNameField.setText(user.getFirstName());
+        lastNameField.setText(user.getLastName());
+
+        System.out.println(user.getRole());
+        // Si l'utilisateur est un client, on récupère et affiche son adresse
+        if ("client".equalsIgnoreCase(user.getRole())) {
+            streetField.setText(user.getAddress().getStreet());
+            cityField.setText(user.getAddress().getCity());
+            postCodeField.setText(String.valueOf(user.getAddress().getPostCode()));
+            countryField.setText(user.getAddress().getCountry());
+        } else {
+            // Si l'utilisateur n'est pas un client, on ne remplit pas ces champs
+            streetField.setText("");
+            cityField.setText("");
+            postCodeField.setText("");
+            countryField.setText("");
+        }
+        
         displayItems();
     }
     
@@ -121,21 +134,20 @@ public class OrderSummaryController extends BaseController {
  	    errorLabel.setText("");
 
  	    // --- Mise à jour des informations du client ---
- 	    c.setFirstName(firstName);
- 	    c.setLastName(lastName);
- 	    c.setStreet(street);
- 	    c.setCity(city);
-
- 	    // Vérifier si postCode est un entier valide avant de l'enregistrer
- 	    try {
- 	        int numericPostCode = Integer.parseInt(postCode);
- 	        c.setPostCode(numericPostCode);
- 	    } catch (NumberFormatException e) {
- 	        errorLabel.setText("PostCode doit être un nombre valide !");
- 	        return;
- 	    }
+ 	    user.setFirstName(firstName);
+ 	    user.setLastName(lastName);
  	    
- 	    c.setCountry(country);
+        // Si l'utilisateur est un client, on met aussi à jour son adresse
+        if ("client".equalsIgnoreCase(user.getRole())) {
+
+            // Mise à jour de l'adresse
+            user.getAddress().setStreet(street);
+            user.getAddress().setCity(city);
+            user.getAddress().setPostCode(postCode);
+            user.getAddress().setCountry(country);
+
+
+        }
  	
  	// --- Mise à jour des informations du client et de la commande ---
  	   boolean updateSuccess = true;  // Variable pour suivre le succès global
@@ -143,7 +155,7 @@ public class OrderSummaryController extends BaseController {
  	   UserSession.getInstance().getOrder().setStatusFromString("Confirmed");
  	   System.out.println(UserSession.getInstance().getOrder().getStatus());
  	   // Mise à jour du client
- 	   updateSuccess &= DataSingleton.getInstance().getClientDAO().updateClient(c);  // On utilise &= pour s'assurer que toutes les étapes réussissent
+ 	   updateSuccess &= DataSingleton.getInstance().getUserDAO().updateUser(user);  // On utilise &= pour s'assurer que toutes les étapes réussissent
 
  	   // Insertion de la commande
  	   int orderID = DataSingleton.getInstance().getOrderDAO().insertOrder(UserSession.getInstance().getOrder());

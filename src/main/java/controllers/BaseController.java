@@ -3,7 +3,7 @@ package controllers;
 
 import java.io.File;
 
-import dao.ClientDAO;
+import dao.UserDAO;
 import dao.ProductDAO;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -15,8 +15,8 @@ import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import tables.Catalog;
-import tables.Client;
 import tables.Order;
+import tables.User;
 import util.DataSingleton;
 import util.SceneManager;
 import util.UserSession;
@@ -201,7 +201,7 @@ public class BaseController {
 		//System.out.println(UserSession.getInstance().getUser().getId());
 		//DataSingleton.getInstance().getOrderDAO().updateOrCreateOrder(UserSession.getInstance().getOrder());
 		UserSession.getInstance().setOrder(new Order());
-		UserSession.getInstance().setUser(new Client());
+		UserSession.getInstance().setUser(new User());
 		
 		handleCatalog();
 	}

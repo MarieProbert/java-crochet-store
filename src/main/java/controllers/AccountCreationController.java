@@ -10,7 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import tables.Client;
+import tables.Address;
+import tables.User;
 import util.DataSingleton;
 import util.ValidationUtils;
 
@@ -54,11 +55,11 @@ public class AccountCreationController extends BaseController {
 
         // Effacer le message d'erreur si tout est valide
         errorLabel.setText("");
-        
-        int intPostCode = Integer.parseInt(postCodeField.getText());
+
         // Add the client to the database
-        Client client = new Client(email, password, firstName, lastName, street, city, intPostCode, country);
-        DataSingleton.getInstance().getClientDAO().insertClient(client);
+        User user = new User(email, password, firstName, lastName, "client");
+        user.setAddress(new Address(street, city, postCode, country, user));
+        DataSingleton.getInstance().getUserDAO().insertUser(user);
         handleReturn();
         
     }

@@ -1,6 +1,6 @@
 package util;
 
-import dao.ClientDAO;
+import dao.UserDAO;
 import dao.InvoiceDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
@@ -11,12 +11,12 @@ public class DataSingleton {
     private final Catalog catalog;
     private final ProductDAO productDAO;
     private final OrderDAO orderDAO;
-    private final ClientDAO clientDAO;
+    private final UserDAO userDAO;
     private final InvoiceDAO invoiceDAO;
 
     private DataSingleton() {
         this.productDAO = new ProductDAO();
-        this.clientDAO = new ClientDAO();
+        this.userDAO = new UserDAO();
         this.orderDAO = new OrderDAO();
         this.catalog = productDAO.getAllProducts();
         this.invoiceDAO = new InvoiceDAO();
@@ -40,10 +40,6 @@ public class DataSingleton {
     public ProductDAO getProductDAO() {
         return productDAO;
     }
-
-    public ClientDAO getClientDAO() {
-        return clientDAO;
-    }
     
     public OrderDAO getOrderDAO() {
     	return orderDAO;
@@ -52,7 +48,10 @@ public class DataSingleton {
 	public InvoiceDAO getInvoiceDAO() {
 		return invoiceDAO;
 	}
-    
-    
+
+	public UserDAO getUserDAO() {
+		return userDAO;
+	}
+	
 
 }

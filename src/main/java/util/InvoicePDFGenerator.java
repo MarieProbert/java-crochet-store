@@ -10,15 +10,15 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import tables.Client;
 import tables.Invoice;
 import tables.Order;
 import tables.Product;
+import tables.User;
 
 public class InvoicePDFGenerator {
 
     // Méthode pour générer une facture en PDF
-    public static void generateInvoicePDF(Client client, Order order, Invoice invoice, String dirPath) throws IOException, DocumentException {
+    public static void generateInvoicePDF(User client, Order order, Invoice invoice, String dirPath) throws IOException, DocumentException {
     	String fileName = "invoice" + invoice.getInvoiceID() + ".pdf";
         String filePath = dirPath + "/" + fileName;
     	
@@ -34,7 +34,7 @@ public class InvoicePDFGenerator {
 
         // Ajouter les informations du client
         document.add(new Paragraph("Customer: " + client.getFirstName() + " " + client.getLastName()));
-        document.add(new Paragraph("Address: " + client.getStreet() + ", " + client.getCity() + " " + client.getPostCode() + ", " + client.getCountry()));
+        document.add(new Paragraph("Address: " + client.getAddress().getStreet() + ", " + client.getAddress().getCity() + " " + client.getAddress().getPostCode() + ", " + client.getAddress().getCountry()));
         document.add(new Paragraph("Email: " + client.getEmail()));
         document.add(new Paragraph("Invoice Date: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invoice.getInvoiceDate())));
 

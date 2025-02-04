@@ -31,26 +31,24 @@ public class LoginController extends BaseController {
         String password = passwordField.getText();
         errorLabel.setText(""); 
         
-        if (!DataSingleton.getInstance().getClientDAO().isLoginValid(email, password)) {
+        if (!DataSingleton.getInstance().getUserDAO().isLoginValid(email, password)) {
         	errorLabel.setText("Invalid username or password.");
         } else {
-        	UserSession.getInstance().setUser(DataSingleton.getInstance().getClientDAO().setClient(email));
-        	UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUser().getId());
+        	UserSession.getInstance().setUser(DataSingleton.getInstance().getUserDAO().setUser(email));
         	
-        	/*
-        	Order o = DataSingleton.getInstance().getOrderDAO().getInProgressOrderByClientID(UserSession.getInstance().getUser().getId());
-        	System.out.println("is it good ?");
-        	System.out.println(o.getCart().toString());
-        	if (o != null) {
-        		System.out.println("yeah");
-        		UserSession.getInstance().setOrder(o);
-        		System.out.println(UserSession.getInstance().getOrder().getCart().toString());
+        	System.out.println("je suis ici");
+        	// Si on est un client on a un panier et en + on arrive sur la page du catalogue (ou du récapitulatif de commande)
+        	if ("client".equals(UserSession.getInstance().getUser().getRole())){
+        		System.out.println("je suis là");
+        		UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUser().getId());
+            	SceneManager.getInstance().showScene(
+            		    UserSession.getInstance().isValidate() ? "OrderSummary" : "Catalog"
+            	);
         	}
-        	*/
-        	
-        	SceneManager.getInstance().showScene(
-        		    UserSession.getInstance().isValidate() ? "OrderSummary" : "Catalog"
-        	);
+        	// l'admin arrive sur des pages admin
+        	else {
+        		// On affiche l'interface de l'admin
+        	}
 
         }
     }
