@@ -23,11 +23,13 @@ public class SceneManager {
         put("Login", "/views/LoginView.fxml");
         put("Catalog", "/views/CatalogView.fxml");
         put("Cart", "/views/CartView.fxml");
-        put("Account", "/views/AccountView.fxml");
+        put("ClientAccount", "/views/AccountView.fxml");
         put("AccountCreation", "/views/AccountCreationView.fxml");
         put("OrderSummary", "/views/OrderSummaryView.fxml");
         put("ValidOrder", "/views/ValidOrderView.fxml");
         put("OrderHistory", "/views/OrderHistoryView.fxml");
+        put("MenuAdmin", "/views/MenuAdminView.fxml");
+        put("AdminAccount", "/views/AdminAccountView.fxml");
     }};
 
     

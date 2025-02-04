@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AccountController" stylesheets="@../style.css">
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuAdminController" stylesheets="@../style.css">
 
     <top>
         <VBox alignment="CENTER">
@@ -29,28 +29,12 @@
     		<Label fx:id="errorLabel" text="" styleClass="error-label" />
 			
 			<HBox  alignment="CENTER">
-				<Label text="Email : "/>
-			    <TextField fx:id="emailField" maxWidth="200" />
+	        	<Button text="Client" onAction="#handleCustomerSystem"/>
+	        	<Button text="Product" onAction="#handleProductCatalogSystem"/>
+	        	<Button text="Invoice" onAction="#handleInvoicingSystem"/>
+        	
 			</HBox>	
 			
-			<HBox  alignment="CENTER">
-				<Label text="Password : "/>
-			    <PasswordField fx:id="passwordField" maxWidth="200" />
-			</HBox>			
-		    
-		    <HBox  alignment="CENTER">
-				<Label text="Last Name : "/>
-			    <TextField fx:id="lastNameField" maxWidth="200" />
-			</HBox>	
-			
-			<HBox  alignment="CENTER">
-				<Label text="First Name : "/>
-			    <TextField fx:id="firstNameField" maxWidth="200" />
-			</HBox>	
-			
-
-			<Button text="Save" onAction="#handleSave" />
-		    
 	    </VBox>
     </center>
 

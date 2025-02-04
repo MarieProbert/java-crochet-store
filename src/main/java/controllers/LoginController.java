@@ -47,7 +47,7 @@ public class LoginController extends BaseController {
         	}
         	// l'admin arrive sur des pages admin
         	else {
-        		// On affiche l'interface de l'admin
+        		SceneManager.getInstance().showScene("MenuAdmin");
         	}
 
         }

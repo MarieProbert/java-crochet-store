@@ -78,32 +78,40 @@ public class BaseController {
         boolean isLoggedIn = UserSession.getInstance().getUser().getId() != -1;
 
         if (isLoggedIn) {
-            // Utilisateur connecté : afficher Account, Past Orders et Logout
+        	if ("client".equals(UserSession.getInstance().getUser().getRole())) {
+	            // Utilisateur connecté : afficher Account, Past Orders et Logout
+	            Button ordersButton = new Button("Past Orders");
+	            ordersButton.getStyleClass().add("text-like-button");
+
+	            ordersButton.setOnAction(event -> {
+	                handlePastOrders();
+	                tooltipPopup.hide();
+	            });
+	            
+	            tooltipBox.getChildren().add(ordersButton);
+	
+        	}
+
+    		// Utilisateur connecté : afficher Account, Past Orders et Logout
             Button accountButton = new Button("Account");
-            Button ordersButton = new Button("Past Orders");
             Button logoutButton = new Button("Logout");
 
             // Appliquer la classe CSS aux boutons
             accountButton.getStyleClass().add("text-like-button");
-            ordersButton.getStyleClass().add("text-like-button");
             logoutButton.getStyleClass().add("text-like-button");
 
             accountButton.setOnAction(event -> {
                 handleAccount();
                 tooltipPopup.hide();
             });
-
-            ordersButton.setOnAction(event -> {
-                handlePastOrders();
-                tooltipPopup.hide();
-            });
-
+            
             logoutButton.setOnAction(event -> {
                 handleLogout(); // Gérer la déconnexion
                 tooltipPopup.hide();
             });
 
-            tooltipBox.getChildren().addAll(accountButton, ordersButton, logoutButton);
+            tooltipBox.getChildren().addAll(accountButton, logoutButton);
+            
         } else {
             // Utilisateur non connecté : afficher uniquement Login
             Button loginButton = new Button("Login");
@@ -174,9 +182,17 @@ public class BaseController {
     
     @FXML
     protected void handleAccount() {
-        String sceneToShow = UserSession.getInstance().getUser().getId() == -1 
-                             ? "Login" 
-                             : "Account";
+    	String sceneToShow;
+
+    	if (UserSession.getInstance().getUser().getId() != -1) {
+    	    if ("admin".equals(UserSession.getInstance().getUser().getRole())) {
+    	        sceneToShow = "AdminAccount";
+    	    } else {
+    	        sceneToShow = "ClientAccount";
+    	    }
+    	} else {
+    	    sceneToShow = "Login";
+    	}
         
         try {
             SceneManager.getInstance().showScene(sceneToShow);
