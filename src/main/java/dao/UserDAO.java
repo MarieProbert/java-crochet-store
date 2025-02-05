@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import tables.Address;
 import tables.User;
@@ -12,6 +14,53 @@ import util.DatabaseConnection;
 
 public class UserDAO {
 
+    public List<User> getAllUsers() {
+        String queryUser = "SELECT * FROM user";
+        String queryAddress = "SELECT * FROM address WHERE user_id = ?";
+        List<User> users = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtUser = conn.prepareStatement(queryUser);
+             ResultSet rsUser = stmtUser.executeQuery()) {
+
+            while (rsUser.next()) {
+                int id = rsUser.getInt("id");
+                String email = rsUser.getString("email");
+                String password = rsUser.getString("password");
+                String firstName = rsUser.getString("firstname");
+                String lastName = rsUser.getString("lastname");
+                String role = rsUser.getString("role");
+
+                User user = new User(id, email, password, firstName, lastName, role);
+
+                if ("client".equalsIgnoreCase(role)) {
+                    try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
+                        stmtAddress.setInt(1, id);
+                        ResultSet rsAddress = stmtAddress.executeQuery();
+
+                        if (rsAddress.next()) {
+                            String street = rsAddress.getString("street");
+                            String city = rsAddress.getString("city");
+                            String postCode = rsAddress.getString("postcode");
+                            String country = rsAddress.getString("country");
+
+                            Address address = new Address(id, street, city, postCode, country, user);
+                            user.setAddress(address);
+                        }
+                    }
+                }
+
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+	
+	
 	public int insertUser(User user) {
 	    String sqlUser = "INSERT INTO user (email, password, firstname, lastname, role) VALUES (?, ?, ?, ?, ?)";
 	    String sqlAddress = "INSERT INTO address (user_id, street, city, postcode, country) VALUES (?, ?, ?, ?, ?)";
@@ -172,6 +221,52 @@ public class UserDAO {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
+	    }
+	}
+	
+	public boolean deleteUser(User user) {
+	    String deleteUserQuery = "DELETE FROM user WHERE id = ?";
+	    String deleteAddressQuery = "DELETE FROM address WHERE user_id = ?";
+
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmtUser = conn.prepareStatement(deleteUserQuery);
+	         PreparedStatement stmtAddress = conn.prepareStatement(deleteAddressQuery)) {
+
+	        // Commencer une transaction
+	        conn.setAutoCommit(false);
+
+	        // Supprimer l'adresse si l'utilisateur est un client
+	        if ("client".equalsIgnoreCase(user.getRole())) {
+	            stmtAddress.setInt(1, user.getId());
+	            stmtAddress.executeUpdate();
+	        }
+
+	        // Supprimer l'utilisateur
+	        stmtUser.setInt(1, user.getId());
+	        int affectedRowsUser = stmtUser.executeUpdate();
+
+	        // Valider la transaction
+	        conn.commit();
+
+	        // Retourner vrai si l'utilisateur a été supprimé
+	        return affectedRowsUser > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        // En cas d'erreur, annuler la transaction
+	        try (Connection conn = DatabaseConnection.getConnection()) {
+	            conn.rollback();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	        return false;
+	    } finally {
+	        // Rétablir l'auto-commit
+	        try (Connection conn = DatabaseConnection.getConnection()) {
+	            conn.setAutoCommit(true);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
 	    }
 	}
 

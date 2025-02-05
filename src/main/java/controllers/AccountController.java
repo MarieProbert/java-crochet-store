@@ -13,8 +13,6 @@ import util.ValidationUtils;
 
 public class AccountController extends BaseController {
 
-
-    
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private TextField firstNameField;

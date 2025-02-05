@@ -2,6 +2,7 @@ package controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import util.SceneManager;
 
 public class MenuAdminController extends BaseController {
     @FXML private Label errorLabel;
@@ -13,12 +14,28 @@ public class MenuAdminController extends BaseController {
 
 	@FXML
 	public void handleCustomerSystem() {
-		
+    	try {
+            SceneManager.getInstance().showScene("AdminClients");
+
+            
+        } catch (Exception e) {
+        	System.out.println("erreur");
+            e.printStackTrace();
+        }
+
 	}
 	
 	@FXML
 	public void handleProductCatalogSystem() {
-		
+    	try {
+            SceneManager.getInstance().showScene("AdminCatalog");
+
+            
+        } catch (Exception e) {
+        	System.out.println("erreur");
+            e.printStackTrace();
+        }
+
 	}
 	
 	@FXML

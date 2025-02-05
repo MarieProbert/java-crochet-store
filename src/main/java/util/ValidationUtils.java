@@ -61,8 +61,27 @@ public class ValidationUtils {
             verifyPostCode(postCode),
             verifyCountry(country),
         };
+        
 
 
+        // Vérifier les autres erreurs
+        for (String error : errors) {
+            if (error != null) {
+                return error; // Retourne la première erreur trouvée
+            }
+        }
+
+        return null; // Aucun problème détecté
+    }
+    
+    public static String verifyModifications(String firstName, String lastName) {
+        String[] errors = {
+            verifyFirstName(firstName),
+            verifyLastName(lastName),
+            
+            
+        };
+        
         // Vérifier les autres erreurs
         for (String error : errors) {
             if (error != null) {
