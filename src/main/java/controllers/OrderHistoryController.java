@@ -67,11 +67,11 @@ public class OrderHistoryController extends BaseController {
 	            imageView.setSmooth(true); // Enable smoothing
 	            
 	            Label nameLabel = new Label(product.getName());
-	            Label quantityLabel = new Label("Quantity: " + order.getCart().get(product));
-	            Label priceLabel = new Label("Price: " + String.format("%.2f €", product.getPrice() * order.getCart().get(product)));
+	            Label quantityLabel = new Label("Quantity: " + order.getCart().get(product).getQuantity());
+	            Label priceLabel = new Label("Price: " + String.format("%.2f €", order.getCart().get(product).getPriceAtPurchase() * order.getCart().get(product).getQuantity()));
 
 	            hboxproduct.getChildren().addAll(imageView, nameLabel, quantityLabel, priceLabel);
-	            totalPrice += product.getPrice() * order.getCart().get(product);
+	            totalPrice += order.getCart().get(product).getPriceAtPurchase() * order.getCart().get(product).getQuantity();
 
 	            vbox.getChildren().add(hboxproduct);  // Ajouter chaque produit au VBox
 	        }

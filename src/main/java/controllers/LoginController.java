@@ -39,7 +39,7 @@ public class LoginController extends BaseController {
         	System.out.println("je suis ici");
         	// Si on est un client on a un panier et en + on arrive sur la page du catalogue (ou du récapitulatif de commande)
         	if ("client".equals(UserSession.getInstance().getUser().getRole())){
-        		System.out.println("je suis là");
+        		System.out.println("Address" + UserSession.getInstance().getUser().getAddress().getStreet());
         		UserSession.getInstance().getOrder().setClientID(UserSession.getInstance().getUser().getId());
             	SceneManager.getInstance().showScene(
             		    UserSession.getInstance().isValidate() ? "OrderSummary" : "Catalog"

@@ -7,6 +7,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import tables.User;
 import util.DataSingleton;
+import util.HashUtils;
 import util.SceneManager;
 import util.UserSession;
 import util.ValidationUtils;
@@ -78,7 +79,7 @@ public class AccountController extends BaseController {
         // --- Mise à jour des informations de l'utilisateur ---
         user.setEmail(email);
         if (!password.isEmpty()) { // Mettre à jour le mot de passe seulement s'il est renseigné
-            user.setPassword(password);
+            user.setPassword(HashUtils.sha256(password));
         }
         user.setFirstName(firstName);
         user.setLastName(lastName);

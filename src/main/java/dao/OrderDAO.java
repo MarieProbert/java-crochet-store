@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import tables.CartItem;
 import tables.Order;
 import tables.Product;
 import util.DataSingleton;
@@ -14,8 +15,8 @@ import util.UserSession;
 public class OrderDAO {
 
 	public int insertOrder(Order order) {
-        String insertOrderQuery = "INSERT INTO `order` (clientID, status, purchaseDate) VALUES (?, ?, ?)";
-        String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity) VALUES (?, ?, ?)";
+        String insertOrderQuery = "INSERT INTO `order` (userID, orderStatus, purchaseDate) VALUES (?, ?, ?)";
+        String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity, priceAtPurchase) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement orderStmt = null;
@@ -55,13 +56,15 @@ public class OrderDAO {
             // 🔹 Étape 4 : Insérer chaque produit dans `orderxproduct`
             orderXProductStmt = conn.prepareStatement(insertOrderXProductQuery);
 
-            for (Map.Entry<Product, Integer> entry : order.getCart().entrySet()) {
+            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
                 Product product = entry.getKey();
-                int quantity = entry.getValue();
+                int quantity = entry.getValue().getQuantity();
+                double price = entry.getValue().getPriceAtPurchase();
 
                 orderXProductStmt.setInt(1, orderId);
                 orderXProductStmt.setInt(2, product.getProductID());
                 orderXProductStmt.setInt(3, quantity);
+                orderXProductStmt.setDouble(4, price);
                 orderXProductStmt.addBatch();
 
                 // Mettre à jour le stock
@@ -104,7 +107,7 @@ public class OrderDAO {
     
     public List<Order> getOrdersByClientId(int clientId) {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM `order` WHERE clientID = ?";
+        String query = "SELECT * FROM `order` WHERE userID = ?";
         String queryOrderXProduct = "SELECT * FROM orderxproduct WHERE orderID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -119,7 +122,7 @@ public class OrderDAO {
                     Order order = new Order();
                     order.setOrderID(orderId);
                     order.setClientID(clientId);
-                    order.setStatusFromString(rs.getString("status"));
+                    order.setStatusFromString(rs.getString("orderStatus"));
                     System.out.println(order.getStatus());
                     
 
@@ -152,9 +155,9 @@ public class OrderDAO {
     
     
     public boolean updateOrder(Order order) {
-        String updateOrderQuery = "UPDATE `order` SET clientID = ?, status = ? WHERE orderID = ?";
+        String updateOrderQuery = "UPDATE `order` SET userID = ?, orderStatus = ? WHERE orderID = ?";
         String deleteOrderXProductQuery = "DELETE FROM orderxproduct WHERE orderID = ?";
-        String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity) VALUES (?, ?, ?)";
+        String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity, priceAtPurchase) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement orderStmt = null;
@@ -170,6 +173,7 @@ public class OrderDAO {
             orderStmt.setInt(1, order.getClientID());
             orderStmt.setString(2, order.getStatus().toString());
             orderStmt.setInt(3, order.getOrderID()); // orderID à mettre à jour
+            
 
             int affectedRows = orderStmt.executeUpdate();
             if (affectedRows == 0) {
@@ -184,13 +188,15 @@ public class OrderDAO {
             // 🔹 Étape 3 : Insérer les nouveaux produits dans `orderxproduct`
             orderXProductStmt = conn.prepareStatement(insertOrderXProductQuery);
 
-            for (Map.Entry<Product, Integer> entry : order.getCart().entrySet()) {
+            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
                 Product product = entry.getKey();
-                int quantity = entry.getValue();
+                int quantity = entry.getValue().getQuantity();
+                double price = entry.getValue().getPriceAtPurchase();
 
                 orderXProductStmt.setInt(1, order.getOrderID()); // orderID
                 orderXProductStmt.setInt(2, product.getProductID()); // productID
                 orderXProductStmt.setInt(3, quantity); // quantity
+                orderXProductStmt.setDouble(4, price); // price
                 orderXProductStmt.addBatch();
             }
 
@@ -223,8 +229,9 @@ public class OrderDAO {
         }
     }
     
+    /*
     public Order getInProgressOrderByClientID(int clientID) {
-        String query = "SELECT * FROM `order` WHERE `clientID` = ? AND `status` = 'In progress' LIMIT 1";
+        String query = "SELECT * FROM `order` WHERE `userID` = ? AND `status` = 'In progress' LIMIT 1";
         Order order = null;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -321,11 +328,13 @@ public class OrderDAO {
         // Ajouter les nouvelles lignes dans orderxproduct
         String insertOrderxProductQuery = "INSERT INTO `orderxproduct` (orderID, productID, quantity) VALUES (?, ?, ?)";
         try (PreparedStatement insertProductStmt = conn.prepareStatement(insertOrderxProductQuery)) {
-            for (Map.Entry<Product, Integer> entry : order.getCart().entrySet()) {
+            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
                 insertProductStmt.setInt(1, order.getOrderID());
                 insertProductStmt.setInt(2, entry.getKey().getProductID());
-                insertProductStmt.setInt(3, entry.getValue());
+                insertProductStmt.setInt(3, entry.getValue().getQuantity());
+                insertProductStmt.setDouble(4, entry.getValue().getPriceAtPurchase());
                 insertProductStmt.addBatch();
+                
             }
             insertProductStmt.executeBatch();
             return true;
@@ -356,10 +365,11 @@ public class OrderDAO {
     private boolean insertOrderxProduct(Connection conn, Order order) throws SQLException {
         String insertOrderxProductQuery = "INSERT INTO `orderxproduct` (orderID, productID, quantity) VALUES (?, ?, ?)";
         try (PreparedStatement insertProductStmt = conn.prepareStatement(insertOrderxProductQuery)) {
-            for (Map.Entry<Product, Integer> entry : order.getCart().entrySet()) {
+            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
                 insertProductStmt.setInt(1, order.getOrderID());
                 insertProductStmt.setInt(2, entry.getKey().getProductID());
-                insertProductStmt.setInt(3, entry.getValue());
+                insertProductStmt.setInt(3, entry.getValue().getQuantity());
+                insertProductStmt.setDouble(4, entry.getValue().getPriceAtPurchase());
                 insertProductStmt.addBatch();
             }
             insertProductStmt.executeBatch();
@@ -386,7 +396,7 @@ public class OrderDAO {
         } catch (SQLException closeEx) {
             closeEx.printStackTrace();
         }
-    }
+    }*/
 
 
 

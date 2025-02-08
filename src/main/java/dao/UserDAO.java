@@ -11,11 +11,12 @@ import java.util.List;
 import tables.Address;
 import tables.User;
 import util.DatabaseConnection;
+import util.HashUtils;
 
 public class UserDAO {
 
     public List<User> getAllUsers() {
-        String queryUser = "SELECT * FROM user";
+        String queryUser = "SELECT * FROM user WHERE active = 1";
         String queryAddress = "SELECT * FROM address WHERE user_id = ?";
         List<User> users = new ArrayList<>();
 
@@ -30,8 +31,9 @@ public class UserDAO {
                 String firstName = rsUser.getString("firstname");
                 String lastName = rsUser.getString("lastname");
                 String role = rsUser.getString("role");
+                int active = rsUser.getInt("active");
 
-                User user = new User(id, email, password, firstName, lastName, role);
+                User user = new User(id, email, password, firstName, lastName, role, active);
 
                 if ("client".equalsIgnoreCase(role)) {
                     try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
@@ -61,70 +63,73 @@ public class UserDAO {
     }
 	
 	
-	public int insertUser(User user) {
-	    String sqlUser = "INSERT INTO user (email, password, firstname, lastname, role) VALUES (?, ?, ?, ?, ?)";
-	    String sqlAddress = "INSERT INTO address (user_id, street, city, postcode, country) VALUES (?, ?, ?, ?, ?)";
-	    int generatedID = -1;  
+    public int insertUser(User user) {
+        String sqlUser = "INSERT INTO user (email, password, firstname, lastname, role) VALUES (?, ?, ?, ?, ?)";
+        String sqlAddress = "INSERT INTO address (user_id, street, city, postcode, country) VALUES (?, ?, ?, ?, ?)";
+        int generatedID = -1;  
 
-	    try (Connection conn = DatabaseConnection.getConnection();
-	         PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
 
-	        // Insérer l'utilisateur
-	        stmtUser.setString(1, user.getEmail());
-	        stmtUser.setString(2, user.getPassword());
-	        stmtUser.setString(3, user.getFirstName());
-	        stmtUser.setString(4, user.getLastName());
-	        stmtUser.setString(5, user.getRole()); // Récupération du rôle depuis l'objet User
+            // Hacher le mot de passe avant l'insertion
+            String hashedPassword = HashUtils.sha256(user.getPassword());
 
-	        int affectedRows = stmtUser.executeUpdate();
+            // Insérer l'utilisateur avec le mot de passe hashé
+            stmtUser.setString(1, user.getEmail());
+            stmtUser.setString(2, hashedPassword);
+            stmtUser.setString(3, user.getFirstName());
+            stmtUser.setString(4, user.getLastName());
+            stmtUser.setString(5, user.getRole());
 
-	        if (affectedRows > 0) {
-	            try (ResultSet generatedKeys = stmtUser.getGeneratedKeys()) {
-	                if (generatedKeys.next()) {
-	                    generatedID = generatedKeys.getInt(1);
-	                }
-	            }
-	        } else {
-	            throw new SQLException("L'insertion de l'utilisateur a échoué, aucune ligne affectée.");
-	        }
+            int affectedRows = stmtUser.executeUpdate();
 
-	        // Si c'est un client et qu'une adresse est fournie, insérer aussi l'adresse
-	        if ("client".equalsIgnoreCase(user.getRole())) {
-	        	Address address = user.getAddress();
-	            try (PreparedStatement stmtAddress = conn.prepareStatement(sqlAddress)) {
-	                stmtAddress.setInt(1, generatedID);
-	                stmtAddress.setString(2, address.getStreet());
-	                stmtAddress.setString(3, address.getCity());
-	                stmtAddress.setString(4, address.getPostCode());
-	                stmtAddress.setString(5, address.getCountry());
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmtUser.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedID = generatedKeys.getInt(1);
+                    }
+                }
+            } else {
+                throw new SQLException("L'insertion de l'utilisateur a échoué, aucune ligne affectée.");
+            }
 
-	                stmtAddress.executeUpdate();
-	            }
-	        }
+            // Si c'est un client et qu'une adresse est fournie, insérer aussi l'adresse
+            if ("client".equalsIgnoreCase(user.getRole())) {
+                Address address = user.getAddress();
+                try (PreparedStatement stmtAddress = conn.prepareStatement(sqlAddress)) {
+                    stmtAddress.setInt(1, generatedID);
+                    stmtAddress.setString(2, address.getStreet());
+                    stmtAddress.setString(3, address.getCity());
+                    stmtAddress.setString(4, address.getPostCode());
+                    stmtAddress.setString(5, address.getCountry());
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+                    stmtAddress.executeUpdate();
+                }
+            }
 
-	    return generatedID; // Retourner l'ID généré
-	}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        return generatedID; // Retourner l'ID généré
+    }
 
 	
-	// Teste si à partir d'un email et d'un mot de passe le login fonctionne
-	public boolean isLoginValid(String testEmail, String testPassword) {
-		String query = "SELECT * FROM User";
+    public boolean isLoginValid(String testEmail, String testPassword) {
+        String query = "SELECT password FROM user WHERE email = ? AND active = 1"; 
+        // Hacher le mot de passe fourni pour pouvoir le comparer avec celui stocké en base
+        String hashedTestPassword = HashUtils.sha256(testPassword);
+        
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            while (rs.next()) {
-                String email = rs.getString("email");
-                String password = rs.getString("password");
-               
-
-                if ((testEmail.equals(email)) && (testPassword.equals(password))){
-                	return true;
+        	System.out.println("Password : " + hashedTestPassword);
+            stmt.setString(1, testEmail);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("password"); // Mot de passe stocké sous forme hashée
+                    System.out.println(storedPassword);
+                    return hashedTestPassword.equals(storedPassword);
                 }
             }
 
@@ -133,8 +138,7 @@ public class UserDAO {
         }
         
         return false;
-		
-	}
+    }
 
 	
 	public User setUser(String email) {
@@ -154,8 +158,9 @@ public class UserDAO {
 	            String firstName = rsUser.getString("firstname"); // Vérifie bien le nom des colonnes
 	            String lastName = rsUser.getString("lastname");
 	            String role = rsUser.getString("role"); // Vérifie si c'est un client
+	            int active = rsUser.getInt("active");
 
-	            User user = new User(id, emailDB, password, firstName, lastName, role);
+	            User user = new User(id, emailDB, password, firstName, lastName, role, active);
 	            
 	            if ("client".equalsIgnoreCase(role)) {
 	            	System.out.println("Halo");
@@ -201,9 +206,9 @@ public class UserDAO {
 
 	        int affectedRowsUser = stmtUser.executeUpdate();
 	        
-	        // Si l'utilisateur a bien été mis à jour, on vérifie si c'est un client
+	        // Si l'utilisateur a bien été mis à jour et qu'il s'agit d'un client, on met aussi à jour son adresse
 	        if (affectedRowsUser > 0 && "client".equalsIgnoreCase(user.getRole())) {
-	        	Address address = user.getAddress();
+	            Address address = user.getAddress();
 	            try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
 	                stmtAddress.setString(1, address.getStreet());
 	                stmtAddress.setString(2, address.getCity());
@@ -225,31 +230,22 @@ public class UserDAO {
 	}
 	
 	public boolean deleteUser(User user) {
-	    String deleteUserQuery = "DELETE FROM user WHERE id = ?";
-	    String deleteAddressQuery = "DELETE FROM address WHERE user_id = ?";
+	    String deactivateUserQuery = "UPDATE user SET active = 0 WHERE id = ?";
 
 	    try (Connection conn = DatabaseConnection.getConnection();
-	         PreparedStatement stmtUser = conn.prepareStatement(deleteUserQuery);
-	         PreparedStatement stmtAddress = conn.prepareStatement(deleteAddressQuery)) {
+	         PreparedStatement stmtUser = conn.prepareStatement(deactivateUserQuery)) {
 
 	        // Commencer une transaction
 	        conn.setAutoCommit(false);
 
-	        // Supprimer l'adresse si l'utilisateur est un client
-	        if ("client".equalsIgnoreCase(user.getRole())) {
-	            stmtAddress.setInt(1, user.getId());
-	            stmtAddress.executeUpdate();
-	        }
-
-	        // Supprimer l'utilisateur
+	        // Désactiver l'utilisateur au lieu de le supprimer
 	        stmtUser.setInt(1, user.getId());
 	        int affectedRowsUser = stmtUser.executeUpdate();
 
 	        // Valider la transaction
 	        conn.commit();
 
-	        // Retourner vrai si l'utilisateur a été supprimé
-	        return affectedRowsUser > 0;
+	        return affectedRowsUser > 0; // Retourne vrai si l'utilisateur a été désactivé
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -269,6 +265,7 @@ public class UserDAO {
 	        }
 	    }
 	}
+
 
 
 }

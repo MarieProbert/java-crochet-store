@@ -12,7 +12,7 @@ public class InvoiceDAO {
 
     // Requête SQL pour insérer une facture
     private static final String INSERT_INVOICE_QUERY = 
-        "INSERT INTO invoice (orderID, clientID, invoiceDate, totalAmount) VALUES (?, ?, ?, ?)";
+        "INSERT INTO invoice (orderID, userID, invoiceDate, totalAmount) VALUES (?, ?, ?, ?)";
 
     // Méthode pour insérer une facture dans la base de données
     public int insertInvoice(Invoice invoice) {

@@ -6,7 +6,6 @@ package tables;
 public class User {
     /** Unique identifier of the user. */
     private int id;
-
     /** Email address of the user. */
     private String email;
 
@@ -16,6 +15,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String role;
+    private int active;
 
     private Address address;
 
@@ -56,13 +56,14 @@ public class User {
     }
 
     // Utilisé
-    public User(int id, String email, String password, String firstName, String lastName, String role) {
+    public User(int id, String email, String password, String firstName, String lastName, String role, int active) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.active = active;
 	}
     
     // Utilisé
@@ -179,6 +180,16 @@ public class User {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
+
+	public int getActive() {
+		return active;
+	}
+
+	public void setActive(int active) {
+		this.active = active;
+	}
+	
+	
     
     
 }

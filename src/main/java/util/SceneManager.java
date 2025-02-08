@@ -44,8 +44,13 @@ public class SceneManager {
         }
         return instance;
     }
+    
 
-    public void setStage(Stage stage) {
+    public Stage getStage() {
+		return stage;
+	}
+
+	public void setStage(Stage stage) {
         this.stage = stage;
     }
     

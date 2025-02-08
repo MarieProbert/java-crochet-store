@@ -29,8 +29,8 @@ public class Order {
     private Timestamp purchaseDate; 
     private Timestamp deliveryDate; 
 
-    /** Map storing product references and their quantities. */
-    private Map<Product, Integer> cart;
+    /** Map storing product references and their quantities and price at purchase. */
+    private Map<Product, CartItem> cart = new HashMap<>();
 
     // Debut de commande quand on n'a aucune informations de panier précédent en cours à récupérer
     // Et qu'on ne sait pas forcément qui est le client
@@ -136,81 +136,77 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    /**
-     * Returns the map of products and their quantities.
-     *
-     * @return A map with product references as keys and quantities as values.
-     */
-    public Map<Product, Integer> getCart() {
+    public Map<Product, CartItem> getCart() {
         return cart;
     }
 
-    /**
-     * Sets the map of products and their quantities.
-     *
-     * @param map A map with product references as keys and quantities as values.
-     */
-    public void setCart(Map<Product, Integer> cart) {
+    public void setCart(Map<Product, CartItem> cart) {
         this.cart = cart;
     }
+
     
     public void deleteFromCart(Product product, int quantity) {
-    	int currentStock = product.getStock();
-         
-        cart.put(product, cart.get(product) - quantity);
-        
-        if (cart.get(product) <= 0) {
-        	cart.remove(product);
+        if (!cart.containsKey(product)) {
+            System.out.println("Error: Product not found in cart.");
+            return;
         }
-        setUpdated(false);
-        
-        product.setStock(currentStock + quantity);
 
+        CartItem item = cart.get(product);
+        int currentQuantity = item.getQuantity();
+
+        if (quantity >= currentQuantity) {
+            // Supprimer complètement l'élément si la quantité devient 0 ou négative
+            cart.remove(product);
+        } else {
+            // Réduire seulement la quantité du produit
+            item.setQuantity(currentQuantity - quantity);
+        }
+
+        // Rétablir le stock du produit
+        product.setStock(product.getStock() + quantity);
         setUpdated(true);
+
+        System.out.println("Removed from cart: " + product.getName() + " Quantity: " + quantity);
     }
-    
+
+
     public void addToCart(Product product, int quantity) {
+        int currentStock = product.getStock();
 
-    	int currentStock = product.getStock();
-
-        if (currentStock == 0) {
-            System.out.println("Error : There is no stock.");
+        if (currentStock <= 0) {
+            System.out.println("Error: No stock available.");
             return;
         }
 
         if (currentStock - quantity < 0) {
-            System.out.println("Error : There is not enough stock for this quantity.");
+            System.out.println("Error: Not enough stock.");
             return;
         }
 
-         
-        cart.put(product, cart.getOrDefault(product, 0) + quantity);
-        
+        // Vérifier si le produit est déjà dans le panier
+        if (cart.containsKey(product)) {
+            CartItem existingItem = cart.get(product);
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+        } else {
+            // Enregistrer le prix du produit au moment de l'ajout
+            cart.put(product, new CartItem(quantity, product.getPrice()));
+        }
+
         product.setStock(currentStock - quantity);
-
-        System.out.println("Produit added to cart : " + product.getName() + " Quantity : " + quantity);
-        
-        System.out.println(getCart().keySet());
+        System.out.println("Added to cart: " + product.getName() + " Quantity: " + quantity);
     }
-    
-    
+
+    // Calculer le total du panier en fonction des prix enregistrés au moment de l'ajout
     public double calculateCartTotal() {
-    	double total = 0;
-    	
-        // Parcourir chaque entrée du panier
-        for (Map.Entry<Product, Integer> entry : cart.entrySet()) {
-            Product product = entry.getKey();
-            int quantity = entry.getValue();
+        double total = 0;
 
-            // Calculer le coût pour ce produit (prix * quantité)
-            double productPrice = product.getPrice(); // Supposons que getPrice() retourne un BigDecimal
-            double lineTotal = productPrice * quantity;
-
-            // Ajouter au total
-            total += lineTotal;
+        for (Map.Entry<Product, CartItem> entry : cart.entrySet()) {
+            CartItem item = entry.getValue();
+            total += item.getPriceAtPurchase() * item.getQuantity();
         }
 
         return total;
     }
+
     
 }

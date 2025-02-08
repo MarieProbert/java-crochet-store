@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import tables.Invoice;
+import tables.Order;
 import tables.Product;
 import tables.User;
 import util.DataSingleton;
@@ -82,14 +83,14 @@ public class OrderSummaryController extends BaseController {
             // Create labels for the name and price
             Label nameLabel = new Label(p.getName());
 
-            Label priceLabel = new Label(String.format("%.2f €", p.getPrice()));
-          
-            Label quantityLabel = new Label(String.format("Quantity: %d", UserSession.getInstance().getOrder().getCart().get(p)));
-
+            Order order = UserSession.getInstance().getOrder();
+            Label priceLabel = new Label(String.format("%.2f €", order.getCart().get(p).getPriceAtPurchase()));
             
-            Label totalPriceLabel = new Label(String.format("%.2f €",p.getPrice()*UserSession.getInstance().getOrder().getCart().get(p)));
+            Label quantityLabel = new Label(String.format("Quantity: %d", order.getCart().get(p).getQuantity()));
 
-            totalprice += p.getPrice()*UserSession.getInstance().getOrder().getCart().get(p);
+            Label totalPriceLabel = new Label(String.format("%.2f €",order.getCart().get(p).getPriceAtPurchase() * order.getCart().get(p).getQuantity()));
+
+            totalprice += order.getCart().get(p).getPriceAtPurchase() * order.getCart().get(p).getQuantity();
             
             // VBox to organize all the information vertically
             VBox infoBox = new VBox(5);

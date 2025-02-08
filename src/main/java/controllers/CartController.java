@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import tables.Order;
 import tables.Product;
 import util.SceneManager;
 import util.UserSession;
@@ -48,9 +49,10 @@ public class CartController extends BaseController {
             nameLabel.setStyle("-fx-underline: true;"); // Style to indicate a clickable link
             nameLabel.setOnMouseClicked(e -> SceneManager.getInstance().showProductScene(p));
 
-            Label priceLabel = new Label(String.format("%.2f €", p.getPrice()));
+            Order order = UserSession.getInstance().getOrder();
+            Label priceLabel = new Label(String.format("%.2f €", order.getCart().get(p).getPriceAtPurchase()));
             
-            Label quantityLabel = new Label(String.format("Quantity: %d", UserSession.getInstance().getOrder().getCart().get(p)));
+            Label quantityLabel = new Label(String.format("Quantity: %d", order.getCart().get(p).getQuantity()));
 
             // Button "+" to increase the quantity
             Button addButton = new Button("+");
