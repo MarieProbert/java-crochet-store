@@ -94,3 +94,66 @@ Label {
     -fx-font-size: 12px;
     -fx-padding: 10px;
 }
+
+
+/* Style général pour les ComboBox */
+.combo-box {
+    -fx-background-color: #f9f9f9; /* Fond clair pour la cohérence avec les champs de texte */
+    -fx-border-color: #ffb0be; /* Bordure rose pour rappeler le thème */
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 12px;
+}
+
+/* Au survol */
+.combo-box:hover {
+    -fx-background-color: #ffe5eb; /* Fond légèrement plus foncé au survol */
+}
+
+/* Quand la ComboBox est activée */
+.combo-box:focused {
+    -fx-border-color: #ff4d6d; /* Bordure plus foncée quand active */
+    -fx-background-color: #ffffff;
+}
+
+/* Style des éléments du menu déroulant */
+.combo-box .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #ffb0be;
+    -fx-text-fill: #ffffff;
+}
+
+/* Style du bouton de la ComboBox */
+.combo-box .arrow-button {
+    -fx-background-color: #ffb0be;
+    -fx-border-radius: 5px;
+}
+
+.combo-box .arrow-button:hover {
+    -fx-background-color: #ff4d6d;
+}
+
+
+/* Style général pour les TextField spécifiques à ce FXML */
+.custom-textfield {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ffb0be;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 12px;
+}
+
+/* Au survol */
+.custom-textfield:hover {
+    -fx-background-color: #ffe5eb;
+}
+
+/* Quand le champ est activé */
+.custom-textfield:focused {
+    -fx-border-color: #ff4d6d;
+    -fx-background-color: #ffffff;
+}
