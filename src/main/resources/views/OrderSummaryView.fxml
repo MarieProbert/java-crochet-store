@@ -30,6 +30,8 @@
     <center>
         <HBox spacing="50" alignment="TOP_LEFT">
             
+            <Label text="Summary of your order. Please validate your personnal information"/>
+            
             <!-- Informations client à gauche -->
             <VBox alignment="TOP_LEFT" spacing="15" maxWidth="300">
                 <Label fx:id="errorLabel" text="" styleClass="error-label" />

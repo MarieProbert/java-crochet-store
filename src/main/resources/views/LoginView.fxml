@@ -5,43 +5,52 @@
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.LoginController" stylesheets="@../style.css">
 
+    <!-- Top section containing the banner and user options -->
     <top>
         <VBox alignment="CENTER">
-            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
+            <!-- Banner section with a background color covering full width -->
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
-            
-            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
-   
-        <HBox alignment="BOTTOM_RIGHT">
-        
-        	<Button text="Cart" onAction="#handleCart"/>
-        	<Button text="Catalog" onAction="#handleCatalog"/>
-        	
-        <!-- Icône de profil -->
-        <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
-        </HBox>         
+            <!-- Image below the banner -->
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
             
+            <!-- User action buttons for Cart, Catalog, and Profile icon -->
+            <HBox alignment="BOTTOM_RIGHT">
+                <Button text="Cart" onAction="#handleCart"/>
+                <Button text="Catalog" onAction="#handleCatalog"/>
+                
+                <!-- Profile icon -->
+                <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
+            </HBox>
         </VBox>
-              
     </top>
 
+    <!-- Center section containing the login form -->
     <center>
         <VBox alignment="CENTER">
+            <!-- Login label and error message -->
             <VBox alignment="CENTER">
                 <Label text="Login"/>
                 <Label fx:id="errorLabel" text="" styleClass="error-label" />
             </VBox>
+
+            <!-- Email input field -->
             <HBox alignment="CENTER">
                 <Label text="Email : " />
-                <TextField fx:id="emailField" promptText="Email" maxWidth="200" styleClass="textfield"/>
+                <TextField fx:id="emailField" promptText="Email" maxWidth="300" styleClass="textfield"/>
             </HBox>
+
+            <!-- Password input field -->
             <HBox alignment="CENTER">
                 <Label text="Password : " />
-                <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200" styleClass="textfield"/>
+                <PasswordField fx:id="passwordField" promptText="Password" maxWidth="300" styleClass="textfield"/>
             </HBox>
+            
+            <Label text= "You don't have an account ? Click on Register"/>
+
+            <!-- Buttons for Login, Register, and Continue as guest -->
             <HBox alignment="CENTER">
                 <Button text="Login" onAction="#handleLogin" styleClass="button"/>
                 <Button text="Register" onAction="#handleRegister" styleClass="button"/>

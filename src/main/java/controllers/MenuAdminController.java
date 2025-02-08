@@ -40,6 +40,13 @@ public class MenuAdminController extends BaseController {
 	
 	@FXML
 	public void handleInvoicingSystem() {
-		
+    	try {
+            SceneManager.getInstance().showScene("AdminOrder");
+
+            
+        } catch (Exception e) {
+        	System.out.println("erreur");
+            e.printStackTrace();
+        }
 	}
 }

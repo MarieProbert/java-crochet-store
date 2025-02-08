@@ -1,6 +1,5 @@
 package util;
 
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,9 +7,9 @@ import java.security.NoSuchAlgorithmException;
 public class HashUtils {
 
     /**
-     * Hash une chaîne en utilisant SHA-256.
-     * @param input La chaîne à hacher.
-     * @return Le hash en hexadécimal.
+     * Hashes a string using SHA-256.
+     * @param input The string to hash.
+     * @return The hash in hexadecimal format.
      */
     public static String sha256(String input) {
         try {
@@ -24,7 +23,7 @@ public class HashUtils {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Erreur lors du hashage en SHA-256", e);
+            throw new RuntimeException("Error during SHA-256 hashing", e);
         }
     }
 }

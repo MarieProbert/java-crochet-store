@@ -5,31 +5,29 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.CartController" stylesheets="@../style.css">
-    
-    
-        <top>
+
+    <!-- Top section containing the banner and user options -->
+    <top>
         <VBox alignment="CENTER">
-            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
+            <!-- Banner section with background color covering full width -->
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
-            
-            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
-   
-        <HBox alignment="BOTTOM_RIGHT">
-        
-        	<Button text="Catalog" onAction="#handleCatalog"/>
-        	
-        <!-- Icône de profil -->
-        <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
-        </HBox>         
-            
+            <!-- Image below the banner -->
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+
+            <!-- User action buttons for Catalog and Profile icon -->
+            <HBox alignment="BOTTOM_RIGHT">
+                <Button text="Catalog" onAction="#handleCatalog"/>
+
+                <!-- Profile icon -->
+                <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
+            </HBox>
         </VBox>
-              
     </top>
 
-    <!-- Grille de produits au centre avec ScrollPane -->
+    <!-- Center section with a scrollable product grid -->
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true">
             <content>
@@ -37,9 +35,10 @@
             </content>
         </ScrollPane>
     </center>
-    
-    <bottom> 
-    	<Button text="Proceed to checkout" onAction="#handleValidate"/>
+
+    <!-- Bottom section with a checkout button -->
+    <bottom>
+        <Button text="Proceed to checkout" onAction="#handleValidate"/>
     </bottom>
 
 </BorderPane>

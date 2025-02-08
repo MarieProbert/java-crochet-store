@@ -1,21 +1,20 @@
 package tables;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import enums.Status;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import util.SceneManager;
 
 /**
  * Represents an order placed by a client, including its ID, client information, and a list of purchased products.
  */
 public class Order {
 	
-	private BooleanProperty isUpdated;
+    /** Indicates whether the order has been updated. */
+    private BooleanProperty isUpdated;
 
     /** Unique identifier for the order (primary key). */
     private int orderID;
@@ -32,30 +31,47 @@ public class Order {
     /** Map storing product references and their quantities and price at purchase. */
     private Map<Product, CartItem> cart = new HashMap<>();
 
-    // Debut de commande quand on n'a aucune informations de panier précédent en cours à récupérer
-    // Et qu'on ne sait pas forcément qui est le client
+    /**
+     * Default constructor to initialize an order without prior cart or client information.
+     * The order is initialized with default values.
+     */
     public Order() {
-    	orderID = -1;
-    	clientID = -1;
-    	status = Status.INPROGRESS;
-    	cart = new HashMap<>();
-    	isUpdated = new SimpleBooleanProperty(true);
-    	purchaseDate = null;
-    	deliveryDate = null;
+        orderID = -1;
+        clientID = -1;
+        status = Status.INPROGRESS;
+        cart = new HashMap<>();
+        isUpdated = new SimpleBooleanProperty(true);
+        purchaseDate = null;
+        deliveryDate = null;
     }
     
+    /**
+     * Returns the updated property.
+     *
+     * @return The BooleanProperty representing if the order has been updated.
+     */
     public BooleanProperty isUpdatedProperty() {
         return isUpdated;
     }
 
+    /**
+     * Returns whether the order is updated.
+     *
+     * @return A boolean value indicating if the order has been updated.
+     */
     public boolean isUpdated() {
         return isUpdated.get();
     }
 
+    /**
+     * Sets the update status of the order.
+     *
+     * @param updated The updated status to be set.
+     */
     public void setUpdated(boolean updated) {
         isUpdated.set(updated);
     }
-    
+
     /**
      * Returns the unique order ID.
      *
@@ -109,42 +125,76 @@ public class Order {
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
     /**
      * Sets the product's status from a string.
      * 
-     * @param color The status string to be converted.
+     * @param status The status string to be converted.
      */
     public void setStatusFromString(String status) {
         this.status = Status.fromStringToStatus(status);
     }
-    
-    
+
+    /**
+     * Returns the order's purchase date.
+     *
+     * @return The purchase timestamp of the order.
+     */
     public Timestamp getPurchaseDate() {
         return purchaseDate;
     }
 
+    /**
+     * Sets the order's purchase date.
+     *
+     * @param purchaseDate The purchase timestamp to be set.
+     */
     public void setPurchaseDate(Timestamp purchaseDate) {
         this.purchaseDate = purchaseDate;
     }
 
+    /**
+     * Returns the order's delivery date.
+     *
+     * @return The delivery timestamp of the order.
+     */
     public Timestamp getDeliveryDate() {
         return deliveryDate;
     }
 
+    /**
+     * Sets the order's delivery date.
+     *
+     * @param deliveryDate The delivery timestamp to be set.
+     */
     public void setDeliveryDate(Timestamp deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
+    /**
+     * Returns the map of products and their cart items in the order.
+     *
+     * @return The map of products and their corresponding cart items.
+     */
     public Map<Product, CartItem> getCart() {
         return cart;
     }
 
+    /**
+     * Sets the map of products and their cart items for the order.
+     *
+     * @param cart The new map of products and cart items.
+     */
     public void setCart(Map<Product, CartItem> cart) {
         this.cart = cart;
     }
 
-    
+    /**
+     * Removes a product from the cart.
+     *
+     * @param product The product to be removed.
+     * @param quantity The quantity to remove.
+     */
     public void deleteFromCart(Product product, int quantity) {
         if (!cart.containsKey(product)) {
             System.out.println("Error: Product not found in cart.");
@@ -155,21 +205,26 @@ public class Order {
         int currentQuantity = item.getQuantity();
 
         if (quantity >= currentQuantity) {
-            // Supprimer complètement l'élément si la quantité devient 0 ou négative
+            // Remove completely if quantity becomes 0 or negative
             cart.remove(product);
         } else {
-            // Réduire seulement la quantité du produit
+            // Reduce quantity
             item.setQuantity(currentQuantity - quantity);
         }
 
-        // Rétablir le stock du produit
+        // Restore product stock
         product.setStock(product.getStock() + quantity);
         setUpdated(true);
 
         System.out.println("Removed from cart: " + product.getName() + " Quantity: " + quantity);
     }
 
-
+    /**
+     * Adds a product to the cart.
+     *
+     * @param product The product to be added.
+     * @param quantity The quantity of the product to be added.
+     */
     public void addToCart(Product product, int quantity) {
         int currentStock = product.getStock();
 
@@ -183,20 +238,35 @@ public class Order {
             return;
         }
 
-        // Vérifier si le produit est déjà dans le panier
+        // Check if the product is already in the cart
         if (cart.containsKey(product)) {
             CartItem existingItem = cart.get(product);
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
         } else {
-            // Enregistrer le prix du produit au moment de l'ajout
+            // Record the price of the product at the time of addition
             cart.put(product, new CartItem(quantity, product.getPrice()));
         }
 
         product.setStock(currentStock - quantity);
-        System.out.println("Added to cart: " + product.getName() + " Quantity: " + quantity);
+    }
+    
+    /**
+     * Adds a product to the cart.
+     *
+     * @param product The product to be added.
+     * @param quantity The quantity of the product to be added.
+     * @param price The price at purchase of the product
+     */
+    public void addToFinalisedCart(Product product, int quantity, double price) {
+        cart.put(product, new CartItem(quantity, price));
+        
     }
 
-    // Calculer le total du panier en fonction des prix enregistrés au moment de l'ajout
+    /**
+     * Calculates the total cost of the cart, considering the prices at the time of addition.
+     *
+     * @return The total cart value.
+     */
     public double calculateCartTotal() {
         double total = 0;
 
@@ -207,6 +277,4 @@ public class Order {
 
         return total;
     }
-
-    
 }

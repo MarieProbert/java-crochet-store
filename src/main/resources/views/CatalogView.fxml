@@ -10,69 +10,71 @@
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.CatalogController" stylesheets="@../style.css">
 
+    <!-- Top section with banner and user options -->
     <top>
         <VBox alignment="CENTER">
-            <!-- Container with the 'banner' class to display the background color across the full width -->
+            <!-- Banner container for the background color -->
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
-            
-            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
-   
-        <HBox alignment="BOTTOM_RIGHT">
-        
-        	<Button text="Cart" onAction="#handleCart"/>
-        	
-        <!-- Profile icon -->
-        <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
-        </HBox>         
-            
+            <!-- Banner image below the text -->
+            <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+
+            <!-- User options: Cart button and profile icon -->
+            <HBox alignment="BOTTOM_RIGHT">
+                <Button text="Cart" onAction="#handleCart"/>
+
+                <!-- Profile icon -->
+                <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
+            </HBox>
         </VBox>
-              
     </top>
-    
+
+    <!-- Left section for search filters -->
     <left>
         <VBox styleClass="left-padding">
-		    <!-- Search bar -->
-		    <TextField fx:id="searchField" promptText="Search for a product..." styleClass="custom-textfield"/>
+            <!-- Search bar to search for products -->
+            <TextField fx:id="searchField" promptText="Search for a product..." styleClass="custom-textfield"/>
 
-		    <!-- Price filters with reduced-size TextFields -->
-		    <HBox spacing="5">
-		        <Label text="Min Price:"/>
-		        <TextField fx:id="minPriceField" promptText="min" maxWidth="60" styleClass="custom-textfield"/>
-		        <Label text="Max Price:"/>
-		        <TextField fx:id="maxPriceField" promptText="max" maxWidth="60" styleClass="custom-textfield"/>
-		    </HBox>
-		    
-		    <!-- Category filter with a dropdown menu -->
-		    <HBox spacing="5">
-		        <Label text="Category:"/>
-		        <ComboBox fx:id="categoryComboBox" promptText="Select a category" />
-		    </HBox>
-		    
-		    <HBox spacing="5">
-		        <Label text="Size:"/>
-		        <ComboBox fx:id="sizeComboBox" promptText="Select a size" />
-		    </HBox>
-		    
-		    <HBox spacing="5">
-		        <Label text="Theme:"/>
-		        <ComboBox fx:id="themeComboBox" promptText="Select a theme" />
-		        
-		    </HBox>
-		    
-		    <HBox spacing="5">
-		        
-		        <Label text="Color:"/>
-		        <ComboBox fx:id="colorComboBox" promptText="Select a color" />
-		    </HBox>
-		    
-		    <Button text="Search" fx:id="searchButton" onAction="#handleSearch"/>
+            <!-- Price range filters -->
+            <HBox spacing="5">
+                <Label text="Min Price:"/>
+                <TextField fx:id="minPriceField" promptText="min" maxWidth="60" styleClass="custom-textfield"/>
+                <Label text="Max Price:"/>
+                <TextField fx:id="maxPriceField" promptText="max" maxWidth="60" styleClass="custom-textfield"/>
+            </HBox>
+
+            <!-- Category filter -->
+            <HBox spacing="5">
+                <Label text="Category:"/>
+                <ComboBox fx:id="categoryComboBox" promptText="Select a category" />
+            </HBox>
+
+            <!-- Size filter -->
+            <HBox spacing="5">
+                <Label text="Size:"/>
+                <ComboBox fx:id="sizeComboBox" promptText="Select a size" />
+            </HBox>
+
+            <!-- Theme filter -->
+            <HBox spacing="5">
+                <Label text="Theme:"/>
+                <ComboBox fx:id="themeComboBox" promptText="Select a theme" />
+            </HBox>
+
+            <!-- Color filter -->
+            <HBox spacing="5">
+                <Label text="Color:"/>
+                <ComboBox fx:id="colorComboBox" promptText="Select a color" />
+            </HBox>
+
+            <!-- Search button -->
+            <Button text="Search" fx:id="searchButton" onAction="#handleSearch"/>
         </VBox>
     </left>
 
-    <!-- Product grid in the center with a ScrollPane -->
+    <!-- Center section to display products in a scrollable grid -->
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true">
             <content>
@@ -81,7 +83,7 @@
         </ScrollPane>
     </center>
 
-    <!-- Pagination at the bottom -->
+    <!-- Bottom section with pagination controls -->
     <bottom>
         <HBox alignment="CENTER">
             <Pagination fx:id="pagination" pageCount="1" />

@@ -1,6 +1,5 @@
 package util;
 
-
 import tables.Invoice;
 import tables.Order;
 import tables.User;
@@ -8,13 +7,15 @@ import tables.User;
 public class UserSession {
     private static UserSession instance;
 
-    // Variables pour l'utilisateur et son panier
+    // Variables for the user and their cart
     private User user;
     private Order order;
     private Invoice invoice;
     private boolean validate;
 
-    // Constructeur privé pour empêcher l'instanciation extérieure
+    /**
+     * Private constructor to prevent external instantiation.
+     */
     private UserSession() {
         order = new Order();
         user = new User();
@@ -22,7 +23,11 @@ public class UserSession {
         invoice = new Invoice();
     }
 
-    // Méthode pour récupérer l'instance unique de UserSession (Singleton)
+    /**
+     * Method to retrieve the unique instance of UserSession (Singleton).
+     * 
+     * @return The unique instance of UserSession.
+     */
     public static synchronized UserSession getInstance() {
         if (instance == null) {
             instance = new UserSession();
@@ -30,42 +35,75 @@ public class UserSession {
         return instance;
     }
     
+    /**
+     * Replaces the current user with a new user.
+     * 
+     * @param user The new user to set.
+     */
     public void setUser(User user) {
-        // Remplace l'utilisateur actuel par un nouvel utilisateur
         this.user = user; 
     }
     
+    /**
+     * Retrieves the current user.
+     * 
+     * @return The current user.
+     */
     public User getUser() {
         return user;
     }
 
-
+    /**
+     * Retrieves the current order.
+     * 
+     * @return The current order.
+     */
 	public Order getOrder() {
 		return order;
 	}
 
+    /**
+     * Sets a new order.
+     * 
+     * @param order The new order to set.
+     */
 	public void setOrder(Order order) {
 		this.order = order;
 	}
 
-	// Est validate si l'utilisateur veut valider sa commande et qu'il faudra donc adapter la fenêtre après le login
+    /**
+     * Checks if the user wants to validate their order and if the window should be adapted after login.
+     * 
+     * @return true if the order is to be validated, false otherwise.
+     */
 	public boolean isValidate() {
 		return validate;
 	}
 
+    /**
+     * Sets the validation state for the order.
+     * 
+     * @param validate The validation state to set.
+     */
 	public void setValidate(boolean validate) {
 		this.validate = validate;
 	}
 
+    /**
+     * Retrieves the current invoice.
+     * 
+     * @return The current invoice.
+     */
 	public Invoice getInvoice() {
 		return invoice;
 	}
 
+    /**
+     * Sets a new invoice.
+     * 
+     * @param invoice The new invoice to set.
+     */
 	public void setInvoice(Invoice invoice) {
 		this.invoice = invoice;
 	}
-	
-	
-    
-    
 }

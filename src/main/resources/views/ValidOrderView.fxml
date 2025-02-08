@@ -16,8 +16,7 @@
             <ImageView fx:id="bannerImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
    
         <HBox alignment="BOTTOM_RIGHT">
-        
-        	<Button text="Cart" onAction="#handleCart"/>
+       
         	
         <!-- Icône de profil -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>

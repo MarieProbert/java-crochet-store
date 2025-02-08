@@ -21,6 +21,7 @@ public class SceneManager {
     
     private static final HashMap<String, String> scenePaths = new HashMap<>() {{
         put("Login", "/views/LoginView.fxml");
+        
         put("Catalog", "/views/CatalogView.fxml");
         put("Cart", "/views/CartView.fxml");
         put("ClientAccount", "/views/AccountView.fxml");
@@ -28,10 +29,12 @@ public class SceneManager {
         put("OrderSummary", "/views/OrderSummaryView.fxml");
         put("ValidOrder", "/views/ValidOrderView.fxml");
         put("OrderHistory", "/views/OrderHistoryView.fxml");
+        
         put("MenuAdmin", "/views/MenuAdminView.fxml");
         put("AdminAccount", "/views/AdminAccountView.fxml"); // a arranger dans l'affichage
         put("AdminCatalog", "/views/AdminCatalogView.fxml"); // a arranger
         put("AdminClients", "/views/AdminClientsView.fxml");
+        put("AdminOrder", "/views/AdminOrderView.fxml"); // a faire
         
     }};
 

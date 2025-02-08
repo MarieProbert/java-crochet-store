@@ -1,9 +1,10 @@
 package tables;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
+/**
+ * Represents an invoice related to an order, including its ID, order information, and total amount.
+ */
 public class Invoice {
     private int invoiceID;
     private int orderID;
@@ -11,10 +12,20 @@ public class Invoice {
     private Timestamp invoiceDate;
     private double totalAmount;
 
+    /**
+     * Default constructor for the Invoice class.
+     */
     public Invoice() {
-    	
     }
-    // Constructeur sans ID de facture, utile lors de la création de nouvelles factures
+
+    /**
+     * Constructor used to create a new invoice without an invoice ID (used when creating new invoices).
+     *
+     * @param orderID The ID of the related order.
+     * @param clientID The ID of the client.
+     * @param invoiceDate The date when the invoice was created.
+     * @param totalAmount The total amount of the invoice.
+     */
     public Invoice(int orderID, int clientID, Timestamp invoiceDate, double totalAmount) {
         this.orderID = orderID;
         this.clientID = clientID;
@@ -22,7 +33,15 @@ public class Invoice {
         this.totalAmount = totalAmount;
     }
 
-    // Constructeur avec tous les paramètres, utilisé pour récupérer une facture existante de la base de données
+    /**
+     * Constructor with all parameters, used for retrieving an existing invoice from the database.
+     *
+     * @param invoiceID The unique invoice ID.
+     * @param orderID The ID of the related order.
+     * @param clientID The ID of the client.
+     * @param invoiceDate The date when the invoice was created.
+     * @param totalAmount The total amount of the invoice.
+     */
     public Invoice(int invoiceID, int orderID, int clientID, Timestamp invoiceDate, double totalAmount) {
         this.invoiceID = invoiceID;
         this.orderID = orderID;
@@ -31,7 +50,8 @@ public class Invoice {
         this.totalAmount = totalAmount;
     }
 
-    // Getters et setters pour tous les attributs
+    // Getters and setters for all attributes
+
     public int getInvoiceID() {
         return invoiceID;
     }
@@ -72,7 +92,9 @@ public class Invoice {
         this.totalAmount = totalAmount;
     }
 
-    // Méthode pour afficher les informations de la facture
+    /**
+     * Displays the details of the invoice.
+     */
     public void displayInvoiceDetails() {
         System.out.println("Invoice ID: " + invoiceID);
         System.out.println("Order ID: " + orderID);
@@ -81,7 +103,11 @@ public class Invoice {
         System.out.println("Total Amount: " + totalAmount);
     }
 
-    // ToString pour faciliter l'affichage sous forme de chaîne de caractères
+    /**
+     * Returns a string representation of the invoice.
+     *
+     * @return A string containing the invoice details.
+     */
     @Override
     public String toString() {
         return "Invoice{" +
@@ -93,4 +119,3 @@ public class Invoice {
                 '}';
     }
 }
-

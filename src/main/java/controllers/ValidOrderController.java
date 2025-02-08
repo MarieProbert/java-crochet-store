@@ -17,6 +17,7 @@ public class ValidOrderController extends BaseController {
     @FXML
     public void initialize() {
     	super.initialize();
+    	needToClearCart = true;
     }
     	
 	@FXML
@@ -29,14 +30,5 @@ public class ValidOrderController extends BaseController {
 	        e.printStackTrace();
 	    }
 	}
-	
-	@FXML
-	public void handleCatalog() {
-		UserSession.getInstance().setOrder(new Order());
-		super.handleCatalog();
-	}
-	
-	// A faire
-     // Commande terminée donc nouveau panier vide
-     //UserSession.getInstance().setOrder(new Order());
+
 }

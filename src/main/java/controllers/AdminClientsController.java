@@ -265,19 +265,7 @@ public class AdminClientsController extends BaseController {
         displayClients(); // Rafraîchir la liste des utilisateurs après la modification
     }
     
-    
-    @FXML
-    public void handleReturnMenu() {
-    	try {
-            SceneManager.getInstance().showScene("MenuAdmin");
 
-            
-        } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
-        }
-
-    }
     
     @FXML
     public void handleAddUser() {

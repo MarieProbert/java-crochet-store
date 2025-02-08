@@ -4,6 +4,18 @@ import java.util.regex.Pattern;
 
 public class ValidationUtils {
 
+    /**
+     * Verifies the submission by checking each field for validity.
+     * @param email The email to verify.
+     * @param password The password to verify.
+     * @param firstName The first name to verify.
+     * @param lastName The last name to verify.
+     * @param street The street address to verify.
+     * @param city The city to verify.
+     * @param postCode The postal code to verify.
+     * @param country The country to verify.
+     * @return The error message if there's any issue, otherwise null if everything is valid.
+     */
     public static String verifySubmission(String email, String password, String firstName, String lastName, String street, String city, String postCode, String country) {
         String[] errors = {
             verifyEmail(email),
@@ -18,14 +30,27 @@ public class ValidationUtils {
 
         for (String error : errors) {
             if (error != null) {
-                return error; // Retourne la première erreur trouvée
+                return error; // Returns the first error found
             }
         }
 
-        return null; // Aucun problème détecté
+        return null; // No issues detected
     }
     
     
+    /**
+     * Verifies modifications, checking each field for validity except for the password.
+     * If password is provided, it is also verified.
+     * @param email The email to verify.
+     * @param password The password to verify.
+     * @param firstName The first name to verify.
+     * @param lastName The last name to verify.
+     * @param street The street address to verify.
+     * @param city The city to verify.
+     * @param postCode The postal code to verify.
+     * @param country The country to verify.
+     * @return The error message if there's any issue, otherwise null if everything is valid.
+     */
     public static String verifyModifications(String email, String password, String firstName, String lastName, String street, String city, String postCode, String country) {
         String[] errors = {
             verifyFirstName(firstName),
@@ -36,22 +61,32 @@ public class ValidationUtils {
             verifyCountry(country),
         };
 
-        // Vérifier le mot de passe seulement s'il est renseigné
+        // Check the password only if it's provided
         if (!password.isEmpty()) {
             String passwordError = verifyPassword(password);
             if (passwordError != null) return passwordError;
         }
 
-        // Vérifier les autres erreurs
+        // Check other errors
         for (String error : errors) {
             if (error != null) {
-                return error; // Retourne la première erreur trouvée
+                return error; // Returns the first error found
             }
         }
 
-        return null; // Aucun problème détecté
+        return null; // No issues detected
     }
     
+    /**
+     * Verifies modifications, checking each field for validity except for the email and password.
+     * @param firstName The first name to verify.
+     * @param lastName The last name to verify.
+     * @param street The street address to verify.
+     * @param city The city to verify.
+     * @param postCode The postal code to verify.
+     * @param country The country to verify.
+     * @return The error message if there's any issue, otherwise null if everything is valid.
+     */
     public static String verifyModifications(String firstName, String lastName, String street, String city, String postCode, String country) {
         String[] errors = {
             verifyFirstName(firstName),
@@ -61,38 +96,44 @@ public class ValidationUtils {
             verifyPostCode(postCode),
             verifyCountry(country),
         };
-        
 
-
-        // Vérifier les autres erreurs
+        // Check other errors
         for (String error : errors) {
             if (error != null) {
-                return error; // Retourne la première erreur trouvée
+                return error; // Returns the first error found
             }
         }
 
-        return null; // Aucun problème détecté
+        return null; // No issues detected
     }
     
+    /**
+     * Verifies modifications, checking only the first name and last name.
+     * @param firstName The first name to verify.
+     * @param lastName The last name to verify.
+     * @return The error message if there's any issue, otherwise null if everything is valid.
+     */
     public static String verifyModifications(String firstName, String lastName) {
         String[] errors = {
             verifyFirstName(firstName),
             verifyLastName(lastName),
-            
-            
         };
         
-        // Vérifier les autres erreurs
+        // Check other errors
         for (String error : errors) {
             if (error != null) {
-                return error; // Retourne la première erreur trouvée
+                return error; // Returns the first error found
             }
         }
 
-        return null; // Aucun problème détecté
+        return null; // No issues detected
     }
-    
 
+    /**
+     * Verifies if the email is valid.
+     * @param email The email to verify.
+     * @return The error message if the email is invalid, otherwise null if it's valid.
+     */
     public static String verifyEmail(String email) {
         if (email.isEmpty()) {
             return "All the fields must be filled!";
@@ -109,13 +150,24 @@ public class ValidationUtils {
         }
         return null;
     }
-    
+
+    /**
+     * Verifies if a given email matches the specified regex pattern.
+     * @param emailAddress The email to verify.
+     * @param regexPattern The regex pattern to match against.
+     * @return True if the email matches the pattern, otherwise false.
+     */
     public static boolean patternMatches(String emailAddress, String regexPattern) {
         return Pattern.compile(regexPattern)
           .matcher(emailAddress)
           .matches();
     }
 
+    /**
+     * Verifies if the password is valid.
+     * @param password The password to verify.
+     * @return The error message if the password is invalid, otherwise null if it's valid.
+     */
     public static String verifyPassword(String password) {
         if (password.isEmpty()) {
             return "All the fields must be filled!";
@@ -126,26 +178,56 @@ public class ValidationUtils {
         return null;
     }
 
+    /**
+     * Verifies if the first name is valid.
+     * @param firstName The first name to verify.
+     * @return The error message if the first name is invalid, otherwise null if it's valid.
+     */
     public static String verifyFirstName(String firstName) {
         return firstName.isEmpty() ? "All the fields must be filled!" : null;
     }
 
+    /**
+     * Verifies if the last name is valid.
+     * @param lastName The last name to verify.
+     * @return The error message if the last name is invalid, otherwise null if it's valid.
+     */
     public static String verifyLastName(String lastName) {
         return lastName.isEmpty() ? "All the fields must be filled!" : null;
     }
 
+    /**
+     * Verifies if the street address is valid.
+     * @param street The street address to verify.
+     * @return The error message if the street address is invalid, otherwise null if it's valid.
+     */
     public static String verifyStreet(String street) {
         return street.isEmpty() ? "All the fields must be filled!" : null;
     }
     
+    /**
+     * Verifies if the city is valid.
+     * @param city The city to verify.
+     * @return The error message if the city is invalid, otherwise null if it's valid.
+     */
     public static String verifyCity(String city) {
         return city.isEmpty() ? "All the fields must be filled!" : null;
     }
 
+    /**
+     * Verifies if the postal code is valid.
+     * @param postCode The postal code to verify.
+     * @return The error message if the postal code is invalid, otherwise null if it's valid.
+     */
     public static String verifyPostCode(String postCode) {
     	return postCode.isEmpty() ? "All the fields must be filled!" : null;
     }
 
+    /**
+     * Verifies if the country is valid.
+     * @param country The country to verify.
+     * @return The error message if the country is invalid, otherwise null if it's valid.
+     */
     public static String verifyCountry(String country) {
         return country.isEmpty() ? "All the fields must be filled!" : null;
     }

@@ -12,34 +12,24 @@ public class Product {
 
     /** Unique identifier for the product. */
     private int productID;
-
     /** Name of the product. */
     private String name;
-
     /** Creator or manufacturer of the product. */
     private String creator;
-
     /** Price of the product. */
     private double price;
-
     /** Description of the product. */
     private String description;
-
     /** Color of the product. */
     private Color color;
-
     /** Number of items available in stock. */
     private int stock;
-
     /** Size of the product. */
     private Size size;
-
     /** Theme associated with the product. */
     private Theme theme;
-
     /** File path to the product's image. */
     private String imagePath;
-
     /** Category of the product. */
     private Category category;
 
@@ -51,18 +41,28 @@ public class Product {
     public Product(int productID) {
         this.productID = productID;
     }
-    
+
+    /**
+     * Returns the product's unique identifier.
+     *
+     * @return The product's ID.
+     */
     public int getProductID() {
-    	return productID;
+        return productID;
     }
-    
+
+    /**
+     * Sets the product's unique identifier.
+     *
+     * @param productID The new ID for the product.
+     */
     public void setProductID(int productID) {
-    	this.productID = productID;
+        this.productID = productID;
     }
 
     /**
      * Returns the product's name.
-     * 
+     *
      * @return The name of the product.
      */
     public String getName() {
@@ -71,7 +71,7 @@ public class Product {
 
     /**
      * Sets the product's name.
-     * 
+     *
      * @param name The name to be set.
      */
     public void setName(String name) {
@@ -79,44 +79,8 @@ public class Product {
     }
 
     /**
-     * Returns the product's price.
-     * 
-     * @return The price of the product.
-     */
-    public double getPrice() {
-        return price;
-    }
-
-    /**
-     * Sets the product's price.
-     * 
-     * @param price The price to be set.
-     */
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    /**
-     * Returns the product's image path.
-     * 
-     * @return The image path of the product.
-     */
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    /**
-     * Sets the product's image path.
-     * 
-     * @param imagePath The image path to be set.
-     */
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    /**
      * Returns the product's creator.
-     * 
+     *
      * @return The creator of the product.
      */
     public String getCreator() {
@@ -125,7 +89,7 @@ public class Product {
 
     /**
      * Sets the product's creator.
-     * 
+     *
      * @param creator The creator to be set.
      */
     public void setCreator(String creator) {
@@ -133,8 +97,26 @@ public class Product {
     }
 
     /**
+     * Returns the product's price.
+     *
+     * @return The price of the product.
+     */
+    public double getPrice() {
+        return price;
+    }
+
+    /**
+     * Sets the product's price.
+     *
+     * @param price The price to be set.
+     */
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    /**
      * Returns the product's description.
-     * 
+     *
      * @return The description of the product.
      */
     public String getDescription() {
@@ -143,7 +125,7 @@ public class Product {
 
     /**
      * Sets the product's description.
-     * 
+     *
      * @param description The description to be set.
      */
     public void setDescription(String description) {
@@ -152,7 +134,7 @@ public class Product {
 
     /**
      * Returns the product's color.
-     * 
+     *
      * @return The color of the product.
      */
     public Color getColor() {
@@ -161,17 +143,16 @@ public class Product {
 
     /**
      * Sets the product's color from a string.
-     * 
+     *
      * @param color The color string to be converted.
      */
     public void setColorFromString(String color) {
         this.color = Color.fromStringToColor(color);
     }
 
-
     /**
      * Returns the product's stock quantity.
-     * 
+     *
      * @return The stock of the product.
      */
     public int getStock() {
@@ -180,7 +161,7 @@ public class Product {
 
     /**
      * Sets the product's stock quantity.
-     * 
+     *
      * @param stock The stock quantity to be set.
      */
     public void setStock(int stock) {
@@ -189,7 +170,7 @@ public class Product {
 
     /**
      * Returns the product's size.
-     * 
+     *
      * @return The size of the product.
      */
     public Size getSize() {
@@ -198,7 +179,7 @@ public class Product {
 
     /**
      * Sets the product's size from a string.
-     * 
+     *
      * @param size The size string to be converted.
      */
     public void setSizeFromString(String size) {
@@ -207,7 +188,7 @@ public class Product {
 
     /**
      * Returns the product's theme.
-     * 
+     *
      * @return The theme of the product.
      */
     public Theme getTheme() {
@@ -216,7 +197,7 @@ public class Product {
 
     /**
      * Sets the product's theme from a string.
-     * 
+     *
      * @param theme The theme string to be converted.
      */
     public void setThemeFromString(String theme) {
@@ -225,7 +206,7 @@ public class Product {
 
     /**
      * Returns the product's category.
-     * 
+     *
      * @return The category of the product.
      */
     public Category getCategory() {
@@ -234,7 +215,7 @@ public class Product {
 
     /**
      * Sets the product's category from a string.
-     * 
+     *
      * @param category The category string to be converted.
      */
     public void setCategoryFromString(String category) {
@@ -242,8 +223,26 @@ public class Product {
     }
 
     /**
+     * Returns the product's image path.
+     *
+     * @return The image path of the product.
+     */
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    /**
+     * Sets the product's image path.
+     *
+     * @param imagePath The image path to be set.
+     */
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    /**
      * Returns a string representation of the product.
-     * 
+     *
      * @return A string containing the product's details.
      */
     @Override

@@ -12,9 +12,20 @@ import util.DataSingleton;
 import util.DatabaseConnection;
 import util.UserSession;
 
+/**
+ * Data Access Object (DAO) class for managing Order-related database operations.
+ * Provides methods to insert, update, and fetch orders and associated products.
+ */
 public class OrderDAO {
 
-	public int insertOrder(Order order) {
+    /**
+     * Inserts a new order into the database, including the order details and associated products.
+     * The stock is updated for each product in the order.
+     * 
+     * @param order The order object to insert.
+     * @return The generated order ID if the order was inserted successfully, or -1 if an error occurred.
+     */
+    public int insertOrder(Order order) {
         String insertOrderQuery = "INSERT INTO `order` (userID, orderStatus, purchaseDate) VALUES (?, ?, ?)";
         String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity, priceAtPurchase) VALUES (?, ?, ?, ?)";
 
@@ -25,37 +36,36 @@ public class OrderDAO {
 
         try {
             conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false); // Démarrer une transaction
+            conn.setAutoCommit(false); // Start a transaction
 
-            // 🔹 Étape 1 : Mettre à jour la date d'achat dans UserSession
+            // Set purchase date
             Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             UserSession.getInstance().getOrder().setPurchaseDate(currentTimestamp);
 
-            // 🔹 Étape 2 : Insérer la commande
+            // Insert the order
             orderStmt = conn.prepareStatement(insertOrderQuery, PreparedStatement.RETURN_GENERATED_KEYS);
             orderStmt.setInt(1, order.getClientID());
-            orderStmt.setString(2, order.getStatus().toString()); 
-            orderStmt.setTimestamp(3, currentTimestamp); // Date d'achat
+            orderStmt.setString(2, order.getStatus().toString());
+            orderStmt.setTimestamp(3, currentTimestamp);
 
             int affectedRows = orderStmt.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Échec de l'insertion de la commande, aucune ligne affectée.");
+                throw new SQLException("Failed to insert the order, no rows affected.");
             }
 
-            // 🔹 Étape 3 : Récupérer l'ID de la commande créée
+            // Retrieve the generated order ID
             generatedKeys = orderStmt.getGeneratedKeys();
-            int orderId = -1; // Initialiser à -1 par défaut
+            int orderId = -1; // Default to -1 if ID not found
             if (generatedKeys.next()) {
                 orderId = generatedKeys.getInt(1);
-                order.setOrderID(orderId); // Mettre à jour l'objet Order
+                order.setOrderID(orderId);
             } else {
-                throw new SQLException("Échec de l'obtention de l'ID de la commande.");
+                throw new SQLException("Failed to retrieve the generated order ID.");
             }
 
-            // 🔹 Étape 4 : Insérer chaque produit dans `orderxproduct`
+            // Insert the products for this order
             orderXProductStmt = conn.prepareStatement(insertOrderXProductQuery);
-
             for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
                 Product product = entry.getKey();
                 int quantity = entry.getValue().getQuantity();
@@ -67,44 +77,49 @@ public class OrderDAO {
                 orderXProductStmt.setDouble(4, price);
                 orderXProductStmt.addBatch();
 
-                // Mettre à jour le stock
+                // Update stock for the product
                 boolean stockUpdated = DataSingleton.getInstance().getProductDAO().updateStock(product.getProductID(), quantity);
                 if (!stockUpdated) {
-                    conn.rollback();  // Annuler la transaction si stock insuffisant
-                    return -1; // Retourner -1 si le stock n'a pas pu être mis à jour
+                    conn.rollback();  // Rollback the transaction if stock update fails
+                    return -1;
                 }
             }
 
-            orderXProductStmt.executeBatch(); // Exécuter toutes les requêtes `orderxproduct` d’un coup
-
-            conn.commit(); // Valider la transaction
-            return orderId; // Retourner l'ID de la commande générée
+            orderXProductStmt.executeBatch(); // Execute all product insertions
+            conn.commit(); // Commit the transaction
+            return orderId; // Return the generated order ID
 
         } catch (SQLException e) {
             if (conn != null) {
                 try {
-                    conn.rollback(); // Annuler la transaction en cas d'erreur
+                    conn.rollback(); // Rollback transaction in case of error
                 } catch (SQLException rollbackEx) {
                     rollbackEx.printStackTrace();
                 }
             }
             e.printStackTrace();
-            return -1; // Retourner -1 en cas d'erreur
+            return -1; // Return -1 on error
 
         } finally {
-            // Fermer les ressources proprement
+            // Close resources
             try {
                 if (generatedKeys != null) generatedKeys.close();
                 if (orderStmt != null) orderStmt.close();
                 if (orderXProductStmt != null) orderXProductStmt.close();
-                if (conn != null) conn.setAutoCommit(true); // Remettre l'auto-commit par défaut
+                if (conn != null) conn.setAutoCommit(true); // Reset auto-commit
                 if (conn != null) conn.close();
             } catch (SQLException closeEx) {
                 closeEx.printStackTrace();
             }
         }
     }
-    
+
+    /**
+     * Retrieves all orders for a specific client from the database.
+     * 
+     * @param clientId The client ID to fetch orders for.
+     * @return A list of Order objects associated with the given client.
+     */
     public List<Order> getOrdersByClientId(int clientId) {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM `order` WHERE userID = ?";
@@ -114,7 +129,7 @@ public class OrderDAO {
              PreparedStatement orderStmt = conn.prepareStatement(query);
              PreparedStatement orderXProductStmt = conn.prepareStatement(queryOrderXProduct)) {
 
-            // Récupérer toutes les commandes du client
+            // Retrieve all orders for the client
             orderStmt.setInt(1, clientId);
             try (ResultSet rs = orderStmt.executeQuery()) {
                 while (rs.next()) {
@@ -123,25 +138,118 @@ public class OrderDAO {
                     order.setOrderID(orderId);
                     order.setClientID(clientId);
                     order.setStatusFromString(rs.getString("orderStatus"));
-                    System.out.println(order.getStatus());
-                    
 
-                    // Récupérer les produits associés à cette commande
+                    // Retrieve products associated with the order
                     orderXProductStmt.setInt(1, orderId);
                     try (ResultSet rsProducts = orderXProductStmt.executeQuery()) {
                         while (rsProducts.next()) {
                             int productId = rsProducts.getInt("productID");
                             int quantity = rsProducts.getInt("quantity");
 
-                            // Créer un objet Product à partir de l'ID du produit
+                            // Fetch product and add to order's cart
                             Product product = DataSingleton.getInstance().getProductDAO().getProductById(productId);
                             if (product != null) {
-                                order.addToCart(product, quantity);  // Ajouter le produit au panier de la commande
+                                order.addToCart(product, quantity);
                             }
                         }
                     }
-                    
-                    // Ajouter la commande à la liste des commandes du client
+
+                    // Add the order to the list
+                    orders.add(order);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+    
+    public Order getOrderByOrderID(int orderId) {
+        String query = "SELECT * FROM `order` WHERE orderID = ?";
+        String queryOrderXProduct = "SELECT * FROM orderxproduct WHERE orderID = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement orderStmt = conn.prepareStatement(query);
+             PreparedStatement orderXProductStmt = conn.prepareStatement(queryOrderXProduct)) {
+
+            // Récupérer la commande principale
+            orderStmt.setInt(1, orderId);
+            try (ResultSet rs = orderStmt.executeQuery()) {
+                if (rs.next()) {
+                    Order order = new Order();
+                    order.setOrderID(orderId);
+                    order.setClientID(rs.getInt("userID"));
+                    order.setStatusFromString(rs.getString("orderStatus"));
+                    order.setPurchaseDate(rs.getTimestamp("purchaseDate"));
+                    order.setDeliveryDate(rs.getTimestamp("deliveryDate"));
+
+                    // Récupérer les produits associés à la commande
+                    orderXProductStmt.setInt(1, orderId);
+                    try (ResultSet rsProducts = orderXProductStmt.executeQuery()) {
+                        while (rsProducts.next()) {
+                            int productId = rsProducts.getInt("productID");
+                            int quantity = rsProducts.getInt("quantity");
+                            double price = rsProducts.getDouble("priceAtPurchase");
+
+                            // Récupérer le produit et l'ajouter au panier de la commande
+                            Product product = DataSingleton.getInstance().getProductDAO().getProductById(productId);
+                            if (product != null) {
+                                order.addToFinalisedCart(product, quantity, price);
+                            }
+                        }
+                    }
+                    return order; // Retourner la commande trouvée
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Retourne null si la commande n'est pas trouvée
+    }
+
+    
+    /**
+     * Retrieves all orders from the database.
+     *
+     * @return A list of Order objects.
+     */
+    public List<Order> getAllOrders() {
+        List<Order> orders = new ArrayList<>();
+        String query = "SELECT * FROM `order`";
+        String queryOrderXProduct = "SELECT * FROM orderxproduct WHERE orderID = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement orderStmt = conn.prepareStatement(query);
+             PreparedStatement orderXProductStmt = conn.prepareStatement(queryOrderXProduct)) {
+
+            try (ResultSet rs = orderStmt.executeQuery()) {
+                while (rs.next()) {
+                    int orderId = rs.getInt("orderID");
+                    Order order = new Order();
+                    order.setOrderID(orderId);
+                    order.setClientID(rs.getInt("userID"));
+                    order.setStatusFromString(rs.getString("orderStatus"));
+                    order.setPurchaseDate(rs.getTimestamp("purchaseDate"));
+                    order.setDeliveryDate(rs.getTimestamp("deliveryDate"));
+
+                    // Retrieve products associated with the order
+                    orderXProductStmt.setInt(1, orderId);
+                    try (ResultSet rsProducts = orderXProductStmt.executeQuery()) {
+                        while (rsProducts.next()) {
+                            int productId = rsProducts.getInt("productID");
+                            int quantity = rsProducts.getInt("quantity");
+                            double price = rsProducts.getDouble("priceAtPurchase");
+
+                            // Fetch product and add to order's cart
+                            Product product = DataSingleton.getInstance().getProductDAO().getProductById(productId);
+                            if (product != null) {
+                                order.addToFinalisedCart(product, quantity, price);
+                            }
+                        }
+                    }
+
+                    // Add the order to the list
                     orders.add(order);
                 }
             }
@@ -152,252 +260,35 @@ public class OrderDAO {
         return orders;
     }
 
-    
-    
+    /**
+     * Updates an existing order and its associated products in the database.
+     * 
+     * @param order The order object to update.
+     * @return true if the order was updated successfully, false otherwise.
+     */
     public boolean updateOrder(Order order) {
-        String updateOrderQuery = "UPDATE `order` SET userID = ?, orderStatus = ? WHERE orderID = ?";
-        String deleteOrderXProductQuery = "DELETE FROM orderxproduct WHERE orderID = ?";
-        String insertOrderXProductQuery = "INSERT INTO orderxproduct (orderID, productID, quantity, priceAtPurchase) VALUES (?, ?, ?, ?)";
-
-        Connection conn = null;
-        PreparedStatement orderStmt = null;
-        PreparedStatement deleteOrderXProductStmt = null;
-        PreparedStatement orderXProductStmt = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false); // Démarrer une transaction
-
-            // 🔹 Étape 1 : Mettre à jour la commande
-            orderStmt = conn.prepareStatement(updateOrderQuery);
-            orderStmt.setInt(1, order.getClientID());
-            orderStmt.setString(2, order.getStatus().toString());
-            orderStmt.setInt(3, order.getOrderID()); // orderID à mettre à jour
-            
-
-            int affectedRows = orderStmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Aucune commande trouvée avec l'ID spécifié pour la mise à jour.");
-            }
-
-            // 🔹 Étape 2 : Supprimer les anciens produits dans `orderxproduct` (si nécessaires)
-            deleteOrderXProductStmt = conn.prepareStatement(deleteOrderXProductQuery);
-            deleteOrderXProductStmt.setInt(1, order.getOrderID()); // orderID à supprimer
-            deleteOrderXProductStmt.executeUpdate();
-
-            // 🔹 Étape 3 : Insérer les nouveaux produits dans `orderxproduct`
-            orderXProductStmt = conn.prepareStatement(insertOrderXProductQuery);
-
-            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
-                Product product = entry.getKey();
-                int quantity = entry.getValue().getQuantity();
-                double price = entry.getValue().getPriceAtPurchase();
-
-                orderXProductStmt.setInt(1, order.getOrderID()); // orderID
-                orderXProductStmt.setInt(2, product.getProductID()); // productID
-                orderXProductStmt.setInt(3, quantity); // quantity
-                orderXProductStmt.setDouble(4, price); // price
-                orderXProductStmt.addBatch();
-            }
-
-            orderXProductStmt.executeBatch(); // Exécuter toutes les requêtes `orderxproduct`
-            conn.commit(); // Valider la transaction
-            return true;
-
-        } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback(); // Annuler la transaction en cas d'erreur
-                } catch (SQLException rollbackEx) {
-                    rollbackEx.printStackTrace();
-                }
-            }
-            e.printStackTrace();
-            return false;
-
-        } finally {
-            // Fermer les ressources proprement
-            try {
-                if (orderStmt != null) orderStmt.close();
-                if (deleteOrderXProductStmt != null) deleteOrderXProductStmt.close();
-                if (orderXProductStmt != null) orderXProductStmt.close();
-                if (conn != null) conn.setAutoCommit(true); // Remettre l'auto-commit par défaut
-                if (conn != null) conn.close();
-            } catch (SQLException closeEx) {
-                closeEx.printStackTrace();
-            }
-        }
-    }
-    
-    /*
-    public Order getInProgressOrderByClientID(int clientID) {
-        String query = "SELECT * FROM `order` WHERE `userID` = ? AND `status` = 'In progress' LIMIT 1";
-        Order order = null;
-
+        String sql = "UPDATE `order` SET orderStatus = ?, deliveryDate = ? WHERE orderID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, clientID);  // On remplace le ? par le clientID
-            try (ResultSet rs = stmt.executeQuery()) {
-
-                if (rs.next()) {
-                    order = new Order();
-                    order.setOrderID(rs.getInt("orderID"));
-                    order.setClientID(rs.getInt("clientID"));
-                    order.setStatusFromString(rs.getString("status"));
-                    order.setPurchaseDate(rs.getTimestamp("purchaseDate"));
-                    order.setDeliveryDate(rs.getTimestamp("deliveryDate"));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return order;  // Retourne la commande ou null si elle n'existe pas
-    }
-    
-
-    public boolean updateOrCreateOrder(Order order) {
-        Connection conn = null;
-        try {
-            conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false); // Démarrer une transaction
-
-            if (orderExists(conn, order.getOrderID())) {
-                // Mise à jour de la commande et des produits dans le panier
-                if (updateOrder(conn, order) && updateOrderxProduct(conn, order)) {
-                    commitTransaction(conn);
-                    return true;
-                } else {
-                    rollbackTransaction(conn);
-                    return false;
-                }
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            // Mise à jour du statut
+            stmt.setString(1, order.getStatus().toString());
+            
+            // Mise à jour de la date de livraison
+            if (order.getDeliveryDate() != null) {
+                stmt.setTimestamp(2, order.getDeliveryDate());
             } else {
-                // Insertion de la commande et des produits dans le panier
-                if (insertOrder(conn, order) && insertOrderxProduct(conn, order)) {
-                    commitTransaction(conn);
-                    return true;
-                } else {
-                    rollbackTransaction(conn);
-                    return false;
-                }
+                stmt.setNull(2, java.sql.Types.TIMESTAMP);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if (conn != null) {
-                rollbackTransaction(conn);
-            }
-            return false;
-        } finally {
-            closeResources(conn);
-        }
-    }
-
-    private boolean orderExists(Connection conn, int orderID) throws SQLException {
-        String checkOrderQuery = "SELECT * FROM `order` WHERE `orderID` = ?";
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkOrderQuery)) {
-            checkStmt.setInt(1, orderID);
-            try (ResultSet rs = checkStmt.executeQuery()) {
-                return rs.next(); // Retourne vrai si la commande existe
-            }
-        }
-    }
-
-    private boolean updateOrder(Connection conn, Order order) throws SQLException {
-        String updateOrderQuery = "UPDATE `order` SET clientID = ?, status = ?, purchaseDate = ?, deliveryDate = ? WHERE orderID = ?";
-        try (PreparedStatement updateStmt = conn.prepareStatement(updateOrderQuery)) {
-            updateStmt.setInt(1, order.getClientID());
-            updateStmt.setString(2, order.getStatus().toString());
-            updateStmt.setTimestamp(3, order.getPurchaseDate());
-            updateStmt.setTimestamp(4, order.getDeliveryDate());
-            updateStmt.setInt(5, order.getOrderID());
-            int affectedRows = updateStmt.executeUpdate();
+            
+            stmt.setInt(3, order.getOrderID());
+            
+            int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
-        }
-    }
-
-    private boolean updateOrderxProduct(Connection conn, Order order) throws SQLException {
-        // Supprimer les anciennes lignes dans orderxproduct pour cette commande
-        String deleteOrderxProductQuery = "DELETE FROM `orderxproduct` WHERE `orderID` = ?";
-        try (PreparedStatement deleteStmt = conn.prepareStatement(deleteOrderxProductQuery)) {
-            deleteStmt.setInt(1, order.getOrderID());
-            deleteStmt.executeUpdate();
-        }
-
-        // Ajouter les nouvelles lignes dans orderxproduct
-        String insertOrderxProductQuery = "INSERT INTO `orderxproduct` (orderID, productID, quantity) VALUES (?, ?, ?)";
-        try (PreparedStatement insertProductStmt = conn.prepareStatement(insertOrderxProductQuery)) {
-            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
-                insertProductStmt.setInt(1, order.getOrderID());
-                insertProductStmt.setInt(2, entry.getKey().getProductID());
-                insertProductStmt.setInt(3, entry.getValue().getQuantity());
-                insertProductStmt.setDouble(4, entry.getValue().getPriceAtPurchase());
-                insertProductStmt.addBatch();
-                
-            }
-            insertProductStmt.executeBatch();
-            return true;
-        }
-    }
-
-    private boolean insertOrder(Connection conn, Order order) throws SQLException {
-        String insertOrderQuery = "INSERT INTO `order` (clientID, status, purchaseDate, deliveryDate) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement insertStmt = conn.prepareStatement(insertOrderQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            insertStmt.setInt(1, order.getClientID());
-            insertStmt.setString(2, order.getStatus().toString());
-            insertStmt.setTimestamp(3, order.getPurchaseDate());
-            insertStmt.setTimestamp(4, order.getDeliveryDate());
-            int affectedRows = insertStmt.executeUpdate();
-
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = insertStmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        order.setOrderID(generatedKeys.getInt(1)); // Set the generated orderID
-                        return true;
-                    }
-                }
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
-
-    private boolean insertOrderxProduct(Connection conn, Order order) throws SQLException {
-        String insertOrderxProductQuery = "INSERT INTO `orderxproduct` (orderID, productID, quantity) VALUES (?, ?, ?)";
-        try (PreparedStatement insertProductStmt = conn.prepareStatement(insertOrderxProductQuery)) {
-            for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
-                insertProductStmt.setInt(1, order.getOrderID());
-                insertProductStmt.setInt(2, entry.getKey().getProductID());
-                insertProductStmt.setInt(3, entry.getValue().getQuantity());
-                insertProductStmt.setDouble(4, entry.getValue().getPriceAtPurchase());
-                insertProductStmt.addBatch();
-            }
-            insertProductStmt.executeBatch();
-            return true;
-        }
-    }
-
-    private void commitTransaction(Connection conn) throws SQLException {
-        conn.commit(); // Valider la transaction
-    }
-
-    private void rollbackTransaction(Connection conn) {
-        try {
-            conn.rollback(); // Annuler la transaction
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void closeResources(Connection conn) {
-        try {
-            if (conn != null) conn.setAutoCommit(true); // Remettre l'auto-commit par défaut
-            if (conn != null) conn.close();
-        } catch (SQLException closeEx) {
-            closeEx.printStackTrace();
-        }
-    }*/
-
-
 
 }

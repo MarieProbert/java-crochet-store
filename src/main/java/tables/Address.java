@@ -1,46 +1,67 @@
 package tables;
 
+/**
+ * Represents an address associated with a user.
+ */
 public class Address {
 
     private int id;
-
     private String street;
     private String city;
     private String postCode;
     private String country;
-
     private User user;
-    
-    
+
+    /**
+     * Default constructor initializing all fields to null.
+     */
     public Address() {
-    	street = null;
-    	city = null;
-    	postCode = null;
-    	country = null;
+        street = null;
+        city = null;
+        postCode = null;
+        country = null;
     }
-    
+
+    /**
+     * Constructor to create an address with the provided values.
+     * 
+     * @param street The street address.
+     * @param city The city of the address.
+     * @param postCode The postal code of the address.
+     * @param country The country of the address.
+     * @param user The user associated with the address.
+     */
     public Address(String street, String city, String postCode, String country, User user) {
-    	this.street = street;
-    	this.city = city;
-    	this.postCode = postCode;
-    	this.country = country;
-    	this.user = user;
+        this.street = street;
+        this.city = city;
+        this.postCode = postCode;
+        this.country = country;
+        this.user = user;
     }
-    
+
+    /**
+     * Constructor to create an address with the provided ID and values.
+     * 
+     * @param id The ID of the address.
+     * @param street The street address.
+     * @param city The city of the address.
+     * @param postCode The postal code of the address.
+     * @param country The country of the address.
+     * @param user The user associated with the address.
+     */
     public Address(int id, String street, String city, String postCode, String country, User user) {
-    	this.id = id;
-    	this.street = street;
-    	this.city = city;
-    	this.postCode = postCode;
-    	this.country = country;
-    	this.user = user;
+        this.id = id;
+        this.street = street;
+        this.city = city;
+        this.postCode = postCode;
+        this.country = country;
+        this.user = user;
     }
 
-
-	/**
+    /**
      * Returns the client's street address.
      *
-     * @return The client's street address.
+     * @return The street address.
      */
     public String getStreet() {
         return street;
@@ -49,7 +70,7 @@ public class Address {
     /**
      * Sets the client's street address.
      *
-     * @param street The new street address for the client.
+     * @param street The new street address.
      */
     public void setStreet(String street) {
         this.street = street;
@@ -58,7 +79,7 @@ public class Address {
     /**
      * Returns the client's city.
      *
-     * @return The client's city.
+     * @return The city.
      */
     public String getCity() {
         return city;
@@ -67,7 +88,7 @@ public class Address {
     /**
      * Sets the client's city.
      *
-     * @param city The new city for the client.
+     * @param city The new city.
      */
     public void setCity(String city) {
         this.city = city;
@@ -76,7 +97,7 @@ public class Address {
     /**
      * Returns the client's postal code.
      *
-     * @return The client's postal code.
+     * @return The postal code.
      */
     public String getPostCode() {
         return postCode;
@@ -85,7 +106,7 @@ public class Address {
     /**
      * Sets the client's postal code.
      *
-     * @param postCode The new postal code for the client.
+     * @param postCode The new postal code.
      */
     public void setPostCode(String postCode) {
         this.postCode = postCode;
@@ -94,7 +115,7 @@ public class Address {
     /**
      * Returns the client's country.
      *
-     * @return The client's country.
+     * @return The country.
      */
     public String getCountry() {
         return country;
@@ -103,27 +124,45 @@ public class Address {
     /**
      * Sets the client's country.
      *
-     * @param country The new country for the client.
+     * @param country The new country.
      */
     public void setCountry(String country) {
         this.country = country;
     }
 
-	public int getId() {
-		return id;
-	}
+    /**
+     * Returns the ID of the address.
+     *
+     * @return The ID of the address.
+     */
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * Sets the ID of the address.
+     *
+     * @param id The new ID for the address.
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public User getUser() {
-		return user;
-	}
+    /**
+     * Returns the user associated with the address.
+     *
+     * @return The associated user.
+     */
+    public User getUser() {
+        return user;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
-    
-    
+    /**
+     * Sets the user associated with the address.
+     *
+     * @param user The new user.
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

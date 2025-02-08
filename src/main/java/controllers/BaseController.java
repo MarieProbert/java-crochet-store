@@ -33,6 +33,7 @@ public class BaseController {
     protected VBox tooltipBox; 
 
     protected PauseTransition hideTooltipDelay;
+    protected boolean needToClearCart = false;
     
     public void initialize() {
         bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
@@ -180,55 +181,85 @@ public class BaseController {
 
     }
     
-    @FXML
-    protected void handleAccount() {
-    	String sceneToShow;
+ // BaseController
+    protected void conditionalClearCart() {
+        // Si on est sur la page ValidOrder, on vide le panier
+        if (needToClearCart) {
+        	needToClearCart = false;
+            UserSession.getInstance().setOrder(new Order());
+        }
+    }
 
-    	if (UserSession.getInstance().getUser().getId() != -1) {
-    	    if ("admin".equals(UserSession.getInstance().getUser().getRole())) {
-    	        sceneToShow = "AdminAccount";
-    	    } else {
-    	        sceneToShow = "ClientAccount";
-    	    }
-    	} else {
-    	    sceneToShow = "Login";
-    	}
-        
+    
+    protected void handleAccount() {
+        String sceneToShow;
+
+        // Appeler conditionalClearCart uniquement si on est sur la page ValidOrder
+        conditionalClearCart();
+
+        if (UserSession.getInstance().getUser().getId() != -1) {
+            if ("admin".equals(UserSession.getInstance().getUser().getRole())) {
+                sceneToShow = "AdminAccount";
+            } else {
+                sceneToShow = "ClientAccount";
+            }
+        } else {
+            sceneToShow = "Login";
+        }
+
         try {
             SceneManager.getInstance().showScene(sceneToShow);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     
-	@FXML
-	public void handleCatalog() {
-    	try {
+    @FXML
+    public void handleCatalog() {
+        // Appeler conditionalClearCart uniquement si on est sur la page ValidOrder
+        conditionalClearCart();
+
+        try {
             SceneManager.getInstance().showScene("Catalog");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
-	}
+    }
+
 
     
 	protected void handleLogout() {
-		// Au logout on devient guest. Le panier est enregistré dans la bdd
-		//System.out.println(UserSession.getInstance().getUser().getId());
-		//DataSingleton.getInstance().getOrderDAO().updateOrCreateOrder(UserSession.getInstance().getOrder());
 		UserSession.getInstance().setOrder(new Order());
 		UserSession.getInstance().setUser(new User());
 		
 		handleCatalog();
 	}
 	
-	protected void handlePastOrders() {
+	@FXML
+	public void handlePastOrders() {
+	    // Appeler conditionalClearCart uniquement si on est sur la page ValidOrder
+	    conditionalClearCart();
+
+	    try {
+	        SceneManager.getInstance().showScene("OrderHistory");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+    
+    @FXML
+    public void handleReturnMenu() {
     	try {
-            SceneManager.getInstance().showScene("OrderHistory");
+            SceneManager.getInstance().showScene("MenuAdmin");
+
+            
         } catch (Exception e) {
+        	System.out.println("erreur");
             e.printStackTrace();
         }
-	}
-    
+
+    }
 }
 

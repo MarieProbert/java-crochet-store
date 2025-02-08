@@ -1,110 +1,177 @@
 package controllers;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import enums.Status;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import tables.Invoice;
 import tables.Order;
+import tables.User;
 import util.DataSingleton;
 import util.InvoicePDFGenerator;
 import util.SceneManager;
-import util.UserSession;
 
 public class AdminOrderController extends BaseController {
 
-    @FXML
+    @javafx.fxml.FXML
     private GridPane orderGrid;
 
-    @FXML
+    @javafx.fxml.FXML
     public void initialize() {
-        super.initialize(); // Si BaseController fait d'autres initialisations
+        super.initialize();
         displayOrders();
     }
     
     private void displayOrders() {
-        // Récupérer toutes les commandes. (Adapter selon ton DAO)
+        // Récupérer toutes les commandes
         List<Order> orders = DataSingleton.getInstance().getOrderDAO().getAllOrders();
 
-        orderGrid.getChildren().clear(); // Nettoyer d'éventuelles lignes précédentes
+        orderGrid.getChildren().clear();
         int rowIndex = 0;
         
-        // Pour chaque commande, créer une ligne d'affichage
         for (Order order : orders) {
-            // Créer un conteneur horizontal pour une ligne
+            // ===== Ligne principale d'affichage =====
             HBox rowBox = new HBox(10);
             rowBox.setPadding(new Insets(5));
             
-            // Créer les labels pour orderID, userID, purchaseDate et deliveryDate
             Label orderIdLabel = new Label("Order ID: " + order.getOrderID());
             Label userIdLabel = new Label("User ID: " + order.getClientID());
             Label purchaseDateLabel = new Label("Purchase: " + order.getPurchaseDate().toString());
-            Label deliveryDateLabel = new Label("Delivery: " + 
-                    (order.getDeliveryDate() != null ? order.getDeliveryDate().toString() : "N/A"));
             
-            // Créer un ComboBox pour le status avec les 3 choix possibles
+            // Affichage en lecture seule de la delivery date
+            String deliveryText = (order.getDeliveryDate() != null) 
+                    ? order.getDeliveryDate().toString() 
+                    : "N/A";
+            Label deliveryDateLabel = new Label("Delivery: " + deliveryText);
+            
+            // ComboBox pour choisir le status
             ComboBox<Status> statusCombo = new ComboBox<>();
             statusCombo.getItems().addAll(Status.INPROGRESS, Status.CONFIRMED, Status.DELIVERED);
             statusCombo.setValue(order.getStatus());
             
-            // Lorsqu'on modifie le status, mettre à jour l'objet order
-            statusCombo.valueProperty().addListener(new ChangeListener<Status>() {
-                @Override
-                public void changed(ObservableValue<? extends Status> observable, Status oldValue, Status newValue) {
-                    order.setStatus(newValue);
-                    // Optionnel : mettre à jour la base de données via DAO
-                }
-            });
-            
-            // Ajouter ces éléments dans la ligne
             rowBox.getChildren().addAll(orderIdLabel, userIdLabel, purchaseDateLabel, deliveryDateLabel, statusCombo);
             
-            // Espace flexible pour pousser les boutons à droite
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
             rowBox.getChildren().add(spacer);
             
-            // Si le status est Confirmed ou Delivered, ajouter les boutons
-            if (order.getStatus() == Status.CONFIRMED || order.getStatus() == Status.DELIVERED) {
-                // Bouton pour générer la facture
+            // Bouton "Generate Invoice" (si le status n'est pas INPROGRESS)
+            if (order.getStatus() != Status.INPROGRESS) {
                 Button generateInvoiceBtn = new Button("Generate Invoice");
                 generateInvoiceBtn.setOnAction(e -> {
-                    // Exemple d'appel à la méthode de génération de PDF
-                    // On passe ici la commande et d'autres infos nécessaires (exemple simplifié)
-            		Stage stage = SceneManager.getInstance().getStage();
-
-            	    try {
-            	    	InvoicePDFGenerator.generateInvoicePDF(stage, UserSession.getInstance().getUser(), UserSession.getInstance().getOrder(), UserSession.getInstance().getInvoice());
-            	    } catch (Exception ex) {
-            	        ex.printStackTrace();
-            	    }
+                    Stage stage = SceneManager.getInstance().getStage();
+                    User user = DataSingleton.getInstance().getUserDAO().getUserById(order.getClientID());
+                    Invoice invoice = DataSingleton.getInstance().getInvoiceDAO().getOrCreateInvoiceByOrderId(order.getOrderID());
+                    try {
+                        InvoicePDFGenerator.generateInvoicePDF(stage, user, order, invoice);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 });
-                
-
-                
-                // Bouton pour supprimer la facture (ou l'annuler)
-                Button deleteInvoiceBtn = new Button("Delete Invoice");
-                deleteInvoiceBtn.setOnAction(e -> {
-                    // Exemple de suppression de facture via DAO
-                    // DataSingleton.getInstance().getInvoiceDAO().deleteInvoiceByOrderId(order.getOrderID());
-                    System.out.println("Delete invoice for Order ID: " + order.getOrderID());
-                });
-                
-                rowBox.getChildren().addAll(generateInvoiceBtn, deleteInvoiceBtn);
+                rowBox.getChildren().add(generateInvoiceBtn);
             }
             
-            // Ajouter la ligne dans la GridPane à la colonne 0, ligne rowIndex
+            // Bouton "Delete Invoice" (si une facture existe déjà)
+            Invoice existingInvoice = DataSingleton.getInstance().getInvoiceDAO().getInvoiceByOrderId(order.getOrderID());
+            System.out.println(existingInvoice);
+            if (existingInvoice != null) { 
+                Button deleteInvoiceBtn = new Button("Delete Invoice");
+                deleteInvoiceBtn.setOnAction(e -> {
+                    boolean deleted = DataSingleton.getInstance().getInvoiceDAO().deleteInvoiceByOrderID(order.getOrderID());
+                    if (deleted) {
+                        System.out.println("Deleted invoice for Order ID: " + order.getOrderID());
+                        displayOrders();
+                    } else {
+                        System.out.println("Failed to delete invoice for Order ID: " + order.getOrderID());
+                    }
+                });
+                rowBox.getChildren().add(deleteInvoiceBtn);
+            }
+            
             orderGrid.add(rowBox, 0, rowIndex++);
+            
+            // ===== Ligne "Save modifications" =====
+            HBox saveBox = new HBox(10);
+            saveBox.setPadding(new Insets(5, 5, 15, 5));
+            Button saveBtn = new Button("Save modifications");
+            saveBtn.setOnAction(e -> {
+                Status newStatus = statusCombo.getValue();
+                // Si le nouveau status est DELIVERED, on ouvre la fenêtre de dialogue
+                if (newStatus == Status.DELIVERED) {
+                    Stage dialogStage = new Stage();
+                    dialogStage.setTitle("Update Delivery Date");
+                    
+                    HBox dialogBox = new HBox(10);
+                    dialogBox.setPadding(new Insets(10));
+                    Label promptLabel = new Label("Select new delivery date (optional):");
+                    DatePicker datePicker = new DatePicker();
+                    // Pré-remplir avec la date existante (si présente)
+                    if (order.getDeliveryDate() != null) {
+                        LocalDate existingDate = order.getDeliveryDate().toLocalDateTime().toLocalDate();
+                        datePicker.setValue(existingDate);
+                    }
+                    Button okBtn = new Button("OK");
+                    Button cancelBtn = new Button("Cancel");
+                    dialogBox.getChildren().addAll(promptLabel, datePicker, okBtn, cancelBtn);
+                    
+                    Scene dialogScene = new Scene(dialogBox);
+                    dialogStage.setScene(dialogScene);
+                    
+                    okBtn.setOnAction(ev -> {
+                        // Si une nouvelle date est sélectionnée, mettre à jour l'objet order
+                        if (datePicker.getValue() != null) {
+                            LocalDateTime ldt = datePicker.getValue().atTime(12, 0); // heure fixe
+                            Timestamp ts = Timestamp.valueOf(ldt);
+                            System.out.println(ts.toString());
+                            order.setDeliveryDate(ts);
+                            System.out.println(order.getDeliveryDate().toString());
+                        }
+                        order.setStatus(newStatus);
+                        // Mise à jour unique via le DAO pour le status et la date (éventuelle)
+                        boolean updated = DataSingleton.getInstance().getOrderDAO().updateOrder(order);
+                        if (updated) {
+                            System.out.println("Order updated: " + order.getOrderID());
+                        } else {
+                            System.out.println("Failed to update order: " + order.getOrderID());
+                        }
+                        dialogStage.close();
+                        displayOrders();
+                    });
+                    
+                    cancelBtn.setOnAction(ev -> {
+                        dialogStage.close();
+                        displayOrders();
+                    });
+                    
+                    dialogStage.showAndWait();
+                } else {
+                    // Si le status est autre que DELIVERED, mise à jour immédiate via le DAO
+                    order.setStatus(newStatus);
+                    boolean updated = DataSingleton.getInstance().getOrderDAO().updateOrder(order);
+                    if (updated) {
+                        System.out.println("Order updated: " + order.getOrderID());
+                    } else {
+                        System.out.println("Failed to update order: " + order.getOrderID());
+                    }
+                    displayOrders();
+                }
+            });
+            saveBox.getChildren().add(saveBtn);
+            
+            orderGrid.add(saveBox, 0, rowIndex++);
         }
     }
 }
