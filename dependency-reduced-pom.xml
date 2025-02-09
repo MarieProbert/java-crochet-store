@@ -5,6 +5,7 @@
   <artifactId>projet-java</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>
+    <finalName>marie-probert</finalName>
     <plugins>
       <plugin>
         <groupId>org.openjfx</groupId>

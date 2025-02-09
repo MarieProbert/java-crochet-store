@@ -58,9 +58,12 @@
 
     
 <build>
+	<finalName>marie-probert</finalName> <!-- Nom du JAR -->
+	
     <plugins>
         <!-- Plugin JavaFX (gardé pour la compilation) -->
         <plugin>
+        
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-maven-plugin</artifactId>
             <version>0.0.8</version>
