@@ -1,8 +1,8 @@
 # Projet Gestion de Vente de produit(s)
 ## Description
-Ce projet est une application JavaFX qui permet de vendre des produits fais en crochet. Il utilise JavaFX 23.0.1 pour l'interface graphique et Maven pour la gestion des dépendances.
+Ce projet est une application JavaFX qui permet de vendre des produits crochetés. Il utilise JavaFX 23.0.1 pour l'interface graphique et Maven pour la gestion des dépendances.
 
-##Auteur
+## Auteur
 [Marie Probert] - [marie.probert@dauphine.eu]
 
 ## Prérequis
@@ -19,7 +19,7 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
 2. Accédez au dossier du projet :
 `cd java-crochet-store`
 
-##Compilation
+## Compilation
 
 Pour compiler le projet, exécutez la commande suivante :
 `mvn clean package`
@@ -28,7 +28,7 @@ Cette commande va :
 Nettoyer le projet (clean).
 Compiler le code source et générer un fichier JAR dans le dossier target.
 
-##Exécution
+## Exécution
 Pour exécuter l'application, utilisez la commande suivante :
 
 `java --module-path "chemin/vers/javafx-sdk-23.0.1/lib" --add-modules javafx.controls,javafx.fxml -jar target/marie-probert.jar`
