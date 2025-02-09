@@ -3,6 +3,7 @@ package controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import enums.Category;
 import enums.Color;
@@ -137,20 +138,103 @@ public class CatalogController extends BaseController {
         // Update display (pagination and grid)
         updateGrid();
     }
+    
 
     /**
-     * Performs the product search based on the entered search text, price filters, and selected category, theme, size, and color.
-     * 
-     * @param searchText the search text entered by the user
-     * @return a list of products that match the search criteria
+     * Classe interne pour analyser la chaîne de recherche en respectant la priorité des opérateurs.
+     */
+    private class QueryParser {
+        private String[] tokens;
+        private int index;
+
+        public QueryParser(String input) {
+            // On ajoute des espaces autour des parenthèses pour que le découpage se fasse correctement.
+            input = input.replace("(", " ( ").replace(")", " ) ");
+            tokens = input.trim().split("\\s+");
+            index = 0;
+        }
+
+        /**
+         * Analyse l'expression complète et renvoie le prédicat correspondant.
+         */
+        public Predicate<Product> parse() throws Exception {
+            Predicate<Product> result = parseExpression();
+            if (index < tokens.length) {
+                throw new Exception("Token non consommé : " + tokens[index]);
+            }
+            return result;
+        }
+
+        /**
+         * Expression : Term { "or" Term }
+         */
+        private Predicate<Product> parseExpression() throws Exception {
+            Predicate<Product> term = parseTerm();
+            while (index < tokens.length && tokens[index].equals("or")) {
+                index++; // consomme le token "or"
+                Predicate<Product> nextTerm = parseTerm();
+                term = term.or(nextTerm);
+            }
+            return term;
+        }
+
+        /**
+         * Term : Factor { "and" Factor }
+         */
+        private Predicate<Product> parseTerm() throws Exception {
+            Predicate<Product> factor = parseFactor();
+            while (index < tokens.length && tokens[index].equals("and")) {
+                index++; // consomme le token "and"
+                Predicate<Product> nextFactor = parseFactor();
+                factor = factor.and(nextFactor);
+            }
+            return factor;
+        }
+
+        /**
+         * Factor : ( Expression ) | keyword
+         */
+        private Predicate<Product> parseFactor() throws Exception {
+            if (index >= tokens.length) {
+                throw new Exception("Requête incomplète");
+            }
+            String token = tokens[index];
+            if (token.equals("(")) {
+                index++; // consomme "("
+                Predicate<Product> expr = parseExpression();
+                if (index >= tokens.length || !tokens[index].equals(")")) {
+                    throw new Exception("Parenthèse fermante attendue");
+                }
+                index++; // consomme ")"
+                return expr;
+            } else {
+                // Considère le token comme un mot-clé
+                index++; // consomme le mot-clé
+                return productMatches(token);
+            }
+        }
+
+        /**
+         * Renvoie un prédicat qui teste si un produit contient le mot-clé dans l'un de ses champs textuels.
+         */
+        private Predicate<Product> productMatches(String keyword) {
+            return p -> p.getCreator().toLowerCase().contains(keyword)
+                      || p.getName().toLowerCase().contains(keyword)
+                      || p.getDescription().toLowerCase().contains(keyword);
+        }
+    }
+
+
+
+
+
+    /**
+     * Effectue la recherche en combinant la recherche textuelle avec les filtres (prix, catégorie, etc.).
      */
     private List<Product> searchProducts(String searchText) {
         List<Product> results = new ArrayList<>();
 
-        // Normalize search text (case insensitive)
-        String lowerSearch = (searchText == null ? "" : searchText.toLowerCase()).trim();
-
-        // Read price filters
+        // Lecture des filtres de prix
         double minPrice = -1, maxPrice = -1;
         if (!minPriceField.getText().trim().isEmpty()) {
             try {
@@ -166,80 +250,63 @@ public class CatalogController extends BaseController {
                 System.out.println("Invalid maximum price format.");
             }
         }
-
-        // Read ComboBox filters for category, theme, size, and color
+        
+        // Lecture des autres filtres (catégorie, thème, taille, couleur)
         Category selectedCategory = categoryComboBox.getValue();
         Theme selectedTheme = themeComboBox.getValue();
         Size selectedSize = sizeComboBox.getValue();
         Color selectedColor = colorComboBox.getValue();
 
-        // Detect logical operator in the query
-        boolean useAndOperator = lowerSearch.contains(" and ");
-        boolean useOrOperator = lowerSearch.contains(" or ");
-
-        // Split the query into keywords based on the operator
-        String[] keywords;
-        if (useAndOperator) {
-            keywords = lowerSearch.split(" and ");
-        } else if (useOrOperator) {
-            keywords = lowerSearch.split(" or ");
-        } else {
-            keywords = new String[]{lowerSearch}; // Simple search
+        // Construction du prédicat de recherche à partir de la chaîne saisie.
+        // Si la chaîne est vide, on considère que le filtre textuel est toujours vrai.
+        Predicate<Product> searchPredicate = p -> true;
+        String normalizedSearch = (searchText == null ? "" : searchText.trim());
+        if (!normalizedSearch.isEmpty()) {
+            try {
+                QueryParser parser = new QueryParser(normalizedSearch.toLowerCase());
+                searchPredicate = parser.parse();
+            } catch (Exception e) {
+                System.out.println("Erreur lors de l'analyse de la requête de recherche : " + e.getMessage());
+                // En cas d'erreur de parsing, on effectue une recherche simple par mot-clé
+                String query = normalizedSearch.toLowerCase();
+                searchPredicate = p -> p.getCreator().toLowerCase().contains(query)
+                                   || p.getName().toLowerCase().contains(query)
+                                   || p.getDescription().toLowerCase().contains(query);
+            }
         }
 
-        // Check all products in the catalog
+        // Parcourt tous les produits et applique les différents filtres
         for (Product p : DataSingleton.getInstance().getCatalog().getProducts()) {
-            boolean matchesSearch = false;
-            if (useAndOperator) {
-                matchesSearch = true;
-                for (String keyword : keywords) {
-                    if (!(p.getCreator().toLowerCase().contains(keyword) ||
-                          p.getName().toLowerCase().contains(keyword) ||
-                          p.getDescription().toLowerCase().contains(keyword))) {
-                        matchesSearch = false;
-                        break;
-                    }
-                }
-            } else if (useOrOperator) {
-                for (String keyword : keywords) {
-                    if (p.getCreator().toLowerCase().contains(keyword) ||
-                        p.getName().toLowerCase().contains(keyword) ||
-                        p.getDescription().toLowerCase().contains(keyword)) {
-                        matchesSearch = true;
-                        break;
-                    }
-                }
-            } else {
-                matchesSearch = lowerSearch.isEmpty() ||
-                    p.getCreator().toLowerCase().contains(lowerSearch) ||
-                    p.getName().toLowerCase().contains(lowerSearch) ||
-                    p.getDescription().toLowerCase().contains(lowerSearch);
+            // Vérification de la recherche textuelle
+            if (!searchPredicate.test(p)) {
+                continue;
             }
-
-            // Check price filter, if provided
-            boolean matchesPrice = true;
+            // Vérification des filtres de prix
             double price = p.getPrice();
             if (minPrice >= 0 && price < minPrice) {
-                matchesPrice = false;
+                continue;
             }
             if (maxPrice >= 0 && price > maxPrice) {
-                matchesPrice = false;
+                continue;
             }
-
-            // Check other filters (if selected)
-            boolean matchesCategory = (selectedCategory == null) || (p.getCategory() == selectedCategory);
-            boolean matchesTheme = (selectedTheme == null) || (p.getTheme() == selectedTheme);
-            boolean matchesSize = (selectedSize == null) || (p.getSize() == selectedSize);
-            boolean matchesColor = (selectedColor == null) || (p.getColor() == selectedColor);
-
-            // Product must match all criteria
-            if (matchesSearch && matchesPrice && matchesCategory && matchesTheme && matchesSize && matchesColor) {
-                results.add(p);
+            // Vérification des autres filtres
+            if (selectedCategory != null && p.getCategory() != selectedCategory) {
+                continue;
             }
+            if (selectedTheme != null && p.getTheme() != selectedTheme) {
+                continue;
+            }
+            if (selectedSize != null && p.getSize() != selectedSize) {
+                continue;
+            }
+            if (selectedColor != null && p.getColor() != selectedColor) {
+                continue;
+            }
+            results.add(p);
         }
         return results;
     }
-
+    
     /**
      * Updates the product grid and pagination.
      * The number of columns is calculated dynamically based on the window width.
@@ -332,3 +399,8 @@ public class CatalogController extends BaseController {
     }
     
 }
+
+
+
+
+

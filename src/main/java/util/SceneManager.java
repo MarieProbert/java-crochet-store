@@ -31,10 +31,10 @@ public class SceneManager {
         put("OrderHistory", "/views/OrderHistoryView.fxml");
         
         put("MenuAdmin", "/views/MenuAdminView.fxml");
-        put("AdminAccount", "/views/AdminAccountView.fxml"); // a arranger dans l'affichage
+        put("AdminAccount", "/views/AdminAccountView.fxml"); 
         put("AdminCatalog", "/views/AdminCatalogView.fxml"); // a arranger
         put("AdminClients", "/views/AdminClientsView.fxml");
-        put("AdminOrder", "/views/AdminOrderView.fxml"); // a faire
+        put("AdminOrder", "/views/AdminOrderView.fxml"); 
         
     }};
 

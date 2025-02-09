@@ -2,6 +2,8 @@ package util;
 
 import java.util.regex.Pattern;
 
+import tables.User;
+
 public class ValidationUtils {
 
     /**
@@ -128,6 +130,36 @@ public class ValidationUtils {
 
         return null; // No issues detected
     }
+    
+    
+    /**
+     * Verifies modifications, checking only the first name and last name.
+     * @param password the password to verify
+     * @param firstName The first name to verify.
+     * @param lastName The last name to verify.
+     * @return The error message if there's any issue, otherwise null if everything is valid.
+     */
+    public static String verifyModifications(String password, String firstName, String lastName) {
+        String[] errors = {
+            verifyFirstName(firstName),
+            verifyLastName(lastName),
+        };
+        
+        // Check the password only if it's provided
+        if (!password.isEmpty()) {
+            String passwordError = verifyPassword(password);
+            if (passwordError != null) return passwordError;
+        }
+        
+        // Check other errors
+        for (String error : errors) {
+            if (error != null) {
+                return error; // Returns the first error found
+            }
+        }
+
+        return null; // No issues detected
+    }
 
     /**
      * Verifies if the email is valid.
@@ -148,6 +180,14 @@ public class ValidationUtils {
         if (!m.matches()) {
             return "The email format is invalid!";
         }
+        
+        
+        //User user = DataSingleton.getInstance().getUserDAO().setUser(email); // Méthode qui récupère un utilisateur par son email
+        //if (user != null) {
+        //    return "This email address already exists!";
+        //}
+        
+        
         return null;
     }
 

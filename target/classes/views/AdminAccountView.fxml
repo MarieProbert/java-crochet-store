@@ -17,7 +17,7 @@
    
         <HBox alignment="BOTTOM_RIGHT">
         
-        	
+        <Button text="Return to menu" onAction="#handleReturnMenu"/>
         <!-- Icône de profil -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
