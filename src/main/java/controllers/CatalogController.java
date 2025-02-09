@@ -119,8 +119,9 @@ public class CatalogController extends BaseController {
      */
     @FXML
     private void handleSearch() {
+    	clearMessage();
+    	
         String searchText = searchField.getText().trim();
-        System.out.println("Searching for products by creator containing: " + searchText);
         
         // Perform search with all criteria
         List<Product> filteredProducts = searchProducts(searchText);
@@ -157,7 +158,8 @@ public class CatalogController extends BaseController {
         public Predicate<Product> parse() throws Exception {
             Predicate<Product> result = parseExpression();
             if (index < tokens.length) {
-                throw new Exception("Token non consommé : " + tokens[index]);
+            	showErrorMessage("Erreur de syntaxe : Token non consommé : " + tokens[index]);
+            	return null;
             }
             return result;
         }
@@ -193,14 +195,15 @@ public class CatalogController extends BaseController {
          */
         private Predicate<Product> parseFactor() throws Exception {
             if (index >= tokens.length) {
-                throw new Exception("Requête incomplète");
+                showErrorMessage("Requête incomplète");
             }
             String token = tokens[index];
             if (token.equals("(")) {
                 index++; // consomme "("
                 Predicate<Product> expr = parseExpression();
                 if (index >= tokens.length || !tokens[index].equals(")")) {
-                    throw new Exception("Parenthèse fermante attendue");
+                    showErrorMessage("Parenthèse fermante attendue");
+                    return null;
                 }
                 index++; // consomme ")"
                 return expr;
@@ -237,14 +240,14 @@ public class CatalogController extends BaseController {
             try {
                 minPrice = Double.parseDouble(minPriceField.getText().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid minimum price format.");
+                showErrorMessage("Invalid minimum price format.");
             }
         }
         if (!maxPriceField.getText().trim().isEmpty()) {
             try {
                 maxPrice = Double.parseDouble(maxPriceField.getText().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid maximum price format.");
+                showErrorMessage("Invalid maximum price format.");
             }
         }
         
@@ -262,7 +265,7 @@ public class CatalogController extends BaseController {
                 QueryParser parser = new QueryParser(normalizedSearch.toLowerCase());
                 searchPredicate = parser.parse();
             } catch (Exception e) {
-                System.out.println("Erreur lors de l'analyse de la requête de recherche : " + e.getMessage());
+                showErrorMessage("Erreur lors de l'analyse de la requête de recherche : " + e.getMessage());
                 // En cas d'erreur de parsing, on effectue une recherche simple par mot-clé
                 String query = normalizedSearch.toLowerCase();
                 searchPredicate = p -> p.getCreator().toLowerCase().contains(query)
@@ -383,8 +386,13 @@ public class CatalogController extends BaseController {
         // "Add to cart" button
         Button addToCartButton = new Button("Add to cart");
         addToCartButton.setOnAction(e -> {
-            UserSession.getInstance().getOrder().addToCart(product, 1);
-            System.out.println("Cart updated: " + UserSession.getInstance().getOrder().getCart().keySet());
+            boolean success = UserSession.getInstance().getOrder().addToCart(product, 1);
+            if (success) {
+            	showInfoMessage("Product added to cart");
+            }
+            else {
+            	showErrorMessage("Not enough stock");
+            }
         });
         vbox.getChildren().add(addToCartButton);
         

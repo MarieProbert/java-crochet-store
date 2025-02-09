@@ -5,34 +5,30 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Gère la connexion à la base de données MySQL pour l'application.
+ * Manages the connection to the MySQL database for the application.
  */
 public class DatabaseConnection {
 
-    // Détails de la connexion à la base de données
-    private static final String URL = "jdbc:mysql://localhost:3306/crochet_store"; // URL de la base de données
-    private static final String USER = "root"; // Nom d'utilisateur de la base de données
-    private static final String PASSWORD = "admin"; // Mot de passe de la base de données
+    private static final String URL = "jdbc:mysql://localhost:3306/crochet_store";
+    private static final String USER = "root";
+    private static final String PASSWORD = "admin";
 
-    // Constructeur privé pour empêcher l'instanciation
+    // Private constructor to prevent instantiation.
     private DatabaseConnection() {}
 
     /**
-     * Établit une connexion à la base de données.
-     * 
-     * @return La connexion établie à la base de données.
-     * @throws SQLException Si la connexion échoue.
+     * Establishes and returns a connection to the database.
+     *
+     * @return a Connection to the database
+     * @throws SQLException if a database access error occurs or the driver is not found
      */
     public static Connection getConnection() throws SQLException {
         try {
-            // Charger le driver JDBC pour MySQL
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Pour MySQL
+            Class.forName("com.mysql.cj.jdbc.Driver"); // Load the MySQL JDBC driver
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new SQLException("JDBC Driver non trouvé");
+            throw new SQLException("JDBC Driver not found");
         }
-
-        // Retourner la connexion à la base de données
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

@@ -21,7 +21,9 @@
         <!-- Icône de profil -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
-        </HBox>         
+        </HBox>  
+        
+        <Label fx:id="messageLabel" styleClass="message-label" />       
             
         </VBox>
               

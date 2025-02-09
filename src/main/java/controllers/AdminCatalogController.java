@@ -14,17 +14,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import tables.Product;
 import util.DataSingleton;
-
+//here
 public class AdminCatalogController extends BaseController {
     @FXML private GridPane productGrid;
     @FXML private TextField searchField;
@@ -37,7 +34,7 @@ public class AdminCatalogController extends BaseController {
     
     
     @FXML
-    public void handleAddProduct() {
+    private void handleAddProduct() {
         // Création d'une nouvelle fenêtre (popup)
         Stage popupStage = new Stage();
         popupStage.setTitle("Add Product");
@@ -173,7 +170,6 @@ public class AdminCatalogController extends BaseController {
             // Insertion du produit via le ProductDAO
             boolean inserted = DataSingleton.getInstance().getProductDAO().insertProduct(newProduct);
             if (inserted) {
-                System.out.println("Produit ajouté: " + newProduct.getName());
                 popupStage.close();
                 afficherProduits(); // Rafraîchissement de l'affichage
             } else {
@@ -252,12 +248,7 @@ public class AdminCatalogController extends BaseController {
                     return;
                 }
                 product.setStock(product.getStock() + quantityToAdd);
-                boolean updated = DataSingleton.getInstance().getProductDAO().updateProduct(product);
-                if (updated) {
-                    System.out.println("Stock updated for product " + product.getProductID());
-                } else {
-                    System.out.println("Failed to update stock for product " + product.getProductID());
-                }
+                DataSingleton.getInstance().getProductDAO().updateProduct(product);
                 popupStage.close();
                 afficherProduits();
             } catch (NumberFormatException ex) {
@@ -371,7 +362,6 @@ public class AdminCatalogController extends BaseController {
             
             boolean updated = DataSingleton.getInstance().getProductDAO().updateProduct(product);
             if (updated) {
-                System.out.println("Product updated: " + product.getProductID());
                 popupStage.close();
                 afficherProduits();
             } else {

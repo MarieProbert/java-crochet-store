@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import enums.Status;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,16 +27,18 @@ import util.SceneManager;
 
 public class AdminOrderController extends BaseController {
 
-    @javafx.fxml.FXML
+    @FXML
     private GridPane orderGrid;
 
-    @javafx.fxml.FXML
+    @FXML
     public void initialize() {
         super.initialize();
         displayOrders();
     }
     
     private void displayOrders() {
+    	clearMessage();
+    	
         // Récupérer toutes les commandes
         List<Order> orders = DataSingleton.getInstance().getOrderDAO().getAllOrders();
 
@@ -78,7 +81,7 @@ public class AdminOrderController extends BaseController {
                     try {
                         InvoicePDFGenerator.generateInvoicePDF(stage, user, order, invoice);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                    	showErrorMessage("Error : Failed to generate the invoice.");
                     }
                 });
                 rowBox.getChildren().add(generateInvoiceBtn);
@@ -86,16 +89,14 @@ public class AdminOrderController extends BaseController {
             
             // Bouton "Delete Invoice" (si une facture existe déjà)
             Invoice existingInvoice = DataSingleton.getInstance().getInvoiceDAO().getInvoiceByOrderId(order.getOrderID());
-            System.out.println(existingInvoice);
             if (existingInvoice != null) { 
                 Button deleteInvoiceBtn = new Button("Delete Invoice");
                 deleteInvoiceBtn.setOnAction(e -> {
                     boolean deleted = DataSingleton.getInstance().getInvoiceDAO().deleteInvoiceByOrderID(order.getOrderID());
                     if (deleted) {
-                        System.out.println("Deleted invoice for Order ID: " + order.getOrderID());
                         displayOrders();
                     } else {
-                        System.out.println("Failed to delete invoice for Order ID: " + order.getOrderID());
+                        showErrorMessage("Failed to delete invoice for Order ID: " + order.getOrderID());
                     }
                 });
                 rowBox.getChildren().add(deleteInvoiceBtn);
@@ -141,12 +142,7 @@ public class AdminOrderController extends BaseController {
                         }
                         order.setStatus(newStatus);
                         // Mise à jour unique via le DAO pour le status et la date (éventuelle)
-                        boolean updated = DataSingleton.getInstance().getOrderDAO().updateOrder(order);
-                        if (updated) {
-                            System.out.println("Order updated: " + order.getOrderID());
-                        } else {
-                            System.out.println("Failed to update order: " + order.getOrderID());
-                        }
+                        DataSingleton.getInstance().getOrderDAO().updateOrder(order);
                         dialogStage.close();
                         displayOrders();
                     });
@@ -160,12 +156,7 @@ public class AdminOrderController extends BaseController {
                 } else {
                     // Si le status est autre que DELIVERED, mise à jour immédiate via le DAO
                     order.setStatus(newStatus);
-                    boolean updated = DataSingleton.getInstance().getOrderDAO().updateOrder(order);
-                    if (updated) {
-                        System.out.println("Order updated: " + order.getOrderID());
-                    } else {
-                        System.out.println("Failed to update order: " + order.getOrderID());
-                    }
+                    DataSingleton.getInstance().getOrderDAO().updateOrder(order);
                     displayOrders();
                 }
             });

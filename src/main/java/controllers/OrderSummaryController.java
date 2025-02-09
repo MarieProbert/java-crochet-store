@@ -31,7 +31,6 @@ public class OrderSummaryController extends BaseController {
     @FXML private TextField cityField;
     @FXML private TextField postCodeField;
     @FXML private TextField countryField;
-    @FXML private Label errorLabel;
     
     private User user;
     
@@ -46,21 +45,11 @@ public class OrderSummaryController extends BaseController {
         firstNameField.setText(user.getFirstName());
         lastNameField.setText(user.getLastName());
 
-        System.out.println(user.getRole());
-        // Si l'utilisateur est un client, on récupère et affiche son adresse
-        if ("client".equalsIgnoreCase(user.getRole())) {
-            streetField.setText(user.getAddress().getStreet());
-            cityField.setText(user.getAddress().getCity());
-            postCodeField.setText(String.valueOf(user.getAddress().getPostCode()));
-            countryField.setText(user.getAddress().getCountry());
-        } else {
-            // Si l'utilisateur n'est pas un client, on ne remplit pas ces champs
-            streetField.setText("");
-            cityField.setText("");
-            postCodeField.setText("");
-            countryField.setText("");
-        }
-        
+        streetField.setText(user.getAddress().getStreet());
+        cityField.setText(user.getAddress().getCity());
+        postCodeField.setText(String.valueOf(user.getAddress().getPostCode()));
+        countryField.setText(user.getAddress().getCountry());
+
         displayItems();
     }
     
@@ -68,9 +57,7 @@ public class OrderSummaryController extends BaseController {
     	productGrid.getChildren().clear();
     	totalprice = 0;
         int i = 0;
-
-        System.out.println("GridPane children count: " + productGrid.getChildren().size());
-        System.out.println(UserSession.getInstance().getOrder().getCart().keySet());
+        
         for (Product p : UserSession.getInstance().getOrder().getCart().keySet()) {
 
             // Load the product image
@@ -111,7 +98,7 @@ public class OrderSummaryController extends BaseController {
 
     
     @FXML
-    public void handleCheckout() {
+    private void handleCheckout() {
     	
  	    String firstName = firstNameField.getText();
  	    String lastName = lastNameField.getText();
@@ -125,30 +112,21 @@ public class OrderSummaryController extends BaseController {
 
  	    // Si une erreur est détectée, on l'affiche et on arrête l'exécution
  	    if (errorMessage != null) {
- 	        errorLabel.setText(errorMessage);
+ 	        showErrorMessage(errorMessage);
  	        return;
  	    }
-
- 	    // Effacer le message d'erreur si tout est valide
- 	    errorLabel.setText("");
-
+ 	    
  	    // --- Mise à jour des informations du client ---
  	    user.setFirstName(firstName);
  	    user.setLastName(lastName);
  	    
-        // Si l'utilisateur est un client, on met aussi à jour son adresse
-        if ("client".equalsIgnoreCase(user.getRole())) {
+        // Mise à jour de l'adresse
+        user.getAddress().setStreet(street);
+        user.getAddress().setCity(city);
+        user.getAddress().setPostCode(postCode);
 
-            // Mise à jour de l'adresse
-            user.getAddress().setStreet(street);
-            user.getAddress().setCity(city);
-            user.getAddress().setPostCode(postCode);
-            user.getAddress().setCountry(country);
-
-
-        }
  	
- 	// --- Mise à jour des informations du client et de la commande ---
+        // --- Mise à jour des informations du client et de la commande ---
  	   boolean updateSuccess = true;  // Variable pour suivre le succès global
 
  	   UserSession.getInstance().getOrder().setStatusFromString("Confirmed");
@@ -161,7 +139,6 @@ public class OrderSummaryController extends BaseController {
 
  	   // Vérification de succès
  	   if (updateSuccess && orderID != -1) {
- 	       System.out.println("Les modifications du Client et de la commande ont été enregistrées avec succès !");
  	      UserSession.getInstance().getOrder().setOrderID(orderID);
 
  	      Invoice invoice = new Invoice(UserSession.getInstance().getOrder().getOrderID(), UserSession.getInstance().getOrder().getClientID(), UserSession.getInstance().getOrder().getPurchaseDate(), UserSession.getInstance().getOrder().calculateCartTotal());
@@ -174,11 +151,11 @@ public class OrderSummaryController extends BaseController {
  	       try {
  	           SceneManager.getInstance().showScene("ValidOrder");
  	       } catch (Exception e) {
- 	           e.printStackTrace();
+ 	           showErrorMessage("Error : there was an issue loading the next scene.");
  	       }
  	   } else {
  	       // Affichage d'un message d'erreur générique si l'une des étapes a échoué
- 	       errorLabel.setText("Erreur lors de la mise à jour du compte ou de l'insertion de la commande !");
+ 	       showErrorMessage("Erreur lors de la mise à jour du compte ou de l'insertion de la commande !");
  	   }
  	    
  	

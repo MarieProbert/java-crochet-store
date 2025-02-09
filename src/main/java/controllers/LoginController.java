@@ -5,7 +5,6 @@ import javafx.scene.control.TextField;
 import util.DataSingleton;
 import util.SceneManager;
 import util.UserSession;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 
 /**
@@ -16,7 +15,6 @@ public class LoginController extends BaseController {
     
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
-    @FXML private Label errorLabel;
     
     /**
      * Initializes the LoginController by calling the parent class' initialize method.
@@ -37,11 +35,10 @@ public class LoginController extends BaseController {
     private void handleLogin() {
         String email = emailField.getText();
         String password = passwordField.getText();
-        errorLabel.setText(""); 
         
         // Check if the login credentials are valid
         if (!DataSingleton.getInstance().getUserDAO().isLoginValid(email, password)) {
-            errorLabel.setText("Invalid username or password.");
+            showErrorMessage("Invalid username or password");
         } else {
             // Set the user session after successful login
             UserSession.getInstance().setUser(DataSingleton.getInstance().getUserDAO().setUser(email));

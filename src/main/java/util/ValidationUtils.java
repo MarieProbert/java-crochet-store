@@ -2,7 +2,6 @@ package util;
 
 import java.util.regex.Pattern;
 
-import tables.User;
 
 public class ValidationUtils {
 

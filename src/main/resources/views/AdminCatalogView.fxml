@@ -22,7 +22,10 @@
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
+        	<Label fx:id="messageLabel" styleClass="message-label" />
+        
             <Button text="Add product" onAction="#handleAddProduct"/>
+            
         </VBox>
               
     </top>

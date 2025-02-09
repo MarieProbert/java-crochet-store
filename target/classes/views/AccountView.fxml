@@ -30,8 +30,8 @@
     <!-- Center section containing the account details form -->
     <center>
         <VBox alignment="CENTER">
-            <!-- Error message display -->
-            <Label fx:id="errorLabel" text="" styleClass="error-label" />
+            <!-- Message display -->
+            <Label fx:id="messageLabel" styleClass="message-label" />
 
             <!-- Email and Password input fields -->
             <HBox alignment="CENTER">

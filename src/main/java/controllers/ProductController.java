@@ -5,11 +5,9 @@ import enums.Size;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import tables.Product;
-import util.SceneManager;
 import util.UserSession;
 
 public class ProductController extends BaseController {
@@ -26,7 +24,7 @@ public class ProductController extends BaseController {
     @FXML private Label productCreator;
     
     @FXML private Label descriptionLabel;
-    @FXML private TextArea productDescription;
+    @FXML private Label productDescription;
 
     @FXML private Label colorLabel;
     @FXML private Label productColor;
@@ -36,7 +34,6 @@ public class ProductController extends BaseController {
     
     @FXML
     public void initialize() {
-
     	super.initialize();
     }
     
@@ -99,7 +96,6 @@ public class ProductController extends BaseController {
 		
 		Image image = loadImage(product.getImagePath(), defaultImagePath);
 		
-
         // Affichage des informations du produit
 		displayProductName(product.getName());
 		displayProductPrice(product.getPrice());
@@ -109,13 +105,17 @@ public class ProductController extends BaseController {
         displayProductColor(product.getColor());
         displayProductSize(product.getSize());
 
-        // Ajouter l'action du bouton
-        //addToCartButton.setOnAction(e -> order.addToCart(product, 1));
 	}
 	
 	@FXML
-	public void handleAddToCart() {
-		UserSession.getInstance().getOrder().addToCart(product, 1);
+	private void handleAddToCart() {
+        boolean success = UserSession.getInstance().getOrder().addToCart(product, 1);
+        if (success) {
+        	showInfoMessage("Product added to cart");
+        }
+        else {
+        	showErrorMessage("Not enough stock");
+        }
 	}
 
 

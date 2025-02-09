@@ -33,7 +33,7 @@
             <!-- Login label and error message -->
             <VBox alignment="CENTER">
                 <Label text="Login"/>
-                <Label fx:id="errorLabel" text="" styleClass="error-label" />
+                <Label fx:id="messageLabel" styleClass="message-label" />
             </VBox>
 
             <!-- Email input field -->

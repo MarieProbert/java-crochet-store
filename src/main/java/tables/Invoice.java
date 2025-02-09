@@ -3,9 +3,10 @@ package tables;
 import java.sql.Timestamp;
 
 /**
- * Represents an invoice related to an order, including its ID, order information, and total amount.
+ * Represents an invoice related to an order.
  */
 public class Invoice {
+
     private int invoiceID;
     private int orderID;
     private int clientID;
@@ -13,18 +14,18 @@ public class Invoice {
     private double totalAmount;
 
     /**
-     * Default constructor for the Invoice class.
+     * Default constructor.
      */
     public Invoice() {
     }
 
     /**
-     * Constructor used to create a new invoice without an invoice ID (used when creating new invoices).
+     * Constructor to create a new invoice without specifying an invoice ID.
      *
-     * @param orderID The ID of the related order.
-     * @param clientID The ID of the client.
-     * @param invoiceDate The date when the invoice was created.
-     * @param totalAmount The total amount of the invoice.
+     * @param orderID     the ID of the related order
+     * @param clientID    the ID of the client
+     * @param invoiceDate the date of the invoice
+     * @param totalAmount the total amount of the invoice
      */
     public Invoice(int orderID, int clientID, Timestamp invoiceDate, double totalAmount) {
         this.orderID = orderID;
@@ -34,13 +35,13 @@ public class Invoice {
     }
 
     /**
-     * Constructor with all parameters, used for retrieving an existing invoice from the database.
+     * Constructor with all parameters.
      *
-     * @param invoiceID The unique invoice ID.
-     * @param orderID The ID of the related order.
-     * @param clientID The ID of the client.
-     * @param invoiceDate The date when the invoice was created.
-     * @param totalAmount The total amount of the invoice.
+     * @param invoiceID   the unique invoice ID
+     * @param orderID     the ID of the related order
+     * @param clientID    the ID of the client
+     * @param invoiceDate the date of the invoice
+     * @param totalAmount the total amount of the invoice
      */
     public Invoice(int invoiceID, int orderID, int clientID, Timestamp invoiceDate, double totalAmount) {
         this.invoiceID = invoiceID;
@@ -50,50 +51,50 @@ public class Invoice {
         this.totalAmount = totalAmount;
     }
 
-    // Getters and setters for all attributes
+    // Getters and setters
 
     public int getInvoiceID() {
         return invoiceID;
     }
-
+ 
     public void setInvoiceID(int invoiceID) {
         this.invoiceID = invoiceID;
     }
-
+ 
     public int getOrderID() {
         return orderID;
     }
-
+ 
     public void setOrderID(int orderID) {
         this.orderID = orderID;
     }
-
+ 
     public int getClientID() {
         return clientID;
     }
-
+ 
     public void setClientID(int clientID) {
         this.clientID = clientID;
     }
-
+ 
     public Timestamp getInvoiceDate() {
         return invoiceDate;
     }
-
+ 
     public void setInvoiceDate(Timestamp invoiceDate) {
         this.invoiceDate = invoiceDate;
     }
-
+ 
     public double getTotalAmount() {
         return totalAmount;
     }
-
+ 
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
     /**
-     * Displays the details of the invoice.
+     * Displays the invoice details.
      */
     public void displayInvoiceDetails() {
         System.out.println("Invoice ID: " + invoiceID);
@@ -106,16 +107,16 @@ public class Invoice {
     /**
      * Returns a string representation of the invoice.
      *
-     * @return A string containing the invoice details.
+     * @return a string containing the invoice details
      */
     @Override
     public String toString() {
         return "Invoice{" +
-                "invoiceID=" + invoiceID +
-                ", orderID=" + orderID +
-                ", clientID=" + clientID +
-                ", invoiceDate=" + invoiceDate +
-                ", totalAmount=" + totalAmount +
-                '}';
+               "invoiceID=" + invoiceID +
+               ", orderID=" + orderID +
+               ", clientID=" + clientID +
+               ", invoiceDate=" + invoiceDate +
+               ", totalAmount=" + totalAmount +
+               '}';
     }
 }

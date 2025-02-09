@@ -1,11 +1,9 @@
 package controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import util.SceneManager;
 
 public class MenuAdminController extends BaseController {
-    @FXML private Label errorLabel;
     
     @FXML
     public void initialize() {
@@ -13,40 +11,37 @@ public class MenuAdminController extends BaseController {
     }
 
 	@FXML
-	public void handleCustomerSystem() {
+	private void handleCustomerSystem() {
     	try {
             SceneManager.getInstance().showScene("AdminClients");
 
             
         } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
+            showErrorMessage("Error : there was an issue loading the next scene.");
         }
 
 	}
 	
 	@FXML
-	public void handleProductCatalogSystem() {
+	private void handleProductCatalogSystem() {
     	try {
             SceneManager.getInstance().showScene("AdminCatalog");
 
             
         } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
+        	showErrorMessage("Error : there was an issue loading the next scene.");
         }
 
 	}
 	
 	@FXML
-	public void handleInvoicingSystem() {
+	private void handleInvoicingSystem() {
     	try {
             SceneManager.getInstance().showScene("AdminOrder");
 
             
         } catch (Exception e) {
-        	System.out.println("erreur");
-            e.printStackTrace();
+        	showErrorMessage("Error : there was an issue loading the next scene.");
         }
 	}
 }

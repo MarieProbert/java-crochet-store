@@ -28,6 +28,8 @@
                 <!-- Profile icon -->
                 <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
             </HBox>
+            
+            <Label fx:id="messageLabel" styleClass="message-label" />
         </VBox>
     </top>
 

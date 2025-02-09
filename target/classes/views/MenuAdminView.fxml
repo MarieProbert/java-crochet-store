@@ -26,12 +26,15 @@
     <!-- Grille de produits au centre -->
     <center>
     	<VBox  alignment="CENTER">
-    		<Label fx:id="errorLabel" text="" styleClass="error-label" />
+    		<Label fx:id="messageLabel" styleClass="message-label" />
+    		
+    		<Label wrapText="true" text="Welcome to the admin dashboard. From here, you can manage users, products, orders, and generate invoices." maxWidth="400" />
+            
 			
 			<HBox  alignment="CENTER">
-	        	<Button text="Client" onAction="#handleCustomerSystem"/>
-	        	<Button text="Product" onAction="#handleProductCatalogSystem"/>
-	        	<Button text="Invoice" onAction="#handleInvoicingSystem"/>
+	        	<Button text="User Management" onAction="#handleCustomerSystem"/>
+	        	<Button text="Product Management" onAction="#handleProductCatalogSystem"/>
+	        	<Button text="Order Management" onAction="#handleInvoicingSystem"/>
         	
 			</HBox>	
 			

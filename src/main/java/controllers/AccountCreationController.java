@@ -1,21 +1,21 @@
 package controllers;
 
-
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import tables.Address;
 import tables.User;
 import util.DataSingleton;
+import util.SceneManager;
 import util.ValidationUtils;
 
+/**
+ * Controller for handling user account creation.
+ * Manages form submission, validation, and navigation to the login screen.
+ */
 public class AccountCreationController extends BaseController {
-	@FXML private TextField emailField;
+
+    @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
@@ -23,15 +23,19 @@ public class AccountCreationController extends BaseController {
     @FXML private TextField cityField;
     @FXML private TextField postCodeField;
     @FXML private TextField countryField;
-    @FXML private Label errorLabel;
 
-    
+    /**
+     * Initializes the controller.
+     */
     @FXML
     public void initialize() {
-    	super.initialize();
+        super.initialize();
     }
 
-    
+    /**
+     * Handles the account creation form submission.
+     * Validates input fields and creates a new user if validation passes.
+     */
     @FXML
     private void handleSubmit() {
         String email = emailField.getText();
@@ -43,42 +47,52 @@ public class AccountCreationController extends BaseController {
         String postCode = postCodeField.getText();
         String country = countryField.getText();
 
-        // Appel de la méthode verifySubmission et récupération du message d'erreur
+        // Validate input fields
         String errorMessage = ValidationUtils.verifySubmission(email, password, firstName, lastName, street, city, postCode, country);
 
-        // Si une erreur est détectée, on l'affiche et on arrête l'exécution
         if (errorMessage != null) {
-            errorLabel.setText(errorMessage);
+            showErrorMessage(errorMessage);
             return;
         }
 
-        // Effacer le message d'erreur si tout est valide
-        errorLabel.setText("");
+        // Create and save the new user
+        User user = createClient(email, password, firstName, lastName, street, city, postCode, country);
+        DataSingleton.getInstance().getUserDAO().insertUser(user);
 
-        // Add the client to the database
+        // Navigate back to the login screen
+        handleReturn();
+    }
+
+    /**
+     * Creates a new User object with the client role with the provided details.
+     *
+     * @param email     User's email
+     * @param password  User's password
+     * @param firstName User's first name
+     * @param lastName  User's last name
+     * @param street    User's street address
+     * @param city      User's city
+     * @param postCode  User's postal code
+     * @param country   User's country
+     * @return A new User object
+     */
+    private User createClient(String email, String password, String firstName, String lastName,
+                            String street, String city, String postCode, String country) {
         User user = new User(email, password, firstName, lastName, "client");
         user.setAddress(new Address(street, city, postCode, country, user));
-        DataSingleton.getInstance().getUserDAO().insertUser(user);
-        handleReturn();
-        
+        return user;
     }
-    
-    
+
+    /**
+     * Handles navigation back to the login screen.
+     */
     @FXML
     private void handleReturn() {
-    	errorLabel.setText("");
-    	try {
-            // Charge the FXML file for login
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoginView.fxml"));
-            Parent root = loader.load();
-
-            // Replace the current scene
-            Stage stage = (Stage) emailField.getScene().getWindow(); // Get the current window
-            stage.setScene(new Scene(root));
+    	
+        try {
+            SceneManager.getInstance().showScene("Login");
         } catch (Exception e) {
-            e.printStackTrace();
-            errorLabel.setText("There was an issue, please restart the app."); 
+        	showErrorMessage("There was an issue loading the next scene.");
         }
     }
-    
 }

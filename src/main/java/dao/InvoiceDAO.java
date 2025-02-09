@@ -5,7 +5,6 @@ import tables.Order;
 import tables.User;
 import util.DataSingleton;
 import util.DatabaseConnection;
-import util.UserSession;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

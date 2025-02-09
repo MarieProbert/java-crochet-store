@@ -39,13 +39,11 @@ public class CartController extends BaseController {
      * for adjusting item quantities.
      */
     private void displayCartItems() {
+    	clearMessage();
+    	
         productGrid.getChildren().clear();
         int i = 0;
 
-        // Print information for debugging purposes
-        System.out.println("GridPane children count: " + productGrid.getChildren().size());
-        System.out.println(UserSession.getInstance().getOrder().getCart().keySet());
-        
         // Loop through all products in the cart
         for (Product p : UserSession.getInstance().getOrder().getCart().keySet()) {
             // Load the product image
@@ -67,15 +65,27 @@ public class CartController extends BaseController {
             // Button "+" to increase the quantity
             Button addButton = new Button("+");
             addButton.setOnAction(e -> {
-                UserSession.getInstance().getOrder().addToCart(p, 1);
+                boolean success = UserSession.getInstance().getOrder().addToCart(p, 1);
+                if (success) {
+                	showInfoMessage("Product added to cart");
+                } else {
+                	showErrorMessage("Not enough stock");
+                }
                 displayCartItems();  // Redraw the interface
             });
 
             // Button "-" to decrease the quantity
             Button subtractButton = new Button("-");
             subtractButton.setOnAction(e -> {
-                UserSession.getInstance().getOrder().deleteFromCart(p, 1);
-                displayCartItems();  // Redraw the interface
+            	boolean success = UserSession.getInstance().getOrder().deleteFromCart(p, 1);
+                
+                if (success) {
+                	showInfoMessage("Product removed from cart");
+                } else {
+                	showErrorMessage("Error: Product not found in cart");
+                }
+                
+            	displayCartItems();  // Redraw the interface
             });
 
             // HBox to align the buttons side by side
@@ -117,7 +127,7 @@ public class CartController extends BaseController {
         try {
             SceneManager.getInstance().showScene(sceneToShow);
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorMessage("There was an issue loading the next scene.");
         }
     }
 }

@@ -189,6 +189,7 @@ public class UserDAO {
         // Hash the provided password to compare with the stored hashed password
         String hashedTestPassword = HashUtils.sha256(testPassword);
 
+        System.out.println(hashedTestPassword);
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 

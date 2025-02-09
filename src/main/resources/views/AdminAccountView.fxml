@@ -26,29 +26,37 @@
         </VBox>
               
     </top>
-    
-    <left>
-        <VBox styleClass="left-padding">
-        
-        	<!-- Barre de recherche -->
-            <TextField fx:id="searchField" promptText="Rechercher un produit..." />
-            <Button text="Rechercher" fx:id="searchButton" onAction="#handleSearch"/>
 
-            <Label text="Filtres" />
-            <CheckBox text="Filtrer par prix" />
-            <CheckBox text="Filtrer par catégorie" />
-            <CheckBox text="Filtrer par couleur" />
-        </VBox>
-    </left>
 
     <!-- Grille de produits au centre avec ScrollPane -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <content>
-                <GridPane fx:id="productGrid" hgap="10" vgap="10" />
-            </content>
-        </ScrollPane>
-    </center>
+		<VBox alignment="CENTER">
+            <!-- Message display -->
+            <Label fx:id="messageLabel" styleClass="message-label" />
 
+            <!-- Email and Password input fields -->
+            <HBox alignment="CENTER">
+                <Label text="Email : "/>
+                <TextField fx:id="emailField" maxWidth="200" />
+            </HBox>
 
+            <HBox alignment="CENTER">
+                <Label text="Password : "/>
+                <PasswordField fx:id="passwordField" maxWidth="200" />
+            </HBox>
+
+            <!-- Last Name and First Name input fields -->
+            <HBox alignment="CENTER">
+                <Label text="Last Name : "/>
+                <TextField fx:id="lastNameField" maxWidth="200" />
+            </HBox>
+
+            <HBox alignment="CENTER">
+                <Label text="First Name : "/>
+                <TextField fx:id="firstNameField" maxWidth="200" />
+            </HBox>
+            <!-- Save button to submit the form -->
+            <Button text="Save" onAction="#handleSave" />
+        </VBox>
+   </center>
 </BorderPane>

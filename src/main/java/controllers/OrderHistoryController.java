@@ -13,10 +13,8 @@ import javafx.scene.layout.VBox;
 import tables.Order;
 import tables.Product;
 import util.DataSingleton;
-import util.SceneManager;
 import util.UserSession;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.Region;
 
 public class OrderHistoryController extends BaseController {
 

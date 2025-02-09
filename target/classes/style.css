@@ -80,13 +80,20 @@ Label {
     -fx-font-weight: bold;
 }
 
-/* ----- Error Label ----- */
-.error-label {
-    -fx-text-fill: #f70000;
+
+.message-label {
     -fx-font-size: 12px;
     -fx-padding: 10px;
+    -fx-alignment: center;
 }
 
+.error-message {
+    -fx-text-fill: #f70000; /* Rouge pour les erreurs */
+}
+
+.info-message {
+    -fx-text-fill: #009900; /* Vert pour les informations */
+}
 
 /* ====================================================
    TEXT-LIKE BUTTON STYLES

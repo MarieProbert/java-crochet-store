@@ -8,7 +8,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -20,9 +19,8 @@ import javafx.stage.Stage;
 import tables.Address;
 import tables.User;
 import util.DataSingleton;
-import util.SceneManager;
 import util.ValidationUtils;
-
+//here
 public class AdminClientsController extends BaseController {
 
     @FXML private GridPane clientGrid;
@@ -44,6 +42,7 @@ public class AdminClientsController extends BaseController {
     }
 
     private void displayClients() {
+    	clearMessage();
 
         clientGrid.getChildren().clear();
         int i = 0;
@@ -96,11 +95,8 @@ public class AdminClientsController extends BaseController {
                 // Si l'utilisateur confirme, supprimer l'utilisateur
                 boolean isDeleted = DataSingleton.getInstance().getUserDAO().deleteUser(user);
                 if (isDeleted) {
-                    System.out.println("Utilisateur supprimé avec succès.");
                     displayClients(); // Rafraîchir la liste des utilisateurs
-                } else {
-                    System.out.println("La suppression a échoué.");
-                }
+                } 
             }
         }); 
     }
@@ -232,12 +228,9 @@ public class AdminClientsController extends BaseController {
 
         // Si une erreur est détectée, on l'affiche et on arrête l'exécution
         if (errorMessage != null) {
-            errorLabel.setText(errorMessage);
+            showErrorMessage(errorMessage);
             return;
         }
-
-        // Effacer le message d'erreur si tout est valide
-        errorLabel.setText("");
 
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -257,7 +250,7 @@ public class AdminClientsController extends BaseController {
         boolean updateSuccess = DataSingleton.getInstance().getUserDAO().updateUser(user);
 
         if (updateSuccess) {
-            System.out.println("Les modifications ont été enregistrées avec succès !");
+            showInfoMessage("Les modifications ont été enregistrées avec succès !");
         } else {
             errorLabel.setText("Erreur lors de la mise à jour du compte !");
             user = DataSingleton.getInstance().getUserDAO().setUser(user.getEmail());
@@ -365,8 +358,7 @@ public class AdminClientsController extends BaseController {
 
             // Si le rôle est "client", création et affectation de l'adresse
             if ("client".equalsIgnoreCase(role)) {
-                // Remarque : adapter la création de l'adresse selon votre modèle
-                tables.Address address = new tables.Address();
+                Address address = new Address();
                 address.setStreet(streetField.getText());
                 address.setCity(cityField.getText());
                 address.setPostCode(postCodeField.getText());
@@ -377,7 +369,6 @@ public class AdminClientsController extends BaseController {
             // Insertion du nouvel utilisateur via le DAO
             int insertSuccess = DataSingleton.getInstance().getUserDAO().insertUser(newUser);
             if (insertSuccess != -1) {
-                System.out.println("User added successfully!");
                 displayClients();  // Rafraîchit la grille des utilisateurs
                 addUserStage.close();
             } else {
