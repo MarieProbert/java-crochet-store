@@ -57,12 +57,6 @@
                 <ComboBox fx:id="sizeComboBox" promptText="Select a size" />
             </HBox>
 
-            <!-- Theme filter -->
-            <HBox spacing="5">
-                <Label text="Theme:"/>
-                <ComboBox fx:id="themeComboBox" promptText="Select a theme" />
-            </HBox>
-
             <!-- Color filter -->
             <HBox spacing="5">
                 <Label text="Color:"/>

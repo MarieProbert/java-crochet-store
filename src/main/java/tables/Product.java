@@ -3,7 +3,6 @@ package tables;
 import enums.Category;
 import enums.Color;
 import enums.Size;
-import enums.Theme;
 
 /**
  * Represents a product in the system with details such as name, creator, price, and attributes like color, fabric, size, etc.
@@ -26,8 +25,6 @@ public class Product {
     private int stock;
     /** Size of the product. */
     private Size size;
-    /** Theme associated with the product. */
-    private Theme theme;
     /** File path to the product's image. */
     private String imagePath;
     /** Category of the product. */
@@ -40,6 +37,10 @@ public class Product {
      */
     public Product(int productID) {
         this.productID = productID;
+    }
+    
+    public Product() {
+    	this.productID = -1;
     }
 
     /**
@@ -186,23 +187,6 @@ public class Product {
         this.size = Size.fromStringToSize(size);
     }
 
-    /**
-     * Returns the product's theme.
-     *
-     * @return The theme of the product.
-     */
-    public Theme getTheme() {
-        return theme;
-    }
-
-    /**
-     * Sets the product's theme from a string.
-     *
-     * @param theme The theme string to be converted.
-     */
-    public void setThemeFromString(String theme) {
-        this.theme = Theme.fromStringToSize(theme);
-    }
 
     /**
      * Returns the product's category.
@@ -240,7 +224,21 @@ public class Product {
         this.imagePath = imagePath;
     }
 
-    /**
+    
+    
+    public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public void setSize(Size size) {
+		this.size = size;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	/**
      * Returns a string representation of the product.
      *
      * @return A string containing the product's details.
@@ -256,7 +254,6 @@ public class Product {
         sb.append("Color: ").append(color != null ? color.toString() : "N/A").append("; ");
         sb.append("Stock: ").append(stock).append("; ");
         sb.append("Size: ").append(size != null ? size.toString() : "N/A").append("; ");
-        sb.append("Theme: ").append(theme != null ? theme.toString() : "N/A").append("; ");
         sb.append("Image Path: ").append(imagePath != null ? imagePath : "N/A").append("; ");
         sb.append("Category: ").append(category != null ? category.toString() : "N/A").append(".");
         return sb.toString();

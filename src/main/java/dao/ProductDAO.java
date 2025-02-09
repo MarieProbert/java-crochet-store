@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import java.sql.Statement;
+
 import tables.Catalog;
 import tables.Product;
 import util.DatabaseConnection;
@@ -37,7 +39,6 @@ public class ProductDAO {
                 product.setColorFromString(rs.getString("color"));
                 product.setStock(rs.getInt("stock"));
                 product.setSizeFromString(rs.getString("size"));
-                product.setThemeFromString(rs.getString("theme"));
                 product.setImagePath(rs.getString("imagePath"));
                 product.setCategoryFromString(rs.getString("category"));
 
@@ -99,7 +100,6 @@ public class ProductDAO {
                     product.setColorFromString(rs.getString("color"));
                     product.setStock(rs.getInt("stock"));
                     product.setSizeFromString(rs.getString("size"));
-                    product.setThemeFromString(rs.getString("theme"));
                     product.setImagePath(rs.getString("imagePath"));
                     product.setCategoryFromString(rs.getString("category"));
                 }
@@ -110,4 +110,78 @@ public class ProductDAO {
         }
         return product;
     }
+    
+    
+    /**
+     * Updates a product in the database with the provided product details.
+     * 
+     * @param product The product object containing the updated details.
+     * @return true if the product was successfully updated, false otherwise.
+     */
+    public boolean updateProduct(Product product) {
+        String query = "UPDATE Product SET name = ?, creator = ?, price = ?, description = ?, color = ?, stock = ?, size = ?, imagePath = ?, category = ? WHERE productID = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getCreator());
+            stmt.setDouble(3, product.getPrice());
+            stmt.setString(4, product.getDescription());
+            stmt.setString(5, product.getColor().toString());
+            stmt.setInt(6, product.getStock());
+            stmt.setString(7, product.getSize().toString());
+            stmt.setString(8, product.getImagePath());
+            stmt.setString(9, product.getCategory().toString());
+            stmt.setInt(10, product.getProductID());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;  // Returns true if the product was successfully updated.
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean insertProduct(Product product) {
+        // Requête SQL d'insertion
+        String query = "INSERT INTO Product (name, creator, price, description, color, stock, size, imagePath, category) " +
+                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             // On demande à récupérer la clé générée lors de l'insertion
+        	PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
+            // Affectation des valeurs aux paramètres de la requête
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getCreator());
+            stmt.setDouble(3, product.getPrice());
+            stmt.setString(4, product.getDescription());
+            stmt.setString(5, product.getColor().toString());
+            stmt.setInt(6, product.getStock());
+            stmt.setString(7, product.getSize().toString());
+            stmt.setString(8, product.getImagePath());
+            stmt.setString(9, product.getCategory().toString());
+
+            // Exécution de la requête
+            int rowsAffected = stmt.executeUpdate();
+
+            // Si l'insertion a réussi, on récupère la clé générée et on la positionne dans l'objet product
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int generatedId = generatedKeys.getInt(1);
+                        product.setProductID(generatedId);
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

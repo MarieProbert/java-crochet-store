@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import enums.Category;
 import enums.Color;
 import enums.Size;
-import enums.Theme;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -43,7 +42,6 @@ public class CatalogController extends BaseController {
     @FXML private TextField minPriceField;
     @FXML private TextField maxPriceField;
     @FXML private ComboBox<Category> categoryComboBox;
-    @FXML private ComboBox<Theme> themeComboBox;
     @FXML private ComboBox<Size> sizeComboBox;
     @FXML private ComboBox<Color> colorComboBox;
     
@@ -68,7 +66,6 @@ public class CatalogController extends BaseController {
         
         // Initialize ComboBoxes with all possible values for each enum
         initializeComboBoxWithAllOption(categoryComboBox, Category.values());
-        initializeComboBoxWithAllOption(themeComboBox, Theme.values());
         initializeComboBoxWithAllOption(sizeComboBox, Size.values());
         initializeComboBoxWithAllOption(colorComboBox, Color.values());
 
@@ -253,7 +250,6 @@ public class CatalogController extends BaseController {
         
         // Lecture des autres filtres (catégorie, thème, taille, couleur)
         Category selectedCategory = categoryComboBox.getValue();
-        Theme selectedTheme = themeComboBox.getValue();
         Size selectedSize = sizeComboBox.getValue();
         Color selectedColor = colorComboBox.getValue();
 
@@ -291,9 +287,6 @@ public class CatalogController extends BaseController {
             }
             // Vérification des autres filtres
             if (selectedCategory != null && p.getCategory() != selectedCategory) {
-                continue;
-            }
-            if (selectedTheme != null && p.getTheme() != selectedTheme) {
                 continue;
             }
             if (selectedSize != null && p.getSize() != selectedSize) {

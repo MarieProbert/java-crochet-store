@@ -6,8 +6,7 @@ public enum Size {
 	M("M"),
 	L("L"),
 	XL("XL"),
-	ONESIZE("One Size"),
-	NA("N/A");
+	ONESIZE("One Size");
 	
 	private final String value;
 	

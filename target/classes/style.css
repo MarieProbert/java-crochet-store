@@ -1,122 +1,139 @@
-/* Styles généraux */
+/* ====================================================
+   GENERAL STYLES
+==================================================== */
+
+/* ----- Button Styles ----- */
 .button {
     -fx-background-color: #ffb0be;
     -fx-text-fill: white;
     -fx-font-size: 14px;
 }
 
-/* Pour les champs de texte */
+/* Button hover effect */
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+/* ----- TextField Styles ----- */
 .textfield {
     -fx-background-color: #f9f9f9;
     -fx-padding: 10px;
     -fx-border-radius: 5px;
 }
 
-/* Changer la couleur au survol */
-.button:hover {
-    -fx-background-color: #45a049;
-}
-
-/* Style global pour VBox */
-VBox {
-    -fx-background-color: #fcfcfc;
-    -fx-border-radius: 10px;
-    -fx-spacing: 10px;
-}
-
-/* Style global pour HBox */
-HBox {
-    -fx-background-color: #fcfcfc;
-    -fx-border-radius: 10px;
-    -fx-spacing: 10px;
-}
-
-/* Pour la HBox et les éléments à l'intérieur */
-GridPane {
-    -fx-background-color: #fcfcfc;
-    -fx-padding: 20px;
-    -fx-border-radius: 10px;
-}
-
-BorderPane {
-    -fx-background-color: #fcfcfc;
-}
-
-Label {
-	-fx-text-background-color : #000000;
-}
-
+/* ----- Utility Class for Left Padding ----- */
 .left-padding {
-    -fx-padding: 0 0 0 20px; /* Padding à gauche de 20px */
+    -fx-padding: 0 0 0 20px; /* 20px left padding */
 }
 
-
+/* ----- Tooltip Box ----- */
 .tooltip-box {
     -fx-background-color: #fcfcfc;
-    -fx-padding: 10;
+    -fx-padding: 10;           /* JavaFX accepte souvent l’unité implicite */
     -fx-background-radius: 8;
 }
 
 
-/* Style pour les boutons qui ressemblent à du texte */
-.text-like-button {
-    -fx-background-color: transparent; /* Fond transparent */
-    -fx-border-color: transparent; /* Pas de bordure */
-    -fx-text-fill: #000000; /* Couleur du texte  */
-    -fx-font-size: 14px; /* Taille de la police */
-    -fx-padding: 0; /* Pas de padding */
-    -fx-cursor: hand; /* Curseur en forme de main pour indiquer que c'est cliquable */
+/* ====================================================
+   CONTAINER STYLES
+==================================================== */
+
+/* Apply common background to all major containers */
+VBox, HBox, BorderPane, GridPane {
+    -fx-background-color: #fcfcfc;
 }
 
-/* Style au survol */
-.text-like-button:hover {
-	-fx-background-color: #45a049;
-    -fx-border-color: #45a049;
+/* VBox & HBox specific styling */
+VBox, HBox {
+    -fx-border-radius: 10px;
+    -fx-spacing: 10px;
 }
 
-/* Style pour la bannière */
+/* GridPane specific styling */
+GridPane {
+    -fx-padding: 20px;
+    /* Note: -fx-border-radius is already set via the group above */
+}
+
+
+/* ====================================================
+   LABEL & BANNER STYLES
+==================================================== */
+
+/* ----- Label ----- */
+Label {
+    -fx-text-background-color: #000000;
+}
+
+/* ----- Banner ----- */
 .banner {
-    -fx-background-color: #ffb0be;  /* Couleur d'arrière-plan de la bannière */
-    -fx-padding: 5px;              /* Ajout de marges internes */
-    -fx-pref-width: 100%;           /* S'assure que le fond s'étend sur toute la largeur */
-    -fx-alignment: center;          /* Centrer le contenu de la bannière */
+    -fx-background-color: #ffb0be;  /* Banner background */
+    -fx-padding: 5px;              /* Internal padding */
+    -fx-pref-width: 100%;          /* Full width */
+    -fx-alignment: center;         /* Center content */
 }
 
-/* Style du texte dans la bannière */
+/* Banner text style */
 .delivery {
-    -fx-text-fill: #ffffff;           /* Couleur du texte */
+    -fx-text-fill: #ffffff;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
+/* ----- Error Label ----- */
 .error-label {
-	-fx-text-fill: #f70000;
+    -fx-text-fill: #f70000;
     -fx-font-size: 12px;
     -fx-padding: 10px;
 }
 
 
-/* Style général pour les ComboBox */
+/* ====================================================
+   TEXT-LIKE BUTTON STYLES
+==================================================== */
+
+/* A button styled to look like plain text */
+.text-like-button {
+    -fx-background-color: transparent; /* Transparent background */
+    -fx-border-color: transparent;     /* No border */
+    -fx-text-fill: #000000;              /* Black text */
+    -fx-font-size: 14px;
+    -fx-padding: 0;
+    -fx-cursor: hand;                   /* Hand cursor on hover */
+}
+
+/* Hover effect for text-like button */
+.text-like-button:hover {
+    -fx-background-color: #45a049;
+    -fx-border-color: #45a049;
+}
+
+
+/* ====================================================
+   COMBOBOX STYLES
+==================================================== */
+
+/* ----- ComboBox Base Style ----- */
 .combo-box {
-    -fx-background-color: #f9f9f9; /* Fond clair pour la cohérence avec les champs de texte */
-    -fx-border-color: #ffb0be; /* Bordure rose pour rappeler le thème */
+    -fx-background-color: #f9f9f9;  /* Consistent with TextFields */
+    -fx-border-color: #ffb0be;
     -fx-border-radius: 5px;
     -fx-padding: 5px;
     -fx-font-size: 12px;
 }
 
-/* Au survol */
+/* Hover state for ComboBox */
 .combo-box:hover {
-    -fx-background-color: #ffe5eb; /* Fond légèrement plus foncé au survol */
+    -fx-background-color: #ffe5eb;
 }
 
-/* Quand la ComboBox est activée */
+/* Focus state for ComboBox */
 .combo-box:focused {
-    -fx-border-color: #ff4d6d; /* Bordure plus foncée quand active */
+    -fx-border-color: #ff4d6d;
     -fx-background-color: #ffffff;
 }
 
-/* Style des éléments du menu déroulant */
+/* ----- ComboBox Dropdown List Items ----- */
 .combo-box .list-cell {
     -fx-background-color: #ffffff;
     -fx-text-fill: #333333;
@@ -127,7 +144,7 @@ Label {
     -fx-text-fill: #ffffff;
 }
 
-/* Style du bouton de la ComboBox */
+/* ----- ComboBox Arrow Button ----- */
 .combo-box .arrow-button {
     -fx-background-color: #ffb0be;
     -fx-border-radius: 5px;
@@ -138,7 +155,11 @@ Label {
 }
 
 
-/* Style général pour les TextField spécifiques à ce FXML */
+/* ====================================================
+   CUSTOM TEXTFIELD STYLES
+==================================================== */
+
+/* A variant of TextField with specific border and padding */
 .custom-textfield {
     -fx-background-color: #f9f9f9;
     -fx-border-color: #ffb0be;
@@ -147,12 +168,12 @@ Label {
     -fx-font-size: 12px;
 }
 
-/* Au survol */
+/* Hover effect for custom text field */
 .custom-textfield:hover {
     -fx-background-color: #ffe5eb;
 }
 
-/* Quand le champ est activé */
+/* Focus state for custom text field */
 .custom-textfield:focused {
     -fx-border-color: #ff4d6d;
     -fx-background-color: #ffffff;

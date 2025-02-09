@@ -22,7 +22,7 @@
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
-            
+            <Button text="Add product" onAction="#handleAddProduct"/>
         </VBox>
               
     </top>
@@ -30,32 +30,13 @@
 
     <!-- Grille de produits au centre avec ScrollPane -->
     <center>
-        <VBox alignment="CENTER">
-            <!-- Error message display -->
-            <Label fx:id="errorLabel" text="" styleClass="error-label" />
-
-            <!-- Email and Password input fields -->
-            <HBox alignment="CENTER">
-                <Label text="Email : "/>
-                <TextField fx:id="emailField" maxWidth="200" />
-            </HBox>
-
-            <HBox alignment="CENTER">
-                <Label text="Password : "/>
-                <PasswordField fx:id="passwordField" maxWidth="200" />
-            </HBox>
-
-            <!-- Last Name and First Name input fields -->
-            <HBox alignment="CENTER">
-                <Label text="Last Name : "/>
-                <TextField fx:id="lastNameField" maxWidth="200" />
-            </HBox>
-            
-            <HBox alignment="CENTER">
-                <Label text="First Name : "/>
-                <TextField fx:id="firstNameField" maxWidth="200" />
-            </HBox>
- 		</VBox>
+    		
+            <!-- Grille de produits au centre avec ScrollPane -->
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <content>
+                    <GridPane fx:id="productGrid" hgap="10" vgap="10" />
+                </content>
+            </ScrollPane>
    </center>
 
 
