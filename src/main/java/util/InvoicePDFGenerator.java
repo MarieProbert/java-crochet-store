@@ -6,11 +6,17 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import tables.CartItem;
@@ -19,90 +25,122 @@ import tables.Order;
 import tables.Product;
 import tables.User;
 
+/**
+ * Utility class for generating PDF invoices.
+ */
 public class InvoicePDFGenerator {
 
     /**
-     * Generates the invoice in PDF format, allowing the user to choose where to save it.
-     * @param owner The parent window for the FileChooser (can be passed as null if unavailable).
-     * @param client The concerned client.
-     * @param order The corresponding order.
-     * @param invoice The invoice to be generated.
-     * @throws IOException
-     * @throws DocumentException
+     * Generates a PDF invoice, allowing the user to choose the save location.
+     *
+     * @param owner   the parent window for the file chooser (can be null)
+     * @param client  the client associated with the invoice
+     * @param order   the order associated with the invoice
+     * @param invoice the invoice to generate
+     * @throws IOException       if an I/O error occurs
+     * @throws DocumentException if a PDF document error occurs
      */
     public static void generateInvoicePDF(Window owner, User client, Order order, Invoice invoice)
             throws IOException, DocumentException {
 
-        // Open a dialog window to choose the file save path
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Invoice");
-        // Filter to show only PDF files
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-        // Suggest a default file name
         fileChooser.setInitialFileName("invoice" + invoice.getInvoiceID() + ".pdf");
-
-        // Show the dialog (if owner is null, the system's default window will be used)
         File file = fileChooser.showSaveDialog(owner);
-
-        // If the user cancels, stop the generation
         if (file == null) {
             return;
         }
 
-        // Create the PDF document
         Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(file));
         document.open();
 
-        // Invoice title
-        Paragraph title = new Paragraph("Invoice",
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Font.BOLD, BaseColor.BLACK));
-        title.setAlignment(Element.ALIGN_CENTER);
-        document.add(title);
+        // Invoice title (centered)
+        Paragraph invoiceTitle = new Paragraph("Invoice No. " + invoice.getInvoiceID(),
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, com.itextpdf.text.BaseColor.BLACK));
+        invoiceTitle.setAlignment(Element.ALIGN_CENTER);
+        document.add(invoiceTitle);
+        document.add(Chunk.NEWLINE);
 
-        // Client information
-        document.add(new Paragraph("Customer: " + client.getFirstName() + " " + client.getLastName()));
-        document.add(new Paragraph("Address: " + client.getAddress().getStreet() + ", " 
-                + client.getAddress().getCity() + " " + client.getAddress().getPostCode() + ", " 
-                + client.getAddress().getCountry()));
-        document.add(new Paragraph("Email: " + client.getEmail()));
-        document.add(new Paragraph("Invoice Date: " 
-                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(invoice.getInvoiceDate())));
+        // Header table with company and client details
+        PdfPTable headerTable = new PdfPTable(2);
+        headerTable.setWidthPercentage(100);
+        headerTable.setSpacingBefore(10);
+        headerTable.setSpacingAfter(10);
+        headerTable.setWidths(new float[]{1f, 1f});
 
-        // Space before the table
-        document.add(new Paragraph("\n"));
+        PdfPCell companyCell = new PdfPCell();
+        companyCell.setBorder(Rectangle.NO_BORDER);
+        companyCell.addElement(new Paragraph("Crochet Store",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+        headerTable.addCell(companyCell);
 
-        // Product table (3 columns: Product, Quantity, Total Price)
-        PdfPTable table = new PdfPTable(3);
-        table.addCell(new PdfPCell(new Phrase("Product")));
-        table.addCell(new PdfPCell(new Phrase("Quantity")));
-        table.addCell(new PdfPCell(new Phrase("Total Price")));
+        PdfPCell clientCell = new PdfPCell();
+        clientCell.setBorder(Rectangle.NO_BORDER);
+        clientCell.addElement(new Paragraph(client.getFirstName() + " " + client.getLastName(),
+                FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        clientCell.addElement(new Paragraph(client.getAddress().getStreet(),
+                FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        clientCell.addElement(new Paragraph(client.getAddress().getPostCode() + " " + client.getAddress().getCity(),
+                FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        clientCell.addElement(new Paragraph(client.getAddress().getCountry(),
+                FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        headerTable.addCell(clientCell);
+
+        document.add(headerTable);
+
+        // Order information
+        Paragraph orderInfo = new Paragraph();
+        orderInfo.setAlignment(Element.ALIGN_LEFT);
+        orderInfo.setFont(FontFactory.getFont(FontFactory.HELVETICA, 12));
+        orderInfo.add("Order No.: " + order.getOrderID() + "\n");
+        orderInfo.add("Client No.: " + order.getClientID() + "\n");
+        orderInfo.add("Invoice Date: " + new SimpleDateFormat("yyyy-MM-dd").format(invoice.getInvoiceDate()) + "\n");
+        document.add(orderInfo);
+        document.add(Chunk.NEWLINE);
+
+        // Product table
+        PdfPTable productTable = new PdfPTable(4);
+        productTable.setWidthPercentage(100);
+        productTable.setSpacingBefore(10f);
+        productTable.setSpacingAfter(10f);
+        productTable.setWidths(new float[]{3f, 1f, 2f, 2f});
+
+        productTable.addCell(new PdfPCell(new Phrase("Product",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12))));
+        productTable.addCell(new PdfPCell(new Phrase("Quantity",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12))));
+        productTable.addCell(new PdfPCell(new Phrase("Unit Price",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12))));
+        productTable.addCell(new PdfPCell(new Phrase("Total Price",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12))));
 
         double totalAmount = 0;
         for (Map.Entry<Product, CartItem> entry : order.getCart().entrySet()) {
             Product product = entry.getKey();
-            int quantity = entry.getValue().getQuantity();
-            double price = entry.getValue().getPriceAtPurchase();
-            double lineTotal = price * quantity;
+            CartItem item = entry.getValue();
+            int quantity = item.getQuantity();
+            double unitPrice = item.getPriceAtPurchase();
+            double lineTotal = unitPrice * quantity;
             totalAmount += lineTotal;
 
-            table.addCell(new PdfPCell(new Phrase(product.getName())));
-            table.addCell(new PdfPCell(new Phrase(String.valueOf(quantity))));
-            table.addCell(new PdfPCell(new Phrase(String.format("%.2f", lineTotal))));
+            productTable.addCell(new PdfPCell(new Phrase(product.getName(),
+                    FontFactory.getFont(FontFactory.HELVETICA, 12))));
+            productTable.addCell(new PdfPCell(new Phrase(String.valueOf(quantity),
+                    FontFactory.getFont(FontFactory.HELVETICA, 12))));
+            productTable.addCell(new PdfPCell(new Phrase(String.format("%.2f €", unitPrice),
+                    FontFactory.getFont(FontFactory.HELVETICA, 12))));
+            productTable.addCell(new PdfPCell(new Phrase(String.format("%.2f €", lineTotal),
+                    FontFactory.getFont(FontFactory.HELVETICA, 12))));
         }
-        document.add(table);
+        document.add(productTable);
 
-        // Total of the order
-        document.add(new Paragraph("\n"));
-        document.add(new Paragraph("Total: " + String.format("%.2f", totalAmount),
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Font.BOLD)));
+        Paragraph totalParagraph = new Paragraph("Order Total: " + String.format("%.2f €", totalAmount),
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
+        totalParagraph.setAlignment(Element.ALIGN_RIGHT);
+        document.add(totalParagraph);
 
-        // Additional invoice information
-        document.add(new Paragraph("\n"));
-        document.add(new Paragraph("Invoice ID: " + invoice.getInvoiceID()));
-        document.add(new Paragraph("Order ID: " + invoice.getOrderID()));
-
-        // Close the document
         document.close();
     }
 }

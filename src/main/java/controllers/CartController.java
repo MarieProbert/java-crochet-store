@@ -16,114 +16,102 @@ import util.SceneManager;
 import util.UserSession;
 
 /**
- * Controller for the shopping cart screen, handling the display and management of items in the cart.
- * Includes functionalities like displaying cart items, updating quantities, and navigating to order validation.
+ * Controller for the shopping cart screen.
+ * Manages display and updates of cart items, including adjusting quantities and navigating to order validation.
  */
 public class CartController extends BaseController {
+
     @FXML private GridPane productGrid;
-    @FXML private Pagination pagination; 
-    
+    @FXML private Pagination pagination;
+
     /**
-     * Initializes the cart screen, displaying the existing products in the user's cart.
+     * Initializes the cart screen by displaying the current cart items.
      */
     @FXML
     public void initialize() {
         super.initialize();
-        // Display the existing products in the cart
         displayCartItems();
     }
 
     /**
-     * Displays all the items currently in the cart by adding them to the productGrid.
-     * Updates the display of the cart with product images, names, prices, quantities, and buttons
-     * for adjusting item quantities.
+     * Displays all items in the user's cart in the grid.
      */
     private void displayCartItems() {
-    	clearMessage();
-    	
+        clearMessage();
         productGrid.getChildren().clear();
-        int i = 0;
+        int rowIndex = 0;
 
-        // Loop through all products in the cart
         for (Product p : UserSession.getInstance().getOrder().getCart().keySet()) {
-            // Load the product image
+            // Load product image.
             Image image = loadImage(p.getImagePath(), defaultImagePath);
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(150);  // Adjust the width
-            imageView.setPreserveRatio(true); // Preserve the aspect ratio
-            imageView.setSmooth(true); // Enable smoothing
+            imageView.setFitWidth(150);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
 
-            // Create labels for the product's name and price
+            // Create clickable label for product name.
             Label nameLabel = new Label(p.getName());
-            nameLabel.setStyle("-fx-underline: true;"); // Style to indicate it's clickable
-            nameLabel.setOnMouseClicked(e -> SceneManager.getInstance().showProductScene(p));
+            nameLabel.setStyle("-fx-underline: true;");
+            nameLabel.setOnMouseClicked(e -> {
+                boolean success = SceneManager.getInstance().showProductScene(p);
+                if (!success) {
+                    System.out.println("Error: Unable to display product scene.");
+                }
+            });
 
             Order order = UserSession.getInstance().getOrder();
             Label priceLabel = new Label(String.format("%.2f €", order.getCart().get(p).getPriceAtPurchase()));
             Label quantityLabel = new Label(String.format("Quantity: %d", order.getCart().get(p).getQuantity()));
 
-            // Button "+" to increase the quantity
+            // Button to increase quantity.
             Button addButton = new Button("+");
             addButton.setOnAction(e -> {
                 boolean success = UserSession.getInstance().getOrder().addToCart(p, 1);
                 if (success) {
-                	showInfoMessage("Product added to cart");
+                    showInfoMessage("Product added to cart");
                 } else {
-                	showErrorMessage("Not enough stock");
+                    showErrorMessage("Not enough stock");
                 }
-                displayCartItems();  // Redraw the interface
+                displayCartItems();
             });
 
-            // Button "-" to decrease the quantity
+            // Button to decrease quantity.
             Button subtractButton = new Button("-");
             subtractButton.setOnAction(e -> {
-            	boolean success = UserSession.getInstance().getOrder().deleteFromCart(p, 1);
-                
+                boolean success = UserSession.getInstance().getOrder().deleteFromCart(p, 1);
                 if (success) {
-                	showInfoMessage("Product removed from cart");
+                    showInfoMessage("Product removed from cart");
                 } else {
-                	showErrorMessage("Error: Product not found in cart");
+                    showErrorMessage("Error: Product not found in cart");
                 }
-                
-            	displayCartItems();  // Redraw the interface
+                displayCartItems();
             });
 
-            // HBox to align the buttons side by side
-            HBox buttonBox = new HBox(5); // 5 px spacing between the buttons
+            HBox buttonBox = new HBox(5);
             buttonBox.getChildren().addAll(subtractButton, addButton);
 
-            // VBox to organize the product info vertically
             VBox infoBox = new VBox(5);
             infoBox.getChildren().addAll(nameLabel, priceLabel, quantityLabel, buttonBox);
 
-            // Create an HBox to align the image and information horizontally
-            HBox hbox = new HBox(10); // 10 px spacing
+            HBox hbox = new HBox(10);
             hbox.setPadding(new Insets(10));
             hbox.getChildren().addAll(imageView, infoBox);
 
-            // Add the HBox to the GridPane
-            productGrid.add(hbox, 0, i);
-
-            i++;
+            productGrid.add(hbox, 0, rowIndex);
+            rowIndex++;
         }
     }
 
     /**
-     * Navigates the user to either the login scene or the order summary scene based on user login status.
-     * If the user is logged in, it sets the validate flag to true and shows the order summary. Otherwise, it redirects to login.
+     * Handles the validation action. If the user is logged in, navigates to the order summary;
+     * otherwise, navigates to the login screen.
      */
     @FXML
     private void handleValidate() {
-        // If the user is logged in -> redirects to the page to validate information
-        // If not logged in -> redirects to the login page
-        // Sets the boolean flag indicating that the user wants to proceed to validation to true
         UserSession.getInstance().setValidate(true);
-
-        // Determine which scene to show based on whether the user is logged in
-        String sceneToShow = UserSession.getInstance().getUser().getId() == -1 
-                ? "Login"  // If user is not logged in, show the login scene
-                : "OrderSummary";  // Otherwise, show the order summary
-
+        String sceneToShow = (UserSession.getInstance().getUser().getId() == -1)
+                ? "Login"
+                : "OrderSummary";
         try {
             SceneManager.getInstance().showScene(sceneToShow);
         } catch (Exception e) {

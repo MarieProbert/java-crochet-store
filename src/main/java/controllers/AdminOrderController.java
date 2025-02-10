@@ -25,6 +25,11 @@ import util.DataSingleton;
 import util.InvoicePDFGenerator;
 import util.SceneManager;
 
+/**
+ * Controller for managing orders in the admin system.
+ * Displays all orders and provides functionality to update order status,
+ * generate or delete invoices, and update the delivery date when necessary.
+ */
 public class AdminOrderController extends BaseController {
 
     @FXML
@@ -36,31 +41,29 @@ public class AdminOrderController extends BaseController {
         displayOrders();
     }
     
+    /**
+     * Retrieves all orders and displays them in the grid.
+     */
     private void displayOrders() {
-    	clearMessage();
-    	
-        // Récupérer toutes les commandes
+        clearMessage();
+        
         List<Order> orders = DataSingleton.getInstance().getOrderDAO().getAllOrders();
-
         orderGrid.getChildren().clear();
         int rowIndex = 0;
         
         for (Order order : orders) {
-            // ===== Ligne principale d'affichage =====
+            // Main row display with order information and status selection.
             HBox rowBox = new HBox(10);
             rowBox.setPadding(new Insets(5));
             
             Label orderIdLabel = new Label("Order ID: " + order.getOrderID());
             Label userIdLabel = new Label("User ID: " + order.getClientID());
             Label purchaseDateLabel = new Label("Purchase: " + order.getPurchaseDate().toString());
-            
-            // Affichage en lecture seule de la delivery date
             String deliveryText = (order.getDeliveryDate() != null) 
                     ? order.getDeliveryDate().toString() 
                     : "N/A";
             Label deliveryDateLabel = new Label("Delivery: " + deliveryText);
             
-            // ComboBox pour choisir le status
             ComboBox<Status> statusCombo = new ComboBox<>();
             statusCombo.getItems().addAll(Status.INPROGRESS, Status.CONFIRMED, Status.DELIVERED);
             statusCombo.setValue(order.getStatus());
@@ -71,7 +74,7 @@ public class AdminOrderController extends BaseController {
             HBox.setHgrow(spacer, Priority.ALWAYS);
             rowBox.getChildren().add(spacer);
             
-            // Bouton "Generate Invoice" (si le status n'est pas INPROGRESS)
+            // "Generate Invoice" button if order status is not INPROGRESS.
             if (order.getStatus() != Status.INPROGRESS) {
                 Button generateInvoiceBtn = new Button("Generate Invoice");
                 generateInvoiceBtn.setOnAction(e -> {
@@ -81,13 +84,13 @@ public class AdminOrderController extends BaseController {
                     try {
                         InvoicePDFGenerator.generateInvoicePDF(stage, user, order, invoice);
                     } catch (Exception ex) {
-                    	showErrorMessage("Error : Failed to generate the invoice.");
+                        showErrorMessage("Error: Failed to generate the invoice.");
                     }
                 });
                 rowBox.getChildren().add(generateInvoiceBtn);
             }
             
-            // Bouton "Delete Invoice" (si une facture existe déjà)
+            // "Delete Invoice" button if an invoice exists.
             Invoice existingInvoice = DataSingleton.getInstance().getInvoiceDAO().getInvoiceByOrderId(order.getOrderID());
             if (existingInvoice != null) { 
                 Button deleteInvoiceBtn = new Button("Delete Invoice");
@@ -104,14 +107,14 @@ public class AdminOrderController extends BaseController {
             
             orderGrid.add(rowBox, 0, rowIndex++);
             
-            // ===== Ligne "Save modifications" =====
+            // Row for saving modifications.
             HBox saveBox = new HBox(10);
             saveBox.setPadding(new Insets(5, 5, 15, 5));
             Button saveBtn = new Button("Save modifications");
             saveBtn.setOnAction(e -> {
                 Status newStatus = statusCombo.getValue();
-                // Si le nouveau status est DELIVERED, on ouvre la fenêtre de dialogue
                 if (newStatus == Status.DELIVERED) {
+                    // Open dialog to update delivery date if status is DELIVERED.
                     Stage dialogStage = new Stage();
                     dialogStage.setTitle("Update Delivery Date");
                     
@@ -119,7 +122,6 @@ public class AdminOrderController extends BaseController {
                     dialogBox.setPadding(new Insets(10));
                     Label promptLabel = new Label("Select new delivery date (optional):");
                     DatePicker datePicker = new DatePicker();
-                    // Pré-remplir avec la date existante (si présente)
                     if (order.getDeliveryDate() != null) {
                         LocalDate existingDate = order.getDeliveryDate().toLocalDateTime().toLocalDate();
                         datePicker.setValue(existingDate);
@@ -132,16 +134,12 @@ public class AdminOrderController extends BaseController {
                     dialogStage.setScene(dialogScene);
                     
                     okBtn.setOnAction(ev -> {
-                        // Si une nouvelle date est sélectionnée, mettre à jour l'objet order
                         if (datePicker.getValue() != null) {
-                            LocalDateTime ldt = datePicker.getValue().atTime(12, 0); // heure fixe
+                            LocalDateTime ldt = datePicker.getValue().atTime(12, 0);
                             Timestamp ts = Timestamp.valueOf(ldt);
-                            System.out.println(ts.toString());
                             order.setDeliveryDate(ts);
-                            System.out.println(order.getDeliveryDate().toString());
                         }
                         order.setStatus(newStatus);
-                        // Mise à jour unique via le DAO pour le status et la date (éventuelle)
                         DataSingleton.getInstance().getOrderDAO().updateOrder(order);
                         dialogStage.close();
                         displayOrders();
@@ -154,14 +152,12 @@ public class AdminOrderController extends BaseController {
                     
                     dialogStage.showAndWait();
                 } else {
-                    // Si le status est autre que DELIVERED, mise à jour immédiate via le DAO
                     order.setStatus(newStatus);
                     DataSingleton.getInstance().getOrderDAO().updateOrder(order);
                     displayOrders();
                 }
             });
             saveBox.getChildren().add(saveBtn);
-            
             orderGrid.add(saveBox, 0, rowIndex++);
         }
     }

@@ -18,12 +18,14 @@ import util.SceneManager;
 import util.UserSession;
 import util.ValidationUtils;
 
+/**
+ * Controller for the order summary screen.
+ * Displays the items in the user's order, shows contact information, and handles the checkout process.
+ */
 public class OrderSummaryController extends BaseController {
+
     @FXML private GridPane productGrid;
-    
     @FXML private Label price;
-    private double totalprice;
-    
     @FXML private Label emailField;
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
@@ -33,18 +35,17 @@ public class OrderSummaryController extends BaseController {
     @FXML private TextField countryField;
     
     private User user;
-    
+    private double totalPrice;
+
     @FXML
     public void initialize() {
-    	super.initialize();
-    	
-    	user = UserSession.getInstance().getUser();
-    	
-        // Afficher les valeurs actuelles dans les champs
+        super.initialize();
+        
+        user = UserSession.getInstance().getUser();
+        
         emailField.setText(user.getEmail());
         firstNameField.setText(user.getFirstName());
         lastNameField.setText(user.getLastName());
-
         streetField.setText(user.getAddress().getStreet());
         cityField.setText(user.getAddress().getCity());
         postCodeField.setText(String.valueOf(user.getAddress().getPostCode()));
@@ -53,113 +54,92 @@ public class OrderSummaryController extends BaseController {
         displayItems();
     }
     
+    /**
+     * Displays all items in the user's order and calculates the total price.
+     */
     private void displayItems() {
-    	productGrid.getChildren().clear();
-    	totalprice = 0;
-        int i = 0;
+        productGrid.getChildren().clear();
+        totalPrice = 0;
+        int rowIndex = 0;
         
-        for (Product p : UserSession.getInstance().getOrder().getCart().keySet()) {
-
-            // Load the product image
+        Order order = UserSession.getInstance().getOrder();
+        for (Product p : order.getCart().keySet()) {
+            // Load product image
             Image image = loadImage(p.getImagePath(), defaultImagePath);
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(100);  // Adjust the width
-            imageView.setPreserveRatio(true); // Preserve the aspect ratio
-            imageView.setSmooth(true); // Enable smoothing
+            imageView.setFitWidth(100);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
 
-            // Create labels for the name and price
+            // Create labels for product information
             Label nameLabel = new Label(p.getName());
-
-            Order order = UserSession.getInstance().getOrder();
             Label priceLabel = new Label(String.format("%.2f €", order.getCart().get(p).getPriceAtPurchase()));
-            
             Label quantityLabel = new Label(String.format("Quantity: %d", order.getCart().get(p).getQuantity()));
+            Label totalPriceLabel = new Label(String.format("%.2f €", 
+                    order.getCart().get(p).getPriceAtPurchase() * order.getCart().get(p).getQuantity()));
 
-            Label totalPriceLabel = new Label(String.format("%.2f €",order.getCart().get(p).getPriceAtPurchase() * order.getCart().get(p).getQuantity()));
-
-            totalprice += order.getCart().get(p).getPriceAtPurchase() * order.getCart().get(p).getQuantity();
+            totalPrice += order.getCart().get(p).getPriceAtPurchase() * order.getCart().get(p).getQuantity();
             
-            // VBox to organize all the information vertically
+            // Organize product information vertically and horizontally
             VBox infoBox = new VBox(5);
             infoBox.getChildren().addAll(nameLabel, priceLabel, quantityLabel, totalPriceLabel);
-
-            // Create an HBox to align the image and information horizontally
-            HBox hbox = new HBox(10); // 10 px spacing
+            HBox hbox = new HBox(10);
             hbox.setPadding(new Insets(10));
             hbox.getChildren().addAll(imageView, infoBox);
 
-            // Add the HBox to the GridPane
-            productGrid.add(hbox, 0, i);
-            
-            i++;
+            productGrid.add(hbox, 0, rowIndex++);
         }
-        price.setText(String.format("%.2f €", totalprice));
+        price.setText(String.format("%.2f €", totalPrice));
     }
 
-    
+    /**
+     * Handles the checkout process by validating modifications, updating user and order data,
+     * inserting the order and invoice into the database, and navigating to the valid order scene.
+     */
     @FXML
     private void handleCheckout() {
-    	
- 	    String firstName = firstNameField.getText();
- 	    String lastName = lastNameField.getText();
- 	    String street = streetField.getText();
- 	    String city = cityField.getText();
- 	    String postCode = postCodeField.getText();
- 	    String country = countryField.getText();
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
+        String street = streetField.getText();
+        String city = cityField.getText();
+        String postCode = postCodeField.getText();
+        String country = countryField.getText();
 
- 	    // Vérification des modifications
- 	    String errorMessage = ValidationUtils.verifyModifications(firstName, lastName, street, city, postCode, country);
-
- 	    // Si une erreur est détectée, on l'affiche et on arrête l'exécution
- 	    if (errorMessage != null) {
- 	        showErrorMessage(errorMessage);
- 	        return;
- 	    }
- 	    
- 	    // --- Mise à jour des informations du client ---
- 	    user.setFirstName(firstName);
- 	    user.setLastName(lastName);
- 	    
-        // Mise à jour de l'adresse
+        String errorMessage = ValidationUtils.verifyModifications(firstName, lastName, street, city, postCode, country);
+        if (errorMessage != null) {
+            showErrorMessage(errorMessage);
+            return;
+        }
+        
+        // Update client information
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.getAddress().setStreet(street);
         user.getAddress().setCity(city);
         user.getAddress().setPostCode(postCode);
 
- 	
-        // --- Mise à jour des informations du client et de la commande ---
- 	   boolean updateSuccess = true;  // Variable pour suivre le succès global
+        // Update order status and persist client and order data
+        boolean updateSuccess = true;
+        Order order = UserSession.getInstance().getOrder();
+        order.setStatusFromString("Confirmed");
 
- 	   UserSession.getInstance().getOrder().setStatusFromString("Confirmed");
- 	   System.out.println(UserSession.getInstance().getOrder().getStatus());
- 	   // Mise à jour du client
- 	   updateSuccess &= DataSingleton.getInstance().getUserDAO().updateUser(user);  // On utilise &= pour s'assurer que toutes les étapes réussissent
+        updateSuccess &= DataSingleton.getInstance().getUserDAO().updateUser(user);
+        int orderID = DataSingleton.getInstance().getOrderDAO().insertOrder(order);
 
- 	   // Insertion de la commande
- 	   int orderID = DataSingleton.getInstance().getOrderDAO().insertOrder(UserSession.getInstance().getOrder());
-
- 	   // Vérification de succès
- 	   if (updateSuccess && orderID != -1) {
- 	      UserSession.getInstance().getOrder().setOrderID(orderID);
-
- 	      Invoice invoice = new Invoice(UserSession.getInstance().getOrder().getOrderID(), UserSession.getInstance().getOrder().getClientID(), UserSession.getInstance().getOrder().getPurchaseDate(), UserSession.getInstance().getOrder().calculateCartTotal());
- 	      int invoiceID = DataSingleton.getInstance().getInvoiceDAO().insertInvoice(invoice);
- 	      
- 	      invoice.setInvoiceID(invoiceID);
- 	      UserSession.getInstance().setInvoice(invoice);
- 	      
- 	       // Passage à la scène suivante uniquement si tout a réussi
- 	       try {
- 	           SceneManager.getInstance().showScene("ValidOrder");
- 	       } catch (Exception e) {
- 	           showErrorMessage("Error : there was an issue loading the next scene.");
- 	       }
- 	   } else {
- 	       // Affichage d'un message d'erreur générique si l'une des étapes a échoué
- 	       showErrorMessage("Erreur lors de la mise à jour du compte ou de l'insertion de la commande !");
- 	   }
- 	    
- 	
+        if (updateSuccess && orderID != -1) {
+            order.setOrderID(orderID);
+            Invoice invoice = new Invoice(order.getOrderID(), order.getClientID(), order.getPurchaseDate(), order.calculateCartTotal());
+            int invoiceID = DataSingleton.getInstance().getInvoiceDAO().insertInvoice(invoice);
+            invoice.setInvoiceID(invoiceID);
+            UserSession.getInstance().setInvoice(invoice);
+            
+            try {
+                SceneManager.getInstance().showScene("ValidOrder");
+            } catch (Exception e) {
+                showErrorMessage("Error: there was an issue loading the next scene.");
+            }
+        } else {
+            showErrorMessage("Error updating account or inserting order.");
+        }
     }
-    	
-    
 }

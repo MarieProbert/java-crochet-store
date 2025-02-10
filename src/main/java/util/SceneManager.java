@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import tables.Product;
 import java.io.IOException;
 import java.util.HashMap;
-//here
+
 /**
  * Manages scene transitions and maintains scene configuration.
  * Implements singleton pattern to ensure single instance across application.
@@ -97,7 +97,6 @@ public class SceneManager {
             stage.show();
             return true;
         } catch (IOException e) {
-            handleSceneLoadError("Product: " + product.getName(), e);
             return false;
         }
     }

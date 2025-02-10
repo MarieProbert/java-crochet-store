@@ -3,7 +3,7 @@ package util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-//here
+
 public class HashUtils {
 
     /**
@@ -23,7 +23,7 @@ public class HashUtils {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error during SHA-256 hashing", e);
+        	return null;
         }
     }
 }

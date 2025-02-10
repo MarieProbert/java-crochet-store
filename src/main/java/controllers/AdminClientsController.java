@@ -20,7 +20,11 @@ import tables.Address;
 import tables.User;
 import util.DataSingleton;
 import util.ValidationUtils;
-//here
+
+/**
+ * Controller for managing the admin client system.
+ * Provides functionalities for displaying, modifying, deleting, and adding users.
+ */
 public class AdminClientsController extends BaseController {
 
     @FXML private GridPane clientGrid;
@@ -34,143 +38,123 @@ public class AdminClientsController extends BaseController {
     private TextField countryField;
     private Label errorLabel;
 
-
     @FXML
     public void initialize() {
         super.initialize();
         displayClients();
     }
 
+    /**
+     * Displays the list of clients in the grid.
+     */
     private void displayClients() {
-    	clearMessage();
-
+        clearMessage();
         clientGrid.getChildren().clear();
         int i = 0;
 
         List<User> userCatalog = DataSingleton.getInstance().getUserDAO().getAllUsers();
 
         for (User u : userCatalog) {
-        	System.out.println(u.getFirstName());
             VBox vbox = new VBox(5);
             vbox.setPadding(new Insets(10));
 
-            Label roleLabel = new Label("Role : " + u.getRole());
-            Label idLabel = new Label("ID : " + u.getId());
-            Label firstNameLabel = new Label("First Name : " + u.getFirstName());
-            Label lastNameLabel = new Label("Last Name : " + u.getLastName());
+            Label roleLabel = new Label("Role: " + u.getRole());
+            Label idLabel = new Label("ID: " + u.getId());
+            Label firstNameLabel = new Label("First Name: " + u.getFirstName());
+            Label lastNameLabel = new Label("Last Name: " + u.getLastName());
 
             Button modifyButton = new Button("Modify");
-            modifyButton.setOnAction(e -> openModifyPopup(u)); // Appel de la méthode pour ouvrir le pop-up
+            modifyButton.setOnAction(e -> openModifyPopup(u));
 
             Button deleteButton = new Button("Delete");
             deleteButton.setOnAction(e -> deleteUser(u));
 
-            HBox generalInfoBox = new HBox(5);
-            generalInfoBox.getChildren().addAll(roleLabel, idLabel);
-
-            HBox nameBox = new HBox(5);
-            nameBox.getChildren().addAll(firstNameLabel, lastNameLabel);
-
-            HBox buttonBox = new HBox(5);
-            buttonBox.getChildren().addAll(modifyButton, deleteButton);
-
-            HBox hbox = new HBox(10);
+            HBox generalInfoBox = new HBox(5, roleLabel, idLabel);
+            HBox nameBox = new HBox(5, firstNameLabel, lastNameLabel);
+            HBox buttonBox = new HBox(5, modifyButton, deleteButton);
+            HBox hbox = new HBox(10, generalInfoBox, nameBox, buttonBox);
             hbox.setPadding(new Insets(10));
-            hbox.getChildren().addAll(generalInfoBox, nameBox, buttonBox);
 
-            clientGrid.add(hbox, 0, i);
-            i++;
+            clientGrid.add(hbox, 0, i++);
         }
     }
     
+    /**
+     * Deletes the specified user after confirmation.
+     * @param user The user to delete.
+     */
     private void deleteUser(User user) {
         Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmationDialog.setTitle("Confirmation de suppression");
-        confirmationDialog.setHeaderText("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
-        confirmationDialog.setContentText("Cette action est irréversible.");
+        confirmationDialog.setTitle("Delete Confirmation");
+        confirmationDialog.setHeaderText("Are you sure you want to delete this user?");
+        confirmationDialog.setContentText("This action is irreversible.");
 
-        // Attendre la réponse de l'utilisateur
         confirmationDialog.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Si l'utilisateur confirme, supprimer l'utilisateur
                 boolean isDeleted = DataSingleton.getInstance().getUserDAO().deleteUser(user);
                 if (isDeleted) {
-                    displayClients(); // Rafraîchir la liste des utilisateurs
-                } 
+                    displayClients();
+                }
             }
-        }); 
+        });
     }
 
+    /**
+     * Opens a popup window to modify the specified user's information.
+     * @param user The user to modify.
+     */
     private void openModifyPopup(User user) {
-        
         Stage popupStage = new Stage();
         popupStage.setTitle("Modify User");
-        
-        // On définit le mode de la fenêtre pour qu'elle bloque l'interaction avec l'application principale
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        
-        
-        // Création du GridPane pour organiser les éléments
+
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20));
 
-        // Ajouter un Label pour les erreurs (initialement vide)
         errorLabel = new Label("");
-        errorLabel.setStyle("-fx-text-fill: red;"); // Optionnel : style pour les erreurs
-        grid.add(errorLabel, 0, 0, 2, 1); // Span sur 2 colonnes
+        errorLabel.setStyle("-fx-text-fill: red;");
+        grid.add(errorLabel, 0, 0, 2, 1);
 
-        // Ajouter les champs non modifiables (ID, email, rôle)
+        // Non-editable fields
         grid.add(new Label("ID:"), 0, 1);
         grid.add(new Label(String.valueOf(user.getId())), 1, 1);
-
         grid.add(new Label("Email:"), 0, 2);
         grid.add(new Label(user.getEmail()), 1, 2);
-
         grid.add(new Label("Role:"), 0, 3);
         grid.add(new Label(user.getRole()), 1, 3);
 
-        // Ajouter les champs modifiables (prénom, nom)
+        // Editable fields
         firstNameField = new TextField(user.getFirstName());
         lastNameField = new TextField(user.getLastName());
-
         grid.add(new Label("First Name:"), 0, 4);
         grid.add(firstNameField, 1, 4);
-
         grid.add(new Label("Last Name:"), 0, 5);
         grid.add(lastNameField, 1, 5);
 
-        // Si l'utilisateur est un client, ajouter les champs d'adresse
+        // If the user is a client, add address fields
         if ("client".equalsIgnoreCase(user.getRole())) {
-            streetField = new TextField(user.getAddress().getStreet()); // Initialisation de streetField
-            cityField = new TextField(user.getAddress().getCity());     // Initialisation de cityField
-            postCodeField = new TextField(user.getAddress().getPostCode()); // Initialisation de postCodeField
-            countryField = new TextField(user.getAddress().getCountry());   // Initialisation de countryField
-
+            streetField = new TextField(user.getAddress().getStreet());
+            cityField = new TextField(user.getAddress().getCity());
+            postCodeField = new TextField(user.getAddress().getPostCode());
+            countryField = new TextField(user.getAddress().getCountry());
 
             grid.add(new Label("Street:"), 0, 6);
             grid.add(streetField, 1, 6);
-
             grid.add(new Label("City:"), 0, 7);
             grid.add(cityField, 1, 7);
-
             grid.add(new Label("Post Code:"), 0, 8);
             grid.add(postCodeField, 1, 8);
-
             grid.add(new Label("Country:"), 0, 9);
             grid.add(countryField, 1, 9);
         }
         
-
-        
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> {
-            // Valider les champs avant de sauvegarder
             if (firstNameField.getText().isEmpty() || lastNameField.getText().isEmpty()) {
                 errorLabel.setText("First Name and Last Name are required.");
             } else {
-                // Mettre à jour les informations de l'utilisateur
                 user.setFirstName(firstNameField.getText());
                 user.setLastName(lastNameField.getText());
 
@@ -180,53 +164,40 @@ public class AdminClientsController extends BaseController {
                     user.getAddress().setPostCode(postCodeField.getText());
                     user.getAddress().setCountry(countryField.getText());
                 }
-
-                // Appeler la méthode handleSave pour sauvegarder les modifications
                 handleSave(user);
-
             }
-            
         });
         
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(e -> popupStage.close());
 
-
-        // On peut placer les boutons dans une HBox pour les aligner
-        HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().addAll(saveButton, cancelButton);
+        HBox buttonBox = new HBox(10, saveButton, cancelButton);
         grid.add(buttonBox, 1, 10);
         
-        // Création de la scène et affectation au Stage
         Scene scene = new Scene(grid);
         popupStage.setScene(scene);
-        
-        // Affichage du pop-up en mode bloquant
         popupStage.showAndWait();
     }
 
+    /**
+     * Saves the modified user information.
+     * @param user The user to update.
+     */
     private void handleSave(User user) {
-    	
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
-
-        String errorMessage = null;
+        String errorMessage;
 
         if ("client".equalsIgnoreCase(user.getRole())) {
             String street = streetField.getText();
             String city = cityField.getText();
             String postCode = postCodeField.getText();
             String country = countryField.getText();
-            
             errorMessage = ValidationUtils.verifyModifications(firstName, lastName, street, city, postCode, country);
-
-        }
-        else {
+        } else {
             errorMessage = ValidationUtils.verifyModifications(firstName, lastName);
-
         }
 
-        // Si une erreur est détectée, on l'affiche et on arrête l'exécution
         if (errorMessage != null) {
             showErrorMessage(errorMessage);
             return;
@@ -234,78 +205,63 @@ public class AdminClientsController extends BaseController {
 
         user.setFirstName(firstName);
         user.setLastName(lastName);
-
-        // Si l'utilisateur est un client, on met aussi à jour son adresse
         if ("client".equalsIgnoreCase(user.getRole())) {
-
-            // Mise à jour de l'adresse
             user.getAddress().setStreet(streetField.getText());
             user.getAddress().setCity(cityField.getText());
             user.getAddress().setPostCode(postCodeField.getText());
             user.getAddress().setCountry(countryField.getText());
-
-
         }
-        // --- Mise à jour des informations du user ---
         boolean updateSuccess = DataSingleton.getInstance().getUserDAO().updateUser(user);
-
         if (updateSuccess) {
-            showInfoMessage("Les modifications ont été enregistrées avec succès !");
+            showInfoMessage("Modifications have been saved successfully!");
         } else {
-            errorLabel.setText("Erreur lors de la mise à jour du compte !");
+            errorLabel.setText("Error updating account!");
             user = DataSingleton.getInstance().getUserDAO().setUser(user.getEmail());
         }
-        displayClients(); // Rafraîchir la liste des utilisateurs après la modification
+        displayClients();
     }
     
-
-    
+    /**
+     * Opens a popup window to add a new user.
+     */
     @FXML
     public void handleAddUser() {
-        // Création d'un nouveau Stage pour le formulaire d'ajout d'utilisateur
         Stage addUserStage = new Stage();
         addUserStage.setTitle("Add User");
         addUserStage.initModality(Modality.APPLICATION_MODAL);
 
-        // Création du GridPane pour organiser les éléments du formulaire
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20));
 
-        // Label d'erreur
         Label errorLabel = new Label("");
         errorLabel.setStyle("-fx-text-fill: red;");
         grid.add(errorLabel, 0, 0, 2, 1);
 
-        // Champ Email
         grid.add(new Label("Email:"), 0, 1);
         TextField emailField = new TextField();
         grid.add(emailField, 1, 1);
 
-        // Champ Password (PasswordField) juste en dessous de l'email
         grid.add(new Label("Password:"), 0, 2);
         PasswordField passwordField = new PasswordField();
         grid.add(passwordField, 1, 2);
 
-        // Liste déroulante pour le rôle (client ou admin)
         grid.add(new Label("Role:"), 0, 3);
         ComboBox<String> roleComboBox = new ComboBox<>();
         roleComboBox.getItems().addAll("client", "admin");
-        roleComboBox.setValue("client");  // valeur par défaut si souhaité
+        roleComboBox.setValue("client");
         grid.add(roleComboBox, 1, 3);
 
-        // Champ First Name
         grid.add(new Label("First Name:"), 0, 4);
         TextField firstNameField = new TextField();
         grid.add(firstNameField, 1, 4);
 
-        // Champ Last Name
         grid.add(new Label("Last Name:"), 0, 5);
         TextField lastNameField = new TextField();
         grid.add(lastNameField, 1, 5);
 
-        // Champs d'adresse (pour le cas d'un client)
+        // Address fields for client role
         grid.add(new Label("Street:"), 0, 6);
         TextField streetField = new TextField();
         grid.add(streetField, 1, 6);
@@ -322,23 +278,19 @@ public class AdminClientsController extends BaseController {
         TextField countryField = new TextField();
         grid.add(countryField, 1, 9);
 
-        // Boutons Save et Cancel
         Button saveButton = new Button("Save");
         Button cancelButton = new Button("Cancel");
 
-        // Action du bouton Save
         saveButton.setOnAction(e -> {
-            // Vérification des champs obligatoires
             if (emailField.getText().isEmpty() ||
                 passwordField.getText().isEmpty() ||
-                firstNameField.getText().isEmpty() || lastNameField.getText().isEmpty()) {
+                firstNameField.getText().isEmpty() ||
+                lastNameField.getText().isEmpty()) {
                 errorLabel.setText("Email, Password, First Name and Last Name are required.");
                 return;
             }
 
-            // Récupération de la valeur du rôle
             String role = roleComboBox.getValue();
-            // Si le rôle est "client", les champs d'adresse sont obligatoires
             if ("client".equalsIgnoreCase(role)) {
                 if (streetField.getText().isEmpty() || cityField.getText().isEmpty() ||
                     postCodeField.getText().isEmpty() || countryField.getText().isEmpty()) {
@@ -347,16 +299,13 @@ public class AdminClientsController extends BaseController {
                 }
             }
 
-            // Création d'un nouvel objet User
             User newUser = new User();
             newUser.setEmail(emailField.getText());
-            // Vous pouvez ajouter ici un setter pour le mot de passe si nécessaire :
             newUser.setPassword(passwordField.getText());
             newUser.setRole(role);
             newUser.setFirstName(firstNameField.getText());
             newUser.setLastName(lastNameField.getText());
 
-            // Si le rôle est "client", création et affectation de l'adresse
             if ("client".equalsIgnoreCase(role)) {
                 Address address = new Address();
                 address.setStreet(streetField.getText());
@@ -366,28 +315,22 @@ public class AdminClientsController extends BaseController {
                 newUser.setAddress(address);
             }
 
-            // Insertion du nouvel utilisateur via le DAO
             int insertSuccess = DataSingleton.getInstance().getUserDAO().insertUser(newUser);
             if (insertSuccess != -1) {
-                displayClients();  // Rafraîchit la grille des utilisateurs
+                displayClients();
                 addUserStage.close();
             } else {
                 errorLabel.setText("Error adding user. Please try again.");
             }
         });
 
-        // Action du bouton Cancel : ferme simplement le Stage
         cancelButton.setOnAction(e -> addUserStage.close());
 
-        // Ajout des boutons dans une HBox
-        HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().addAll(saveButton, cancelButton);
+        HBox buttonBox = new HBox(10, saveButton, cancelButton);
         grid.add(buttonBox, 1, 10);
 
-        // Création de la scène et affichage du Stage
         Scene scene = new Scene(grid);
         addUserStage.setScene(scene);
         addUserStage.showAndWait();
     }
-
 }

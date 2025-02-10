@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.File;
-
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -29,6 +28,7 @@ public class BaseController {
 
     @FXML 
     protected ImageView bannerImage;
+    
     @FXML 
     protected ImageView personIcon;
     
@@ -41,21 +41,15 @@ public class BaseController {
     protected boolean needToClearCart = false;
 
     /**
-     * Initializes the controller.
-     * Sets up the banner and user icon images, creates the tooltip popup,
-     * and attaches mouse event handlers for the tooltip.
+     * Initializes the controller, loads images, and sets up the tooltip for the user icon.
      */
     public void initialize() {
-    	clearMessage();
+        clearMessage();
         bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
         personIcon.setImage(loadImage("C:/Users/marie/eclipse-workspace/projet-java/pictures/others/user_icon.png", defaultImagePath));
-
         createTooltipPopup();
 
-        // Show tooltip when the mouse enters the user icon.
         personIcon.setOnMouseEntered(event -> showTooltip());
-
-        // Start delay to hide tooltip when the mouse exits the icon and is not over the tooltip.
         personIcon.setOnMouseExited(event -> {
             if (!tooltipBox.isHover()) {
                 startHideTooltipDelay();
@@ -64,7 +58,7 @@ public class BaseController {
     }
 
     /**
-     * Loads an image from the specified path. Returns a default image if the image is not found.
+     * Loads an image from the specified path, returning a default image if not found.
      *
      * @param imagePath   the path to the image
      * @param defaultPath the default image path if the image is not found
@@ -83,21 +77,17 @@ public class BaseController {
 
     /**
      * Creates the tooltip popup for the user icon.
-     * The tooltip content is built based on the user login status.
+     * The tooltip content is built based on the user's login status.
      */
     protected void createTooltipPopup() {
         String cssFile = getClass().getResource("/style.css").toExternalForm();
-
         tooltipPopup = new Popup();
-        tooltipBox = new VBox(5); // Reduce spacing between buttons.
+        tooltipBox = new VBox(5);
         tooltipBox.getStylesheets().add(cssFile);
         tooltipBox.getStyleClass().add("tooltip-box");
 
-        // Check if the user is logged in.
         boolean isLoggedIn = UserSession.getInstance().getUser().getId() != -1;
-
         if (isLoggedIn) {
-            // For clients, add "Past Orders" button.
             if ("client".equals(UserSession.getInstance().getUser().getRole())) {
                 Button ordersButton = new Button("Past Orders");
                 ordersButton.getStyleClass().add("text-like-button");
@@ -108,7 +98,6 @@ public class BaseController {
                 tooltipBox.getChildren().add(ordersButton);
             }
 
-            // Add Account and Logout buttons.
             Button accountButton = new Button("Account");
             Button logoutButton = new Button("Logout");
             accountButton.getStyleClass().add("text-like-button");
@@ -122,22 +111,18 @@ public class BaseController {
                 handleLogout();
                 tooltipPopup.hide();
             });
-
             tooltipBox.getChildren().addAll(accountButton, logoutButton);
         } else {
-            // For not logged in users, show only the Login button.
             Button loginButton = new Button("Login");
             loginButton.getStyleClass().add("text-like-button");
             loginButton.setOnAction(event -> {
-                handleAccount(); // Redirect to login page.
+                handleAccount();
                 tooltipPopup.hide();
             });
             tooltipBox.getChildren().add(loginButton);
         }
-
         tooltipPopup.getContent().add(tooltipBox);
 
-        // Keep the popup open if the mouse is over it.
         tooltipBox.setOnMouseEntered(event -> {
             if (hideTooltipDelay != null) {
                 hideTooltipDelay.stop();
@@ -181,20 +166,19 @@ public class BaseController {
     }
 
     /**
-     * Handles the action to display the shopping cart.
+     * Navigates to the shopping cart scene.
      */
     @FXML
     protected void handleCart() {
         try {
             SceneManager.getInstance().showScene("Cart");
         } catch (Exception e) {
-        	showErrorMessage("There was an issue loading the next scene.");
+            showErrorMessage("There was an issue loading the next scene.");
         }
     }
 
     /**
-     * Conditionally clears the shopping cart if required.
-     * If the flag is set, it resets the order in the user session.
+     * Clears the shopping cart if flagged.
      */
     protected void conditionalClearCart() {
         if (needToClearCart) {
@@ -204,13 +188,11 @@ public class BaseController {
     }
 
     /**
-     * Handles navigation to the account or login page.
-     * Chooses the destination scene based on the user login status and role.
+     * Navigates to the account or login page based on the user's login status and role.
      */
     protected void handleAccount() {
         String sceneToShow;
         conditionalClearCart();
-
         if (UserSession.getInstance().getUser().getId() != -1) {
             if ("admin".equals(UserSession.getInstance().getUser().getRole())) {
                 sceneToShow = "AdminAccount";
@@ -220,16 +202,15 @@ public class BaseController {
         } else {
             sceneToShow = "Login";
         }
-
         try {
             SceneManager.getInstance().showScene(sceneToShow);
         } catch (Exception e) {
-        	showErrorMessage("There was an issue loading the next scene.");
+            showErrorMessage("There was an issue loading the next scene.");
         }
     }
 
     /**
-     * Handles navigation to the catalog scene.
+     * Navigates to the catalog scene.
      */
     @FXML
     protected void handleCatalog() {
@@ -237,13 +218,12 @@ public class BaseController {
         try {
             SceneManager.getInstance().showScene("Catalog");
         } catch (Exception e) {
-        	showErrorMessage("There was an issue loading the next scene.");
+            showErrorMessage("There was an issue loading the next scene.");
         }
     }
 
     /**
-     * Handles the user logout process.
-     * Resets the user session and navigates back to the catalog.
+     * Logs the user out and navigates back to the catalog.
      */
     protected void handleLogout() {
         UserSession.getInstance().setOrder(new Order());
@@ -252,7 +232,7 @@ public class BaseController {
     }
 
     /**
-     * Handles navigation to the past orders (order history) scene.
+     * Navigates to the order history (past orders) scene.
      */
     @FXML
     protected void handlePastOrders() {
@@ -260,52 +240,57 @@ public class BaseController {
         try {
             SceneManager.getInstance().showScene("OrderHistory");
         } catch (Exception e) {
-        	showErrorMessage("There was an issue loading the next scene.");
+            showErrorMessage("There was an issue loading the next scene.");
         }
     }
 
     /**
-     * Handles navigation to the admin menu scene.
+     * Navigates to the admin menu scene.
      */
     @FXML
     protected void handleReturnMenu() {
         try {
             SceneManager.getInstance().showScene("MenuAdmin");
         } catch (Exception e) {
-        	showErrorMessage("There was an issue loading the next scene.");
+            showErrorMessage("There was an issue loading the next scene.");
         }
     }
-    
-    
+
     /**
-     * Affiche un message d'erreur dans le label.
-     * @param message Le message d'erreur à afficher
+     * Displays an error message in the message label.
+     *
+     * @param message the error message to display
      */
     protected void showErrorMessage(String message) {
         messageLabel.setText(message);
-        messageLabel.getStyleClass().remove("info-message"); // Supprime le style d'information
-        messageLabel.getStyleClass().add("error-message");   // Applique le style d'erreur
-        messageLabel.setVisible(true);                       // Rend le label visible
+        messageLabel.getStyleClass().remove("info-message");
+        if (!messageLabel.getStyleClass().contains("error-message")) {
+            messageLabel.getStyleClass().add("error-message");
+        }
+        messageLabel.setVisible(true);
     }
 
     /**
-     * Affiche un message d'information dans le label.
-     * @param message Le message d'information à afficher
+     * Displays an informational message in the message label.
+     *
+     * @param message the information message to display
      */
     protected void showInfoMessage(String message) {
         messageLabel.setText(message);
-        messageLabel.getStyleClass().remove("error-message"); // Supprime le style d'erreur
-        messageLabel.getStyleClass().add("info-message");     // Applique le style d'information
-        messageLabel.setVisible(true);                        // Rend le label visible
+        messageLabel.getStyleClass().remove("error-message");
+        if (!messageLabel.getStyleClass().contains("info-message")) {
+            messageLabel.getStyleClass().add("info-message");
+        }
+        messageLabel.setVisible(true);
     }
 
     /**
-     * Efface le message affiché et cache le label.
+     * Clears the message label.
      */
     protected void clearMessage() {
         messageLabel.setText("");
         messageLabel.getStyleClass().remove("error-message");
         messageLabel.getStyleClass().remove("info-message");
-        messageLabel.setVisible(false); // Cache le label
+        messageLabel.setVisible(false);
     }
 }

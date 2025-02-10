@@ -3,45 +3,50 @@ package controllers;
 import javafx.fxml.FXML;
 import util.SceneManager;
 
+/**
+ * Controller for the admin menu.
+ * Provides navigation to customer management, product catalog management, and invoicing systems.
+ */
 public class MenuAdminController extends BaseController {
     
     @FXML
     public void initialize() {
-    	super.initialize();
+        super.initialize();
     }
 
-	@FXML
-	private void handleCustomerSystem() {
-    	try {
+    /**
+     * Navigates to the customer management system.
+     */
+    @FXML
+    private void handleCustomerSystem() {
+        try {
             SceneManager.getInstance().showScene("AdminClients");
-
-            
         } catch (Exception e) {
-            showErrorMessage("Error : there was an issue loading the next scene.");
+            showErrorMessage("Error: there was an issue loading the next scene.");
         }
-
-	}
-	
-	@FXML
-	private void handleProductCatalogSystem() {
-    	try {
+    }
+    
+    /**
+     * Navigates to the product catalog management system.
+     */
+    @FXML
+    private void handleProductCatalogSystem() {
+        try {
             SceneManager.getInstance().showScene("AdminCatalog");
-
-            
         } catch (Exception e) {
-        	showErrorMessage("Error : there was an issue loading the next scene.");
+            showErrorMessage("Error: there was an issue loading the next scene.");
         }
-
-	}
-	
-	@FXML
-	private void handleInvoicingSystem() {
-    	try {
-            SceneManager.getInstance().showScene("AdminOrder");
-
-            
+    }
+    
+    /**
+     * Navigates to the invoicing system.
+     */
+    @FXML
+    private void handleInvoicingSystem() {
+        try {
+            SceneManager.getInstance().showScene("AdminOrders");
         } catch (Exception e) {
-        	showErrorMessage("Error : there was an issue loading the next scene.");
+            showErrorMessage("Error: there was an issue loading the next scene.");
         }
-	}
+    }
 }

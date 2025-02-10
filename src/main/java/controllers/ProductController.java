@@ -10,33 +10,54 @@ import javafx.scene.image.ImageView;
 import tables.Product;
 import util.UserSession;
 
+/**
+ * Controller for displaying detailed information about a product.
+ * Provides methods to update UI components with product data and handle adding the product to the cart.
+ */
 public class ProductController extends BaseController {
-	
-	private Product product;
-	
+
+    private Product product;
+
     @FXML private ImageView productImage;
     @FXML private Label productName;
     @FXML private Label productPrice;
     @FXML private Button addToCartButton;
 
-   
     @FXML private Label creatorLabel;
     @FXML private Label productCreator;
-    
+
     @FXML private Label descriptionLabel;
     @FXML private Label productDescription;
 
     @FXML private Label colorLabel;
     @FXML private Label productColor;
-    
+
     @FXML private Label sizeLabel;
     @FXML private Label productSize;
-    
+
     @FXML
     public void initialize() {
-    	super.initialize();
+        super.initialize();
     }
-    
+
+    /**
+     * Sets the current product and updates the UI with its details.
+     *
+     * @param product the product to display
+     */
+    public void setProduct(Product product) {
+        this.product = product;
+        Image image = loadImage(product.getImagePath(), defaultImagePath);
+
+        displayProductName(product.getName());
+        displayProductPrice(product.getPrice());
+        displayProductCreator(product.getCreator());
+        displayProductDescription(product.getDescription());
+        displayProductImage(image);
+        displayProductColor(product.getColor());
+        displayProductSize(product.getSize());
+    }
+
     public void displayProductName(String name) {
         productName.setText(name);
     }
@@ -47,77 +68,38 @@ public class ProductController extends BaseController {
 
     public void displayProductImage(Image image) {
         productImage.setImage(image);
-    }    
+    }
 
     public void displayProductCreator(String creator) {
-        if (creator != null) {
-            productCreator.setText(creator);
-            creatorLabel.setVisible(true); // Affiche le label "Couleur :"
-        } else {
-            productCreator.setText(""); // Vide le champ de couleur
-            creatorLabel.setVisible(false); // Cache le label "Couleur :"
-        }
+        productCreator.setText(creator);
+        creatorLabel.setVisible(true);
     }
-    
+
     public void displayProductDescription(String description) {
-        if (description != null) {
-            productDescription.setText(description);
-            descriptionLabel.setVisible(true); // Affiche le label "Couleur :"
-        } else {
-            productDescription.setText(""); // Vide le champ de couleur
-            descriptionLabel.setVisible(false); // Cache le label "Couleur :"
-        }
+        productDescription.setText(description);
+        descriptionLabel.setVisible(true);
     }
-    
+
     public void displayProductColor(Color color) {
-        if (color != null) {
-            productColor.setText(color.toString());
-            colorLabel.setVisible(true); // Affiche le label "Couleur :"
-        } else {
-            productColor.setText(""); // Vide le champ de couleur
-            colorLabel.setVisible(false); // Cache le label "Couleur :"
-        }
+        productColor.setText(color.toString());
+        colorLabel.setVisible(true);
     }
-    
+
     public void displayProductSize(Size size) {
-        if (size != null) {
-            productSize.setText(size.toString());
-            sizeLabel.setVisible(true); // Affiche le label "Couleur :"
-        } else {
-            productSize.setText(""); // Vide le champ de couleur
-            sizeLabel.setVisible(false); // Cache le label "Couleur :"
-        }
+        productSize.setText(size.toString());
+        sizeLabel.setVisible(true);
     }
 
-    
-	public void setProduct(Product product) {
-        
-		this.product = product;
-		
-		Image image = loadImage(product.getImagePath(), defaultImagePath);
-		
-        // Affichage des informations du produit
-		displayProductName(product.getName());
-		displayProductPrice(product.getPrice());
-		displayProductCreator(product.getCreator());
-		displayProductDescription(product.getDescription());
-		displayProductImage(image);
-        displayProductColor(product.getColor());
-        displayProductSize(product.getSize());
-
-	}
-	
-	@FXML
-	private void handleAddToCart() {
+    /**
+     * Handles the "Add to Cart" action for the current product.
+     */
+    @FXML
+    private void handleAddToCart() {
         boolean success = UserSession.getInstance().getOrder().addToCart(product, 1);
         if (success) {
-        	showInfoMessage("Product added to cart");
+            showInfoMessage("Product added to cart");
+        } else {
+            showErrorMessage("Not enough stock");
         }
-        else {
-        	showErrorMessage("Not enough stock");
-        }
-	}
-
-
-    
+    }
 }

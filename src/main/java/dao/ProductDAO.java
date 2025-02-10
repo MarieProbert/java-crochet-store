@@ -44,7 +44,6 @@ public class ProductDAO {
 
                 catalog.addProduct(product);
             }
-            System.out.println(catalog.toString());
 
         } catch (SQLException e) {
             e.printStackTrace();

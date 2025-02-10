@@ -29,47 +29,43 @@ import util.SceneManager;
 import util.UserSession;
 
 /**
- * Controller for managing the product catalog screen, including filtering, searching, and displaying products.
- * Handles filtering based on various criteria like price, category, theme, size, and color, and manages pagination.
+ * Controller for managing the product catalog screen.
+ * Supports filtering (by price, category, size, and color), searching using a query parser,
+ * and dynamic pagination based on window size.
  */
 public class CatalogController extends BaseController {
 
     @FXML private GridPane productGrid;
     @FXML private TextField searchField;
     @FXML private Button searchButton;
-    
-    // Additional filters
+
     @FXML private TextField minPriceField;
     @FXML private TextField maxPriceField;
     @FXML private ComboBox<Category> categoryComboBox;
     @FXML private ComboBox<Size> sizeComboBox;
     @FXML private ComboBox<Color> colorComboBox;
-    
+
     @FXML private Pagination pagination;
-    
-    // Catalog currently displayed (loaded into memory)
+
+    // Catalog currently displayed (loaded in memory)
     private Catalog catalog;
-    
-    // Number of products per page (2 rows max: calculated dynamically = columns * 2)
+
+    // Number of products per page (dynamically calculated: columns * 2)
     private int PRODUCTS_PER_PAGE = 4;
 
     /**
-     * Initializes the CatalogController, loading the complete catalog and setting up filters.
-     * Adds listeners to handle screen resizing and pagination changes.
+     * Initializes the catalog controller by loading the full catalog and setting up filters and listeners.
      */
     @FXML
     public void initialize() {
         super.initialize();
-        
-        // Load the full catalog initially
         catalog = DataSingleton.getInstance().getCatalog();
-        
-        // Initialize ComboBoxes with all possible values for each enum
+
         initializeComboBoxWithAllOption(categoryComboBox, Category.values());
         initializeComboBoxWithAllOption(sizeComboBox, Size.values());
         initializeComboBoxWithAllOption(colorComboBox, Color.values());
 
-        // Add listener to adjust the display when the scene is resized
+        // Adjust the grid when the scene is resized.
         productGrid.sceneProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends javafx.scene.Scene> observable,
@@ -81,24 +77,24 @@ public class CatalogController extends BaseController {
                 }
             }
         });
-        
-        // Configure pagination: when the user changes the page, we update the grid
+
+        // Update grid when pagination page changes.
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> updateGrid());
     }
 
     /**
-     * Initializes a ComboBox with an "All" option and the values from the provided enum array.
-     * 
+     * Initializes a ComboBox by adding a null (interpreted as "All") option along with all enum values.
+     *
+     * @param <T>      the enum type
      * @param comboBox the ComboBox to initialize
-     * @param values the values of the enum to populate the ComboBox
+     * @param values   the array of enum values
      */
     private <T extends Enum<T>> void initializeComboBoxWithAllOption(ComboBox<T> comboBox, T[] values) {
         List<T> items = new ArrayList<>();
-        items.add(null); // "All"
+        items.add(null); // Represents "All"
         items.addAll(Arrays.asList(values));
         comboBox.getItems().setAll(items);
 
-        // Set up display to show "All" for the null value
         comboBox.setConverter(new StringConverter<T>() {
             @Override
             public String toString(T value) {
@@ -113,64 +109,61 @@ public class CatalogController extends BaseController {
     }
 
     /**
-     * Method called when the "Search" button is clicked.
-     * It retrieves the values from the search field, price filters, and ComboBox selections,
-     * then filters the catalog in memory to display products that match the criteria.
+     * Handles the search action when the "Search" button is clicked.
+     * Reads filter values, performs a search, updates the catalog, and refreshes the display.
      */
     @FXML
     private void handleSearch() {
-    	clearMessage();
-    	
+        clearMessage();
         String searchText = searchField.getText().trim();
-        
-        // Perform search with all criteria
         List<Product> filteredProducts = searchProducts(searchText);
-        
-        // Create a new catalog with only the filtered products
+
         Catalog newCatalog = new Catalog();
         for (Product p : filteredProducts) {
             newCatalog.addProduct(p);
         }
         catalog = newCatalog;
-        
-        // Update display (pagination and grid)
+
         updateGrid();
     }
-    
 
     /**
-     * Classe interne pour analyser la chaîne de recherche en respectant la priorité des opérateurs.
+     * Inner class that parses a search query string and builds a corresponding Predicate.
+     * The parser respects operator precedence (with "and" having higher precedence than "or").
      */
     private class QueryParser {
         private String[] tokens;
         private int index;
 
         public QueryParser(String input) {
-            // On ajoute des espaces autour des parenthèses pour que le découpage se fasse correctement.
+            // Add spaces around parentheses for proper tokenization.
             input = input.replace("(", " ( ").replace(")", " ) ");
             tokens = input.trim().split("\\s+");
             index = 0;
         }
 
         /**
-         * Analyse l'expression complète et renvoie le prédicat correspondant.
+         * Parses the entire expression and returns the corresponding predicate.
+         *
+         * @return a Predicate for Product matching the query
+         * @throws Exception if a parsing error occurs
          */
         public Predicate<Product> parse() throws Exception {
             Predicate<Product> result = parseExpression();
             if (index < tokens.length) {
-            	showErrorMessage("Erreur de syntaxe : Token non consommé : " + tokens[index]);
-            	return null;
+                showErrorMessage("Syntax error: Unconsumed token: " + tokens[index]);
+                return null;
             }
             return result;
         }
 
         /**
-         * Expression : Term { "or" Term }
+         * Parses an expression: Term { "or" Term }
          */
         private Predicate<Product> parseExpression() throws Exception {
             Predicate<Product> term = parseTerm();
             while (index < tokens.length && tokens[index].equals("or")) {
-                index++; // consomme le token "or"
+                index++; // Consume "or"
                 Predicate<Product> nextTerm = parseTerm();
                 term = term.or(nextTerm);
             }
@@ -178,12 +171,12 @@ public class CatalogController extends BaseController {
         }
 
         /**
-         * Term : Factor { "and" Factor }
+         * Parses a term: Factor { "and" Factor }
          */
         private Predicate<Product> parseTerm() throws Exception {
             Predicate<Product> factor = parseFactor();
             while (index < tokens.length && tokens[index].equals("and")) {
-                index++; // consomme le token "and"
+                index++; // Consume "and"
                 Predicate<Product> nextFactor = parseFactor();
                 factor = factor.and(nextFactor);
             }
@@ -191,50 +184,51 @@ public class CatalogController extends BaseController {
         }
 
         /**
-         * Factor : ( Expression ) | keyword
+         * Parses a factor: either an expression within parentheses or a keyword.
          */
         private Predicate<Product> parseFactor() throws Exception {
             if (index >= tokens.length) {
-                showErrorMessage("Requête incomplète");
+                showErrorMessage("Incomplete query");
+                return null;
             }
             String token = tokens[index];
             if (token.equals("(")) {
-                index++; // consomme "("
+                index++; // Consume "("
                 Predicate<Product> expr = parseExpression();
                 if (index >= tokens.length || !tokens[index].equals(")")) {
-                    showErrorMessage("Parenthèse fermante attendue");
+                    showErrorMessage("Closing parenthesis expected");
                     return null;
                 }
-                index++; // consomme ")"
+                index++; // Consume ")"
                 return expr;
             } else {
-                // Considère le token comme un mot-clé
-                index++; // consomme le mot-clé
+                index++; // Consume keyword
                 return productMatches(token);
             }
         }
 
         /**
-         * Renvoie un prédicat qui teste si un produit contient le mot-clé dans l'un de ses champs textuels.
+         * Returns a predicate that tests if a product contains the keyword in one of its text fields.
+         *
+         * @param keyword the search keyword
+         * @return the predicate testing the product's creator, name, or description
          */
         private Predicate<Product> productMatches(String keyword) {
             return p -> p.getCreator().toLowerCase().contains(keyword)
-                      || p.getName().toLowerCase().contains(keyword)
-                      || p.getDescription().toLowerCase().contains(keyword);
+                     || p.getName().toLowerCase().contains(keyword)
+                     || p.getDescription().toLowerCase().contains(keyword);
         }
     }
 
-
-
-
-
     /**
-     * Effectue la recherche en combinant la recherche textuelle avec les filtres (prix, catégorie, etc.).
+     * Combines textual search with filters (price, category, size, and color) and returns matching products.
+     *
+     * @param searchText the search text entered by the user
+     * @return a list of products that match all criteria
      */
     private List<Product> searchProducts(String searchText) {
         List<Product> results = new ArrayList<>();
 
-        // Lecture des filtres de prix
         double minPrice = -1, maxPrice = -1;
         if (!minPriceField.getText().trim().isEmpty()) {
             try {
@@ -250,14 +244,11 @@ public class CatalogController extends BaseController {
                 showErrorMessage("Invalid maximum price format.");
             }
         }
-        
-        // Lecture des autres filtres (catégorie, thème, taille, couleur)
+
         Category selectedCategory = categoryComboBox.getValue();
         Size selectedSize = sizeComboBox.getValue();
         Color selectedColor = colorComboBox.getValue();
 
-        // Construction du prédicat de recherche à partir de la chaîne saisie.
-        // Si la chaîne est vide, on considère que le filtre textuel est toujours vrai.
         Predicate<Product> searchPredicate = p -> true;
         String normalizedSearch = (searchText == null ? "" : searchText.trim());
         if (!normalizedSearch.isEmpty()) {
@@ -265,22 +256,18 @@ public class CatalogController extends BaseController {
                 QueryParser parser = new QueryParser(normalizedSearch.toLowerCase());
                 searchPredicate = parser.parse();
             } catch (Exception e) {
-                showErrorMessage("Erreur lors de l'analyse de la requête de recherche : " + e.getMessage());
-                // En cas d'erreur de parsing, on effectue une recherche simple par mot-clé
+                showErrorMessage("Error parsing search query: " + e.getMessage());
                 String query = normalizedSearch.toLowerCase();
                 searchPredicate = p -> p.getCreator().toLowerCase().contains(query)
-                                   || p.getName().toLowerCase().contains(query)
-                                   || p.getDescription().toLowerCase().contains(query);
+                                     || p.getName().toLowerCase().contains(query)
+                                     || p.getDescription().toLowerCase().contains(query);
             }
         }
 
-        // Parcourt tous les produits et applique les différents filtres
         for (Product p : DataSingleton.getInstance().getCatalog().getProducts()) {
-            // Vérification de la recherche textuelle
             if (!searchPredicate.test(p)) {
                 continue;
             }
-            // Vérification des filtres de prix
             double price = p.getPrice();
             if (minPrice >= 0 && price < minPrice) {
                 continue;
@@ -288,7 +275,6 @@ public class CatalogController extends BaseController {
             if (maxPrice >= 0 && price > maxPrice) {
                 continue;
             }
-            // Vérification des autres filtres
             if (selectedCategory != null && p.getCategory() != selectedCategory) {
                 continue;
             }
@@ -302,46 +288,40 @@ public class CatalogController extends BaseController {
         }
         return results;
     }
-    
+
     /**
-     * Updates the product grid and pagination.
-     * The number of columns is calculated dynamically based on the window width.
-     * Only 2 rows of products are displayed per page.
+     * Updates the product grid and pagination. Dynamically calculates the number of columns based on window width
+     * and displays only two rows per page.
      */
     private void updateGrid() {
         if (productGrid.getScene() == null) return;
-        
+
         productGrid.getChildren().clear();
-        
-        // Calculate available width in the scene (with margin)
+
         double gridWidth = productGrid.getScene().getWidth() - 200;
-        double productBoxWidth = 200; // approximate width of a VBox for a product
+        double productBoxWidth = 200; // Approximate width of a product box
         int columns = Math.max(1, (int) (gridWidth / productBoxWidth));
-        
-        // Limit display to 2 rows per page
+
         PRODUCTS_PER_PAGE = columns * 2;
-        
-        // Calculate total number of pages based on filtered product count
         int totalProducts = catalog.getProducts().size();
         int pageCount = (int) Math.ceil((double) totalProducts / PRODUCTS_PER_PAGE);
         pagination.setPageCount(pageCount);
-        
-        // Get the current page index and display the corresponding products
+
         int currentPage = pagination.getCurrentPageIndex();
-        afficherProduits(currentPage, columns);
+        displayProducts(currentPage, columns);
     }
 
     /**
-     * Displays the products of the specified page in the GridPane.
-     * 
+     * Displays the products for the given page index in the grid.
+     *
      * @param pageIndex the index of the page to display
-     * @param columns the dynamically calculated number of columns
+     * @param columns   the number of columns in the grid
      */
-    private void afficherProduits(int pageIndex, int columns) {
+    private void displayProducts(int pageIndex, int columns) {
         productGrid.getChildren().clear();
         int startIndex = pageIndex * PRODUCTS_PER_PAGE;
         int endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, catalog.getProducts().size());
-        
+
         int col = 0, row = 0;
         for (int i = startIndex; i < endIndex; i++) {
             Product product = catalog.getProducts().get(i);
@@ -356,52 +336,46 @@ public class CatalogController extends BaseController {
     }
 
     /**
-     * Creates a VBox displaying product details (image, name, price, "Add to cart" button).
-     * 
+     * Creates a VBox displaying product details (image, name, price, and an "Add to cart" button).
+     *
      * @param product the product to display
-     * @return the VBox containing the product details
+     * @return a VBox containing the product details
      */
     private VBox createProductBox(Product product) {
         VBox vbox = new VBox(5);
         vbox.setPadding(new Insets(10));
-        
-        // Load product image
+
         Image image = loadImage(product.getImagePath(), "defaultImagePath.jpg");
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(150);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         vbox.getChildren().add(imageView);
-        
-        // Product name (click to view details)
+
         Label nameLabel = new Label(product.getName());
         nameLabel.setStyle("-fx-underline: true;");
-        nameLabel.setOnMouseClicked(e -> SceneManager.getInstance().showProductScene(product));
+        nameLabel.setOnMouseClicked(e -> {
+            boolean success = SceneManager.getInstance().showProductScene(product);
+            if (!success) {
+                System.out.println("Error: Unable to display product scene.");
+            }
+        });
         vbox.getChildren().add(nameLabel);
-        
-        // Product price
+
         Label priceLabel = new Label(String.format("%.2f €", product.getPrice()));
         vbox.getChildren().add(priceLabel);
-        
-        // "Add to cart" button
+
         Button addToCartButton = new Button("Add to cart");
         addToCartButton.setOnAction(e -> {
             boolean success = UserSession.getInstance().getOrder().addToCart(product, 1);
             if (success) {
-            	showInfoMessage("Product added to cart");
-            }
-            else {
-            	showErrorMessage("Not enough stock");
+                showInfoMessage("Product added to cart");
+            } else {
+                showErrorMessage("Not enough stock");
             }
         });
         vbox.getChildren().add(addToCartButton);
-        
+
         return vbox;
     }
-    
 }
-
-
-
-
-

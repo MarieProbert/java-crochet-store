@@ -3,7 +3,6 @@ package controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import enums.Category;
 import enums.Color;
 import enums.Size;
@@ -21,56 +20,61 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import tables.Product;
 import util.DataSingleton;
-//here
+
+/**
+ * Controller for managing the admin product catalog.
+ * Provides functionalities for displaying, adding, modifying, and updating product stock.
+ */
 public class AdminCatalogController extends BaseController {
+
     @FXML private GridPane productGrid;
     @FXML private TextField searchField;
 
     @FXML
     public void initialize() {
         super.initialize();
-        afficherProduits();
+        displayProducts();
     }
     
-    
+    /**
+     * Opens a popup window to add a new product.
+     */
     @FXML
     private void handleAddProduct() {
-        // Création d'une nouvelle fenêtre (popup)
         Stage popupStage = new Stage();
         popupStage.setTitle("Add Product");
         popupStage.initModality(Modality.APPLICATION_MODAL);
 
-        // Configuration du layout
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20));
 
-        // Champ Nom
+        // Name field
         Label nameLabel = new Label("Name:");
         TextField nameField = new TextField();
         grid.add(nameLabel, 0, 0);
         grid.add(nameField, 1, 0);
 
-        // Champ Prix
+        // Price field
         Label priceLabel = new Label("Price (€):");
         TextField priceField = new TextField();
         grid.add(priceLabel, 0, 1);
         grid.add(priceField, 1, 1);
 
-        // Champ Créateur
+        // Creator field
         Label creatorLabel = new Label("Creator:");
         TextField creatorField = new TextField();
         grid.add(creatorLabel, 0, 2);
         grid.add(creatorField, 1, 2);
 
-        // Champ Description
+        // Description field
         Label descriptionLabel = new Label("Description:");
         TextField descriptionField = new TextField();
         grid.add(descriptionLabel, 0, 3);
         grid.add(descriptionField, 1, 3);
 
-        // Champ Catégorie (Enum)
+        // Category (Enum)
         Label categoryLabel = new Label("Category:");
         ComboBox<Category> categoryComboBox = new ComboBox<>();
         categoryComboBox.getItems().addAll(Category.values());
@@ -78,7 +82,7 @@ public class AdminCatalogController extends BaseController {
         grid.add(categoryLabel, 0, 4);
         grid.add(categoryComboBox, 1, 4);
 
-        // Champ Taille (Enum)
+        // Size (Enum)
         Label sizeLabel = new Label("Size:");
         ComboBox<Size> sizeComboBox = new ComboBox<>();
         sizeComboBox.getItems().addAll(Size.values());
@@ -86,7 +90,7 @@ public class AdminCatalogController extends BaseController {
         grid.add(sizeLabel, 0, 5);
         grid.add(sizeComboBox, 1, 5);
 
-        // Champ Couleur (Enum)
+        // Color (Enum)
         Label colorLabel = new Label("Color:");
         ComboBox<Color> colorComboBox = new ComboBox<>();
         colorComboBox.getItems().addAll(Color.values());
@@ -94,32 +98,30 @@ public class AdminCatalogController extends BaseController {
         grid.add(colorLabel, 0, 6);
         grid.add(colorComboBox, 1, 6);
 
-        // Champ Stock
+        // Stock field
         Label quantityLabel = new Label("Stock:");
         TextField quantityField = new TextField();
         grid.add(quantityLabel, 0, 7);
         grid.add(quantityField, 1, 7);
 
-        // Champ Image path
+        // Image path field
         Label imageLabel = new Label("Image path:");
         TextField imageField = new TextField();
         grid.add(imageLabel, 0, 8);
         grid.add(imageField, 1, 8);
 
-        // Label d'erreur pour afficher d'éventuels messages de validation
+        // Error message label
         Label errorLabel = new Label("");
         errorLabel.setStyle("-fx-text-fill: red;");
         grid.add(errorLabel, 0, 9, 2, 1);
 
-        // Boutons Save et Cancel
+        // Save and Cancel buttons
         Button saveButton = new Button("Save");
         Button cancelButton = new Button("Cancel");
         HBox buttonBox = new HBox(10, saveButton, cancelButton);
         grid.add(buttonBox, 1, 10);
 
-        // Action du bouton Save
         saveButton.setOnAction(e -> {
-            // Vérification que tous les champs sont renseignés
             if (nameField.getText().trim().isEmpty() ||
                 priceField.getText().trim().isEmpty() ||
                 creatorField.getText().trim().isEmpty() ||
@@ -129,20 +131,18 @@ public class AdminCatalogController extends BaseController {
                 colorComboBox.getValue() == null ||
                 quantityField.getText().trim().isEmpty() ||
                 imageField.getText().trim().isEmpty()) {
-                errorLabel.setText("Tous les champs doivent être remplis.");
+                errorLabel.setText("All fields must be filled.");
                 return;
             }
 
-            // Vérification du format du prix
             double price;
             try {
                 price = Double.parseDouble(priceField.getText());
             } catch (NumberFormatException ex) {
-                errorLabel.setText("Format de prix invalide.");
+                errorLabel.setText("Invalid price format.");
                 return;
             }
 
-            // Vérification du format du stock
             int stock;
             try {
                 stock = Integer.parseInt(quantityField.getText());
@@ -151,11 +151,10 @@ public class AdminCatalogController extends BaseController {
                     return;
                 }
             } catch (NumberFormatException ex) {
-                errorLabel.setText("Format du stock invalide.");
+                errorLabel.setText("Invalid stock format.");
                 return;
             }
 
-            // Création d'un nouveau produit
             Product newProduct = new Product();
             newProduct.setName(nameField.getText());
             newProduct.setPrice(price);
@@ -167,55 +166,52 @@ public class AdminCatalogController extends BaseController {
             newProduct.setStock(stock);
             newProduct.setImagePath(imageField.getText());
 
-            // Insertion du produit via le ProductDAO
             boolean inserted = DataSingleton.getInstance().getProductDAO().insertProduct(newProduct);
             if (inserted) {
                 popupStage.close();
-                afficherProduits(); // Rafraîchissement de l'affichage
+                displayProducts();
             } else {
-                errorLabel.setText("Échec de l'ajout du produit.");
+                errorLabel.setText("Failed to add product.");
             }
         });
 
-        // Action du bouton Cancel
         cancelButton.setOnAction(e -> popupStage.close());
 
-        // Affichage de la popup
         Scene scene = new Scene(grid);
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
 
-
-    private void afficherProduits() {
+    /**
+     * Displays all products in the catalog in the product grid.
+     */
+    private void displayProducts() {
         productGrid.getChildren().clear();
         int row = 0;
         for (Product p : DataSingleton.getInstance().getCatalog().getProducts()) {
-            // Création de l'image et des labels (simplifiés ici)
-        	
+            Label idLabel = new Label("ID: " + p.getProductID());
+            Label nameLabel = new Label("Name: " + p.getName());
+            Label priceLabel = new Label(String.format("Price: %.2f €", p.getPrice()));
+            Label stockLabel = new Label(p.getStock() > 0 ? "Quantity: " + p.getStock() : "Out of stock");
 
-            Label idLabel = new Label("ID : " + p.getProductID());
-            Label nameLabel = new Label("Name : " + p.getName());
-            Label priceLabel = new Label(String.format("Price : %.2f €", p.getPrice()));
-            Label stockLabel = new Label(p.getStock() > 0 ? "Quantity : " + p.getStock() : "Out of stock");
-            
-            // Bouton 'Add stock'
             Button addStockButton = new Button("Add stock");
             addStockButton.setOnAction(e -> openAddStockPopup(p));
-            
-            // Bouton 'Modify'
+
             Button modifyButton = new Button("Modify");
             modifyButton.setOnAction(e -> openModifyPopup(p));
-            
+
             HBox buttonBox = new HBox(5, addStockButton, modifyButton);
             HBox infoBox = new HBox(10, idLabel, nameLabel, priceLabel, stockLabel, buttonBox);
             infoBox.setPadding(new Insets(10));
-            
-            productGrid.add(infoBox, 0, row);
-            row++;
+
+            productGrid.add(infoBox, 0, row++);
         }
     }
     
+    /**
+     * Opens a popup window to add stock to the specified product.
+     * @param product The product for which to add stock.
+     */
     private void openAddStockPopup(Product product) {
         Stage popupStage = new Stage();
         popupStage.setTitle("Add Stock");
@@ -250,7 +246,7 @@ public class AdminCatalogController extends BaseController {
                 product.setStock(product.getStock() + quantityToAdd);
                 DataSingleton.getInstance().getProductDAO().updateProduct(product);
                 popupStage.close();
-                afficherProduits();
+                displayProducts();
             } catch (NumberFormatException ex) {
                 errorLabel.setText("Invalid number format.");
             }
@@ -263,9 +259,8 @@ public class AdminCatalogController extends BaseController {
     }
     
     /**
-     * Ouvre la fenêtre de modification d'un produit.
-     * Pour les champs de type énumération (Color, Size et Category), on utilise des ComboBox
-     * qui affichent en premier la valeur actuelle du produit.
+     * Opens a popup window to modify the specified product.
+     * @param product The product to modify.
      */
     private void openModifyPopup(Product product) {
         Stage popupStage = new Stage();
@@ -277,52 +272,44 @@ public class AdminCatalogController extends BaseController {
         grid.setVgap(10);
         grid.setPadding(new Insets(20));
 
-        // Champ Name
         Label nameLabel = new Label("Name:");
         TextField nameField = new TextField(product.getName());
         grid.add(nameLabel, 0, 0);
         grid.add(nameField, 1, 0);
         
-        // Champ Name
         Label priceLabel = new Label("Price (€):");
         TextField priceField = new TextField(String.valueOf(product.getPrice()));
         grid.add(priceLabel, 0, 1);
         grid.add(priceField, 1, 1);
 
-        // Champ Creator
         Label creatorLabel = new Label("Creator:");
         TextField creatorField = new TextField(product.getCreator());
         grid.add(creatorLabel, 0, 2);
         grid.add(creatorField, 1, 2);
 
-        // Champ Color (Enum)
         Label colorLabel = new Label("Color:");
         ComboBox<Color> colorComboBox = new ComboBox<>();
         initializeComboBoxWithoutNull(colorComboBox, Color.values(), product.getColor());
         grid.add(colorLabel, 0, 3);
         grid.add(colorComboBox, 1, 3);
 
-        // Champ Size (Enum)
         Label sizeLabel = new Label("Size:");
         ComboBox<Size> sizeComboBox = new ComboBox<>();
         initializeComboBoxWithoutNull(sizeComboBox, Size.values(), product.getSize());
         grid.add(sizeLabel, 0, 4);
         grid.add(sizeComboBox, 1, 4);
 
-        // Champ Category (Enum)
         Label categoryLabel = new Label("Category:");
         ComboBox<Category> categoryComboBox = new ComboBox<>();
         initializeComboBoxWithoutNull(categoryComboBox, Category.values(), product.getCategory());
         grid.add(categoryLabel, 0, 5);
         grid.add(categoryComboBox, 1, 5);
 
-        // Champ Image Path
         Label imagePathLabel = new Label("Image Path:");
         TextField imagePathField = new TextField(product.getImagePath());
         grid.add(imagePathLabel, 0, 6);
         grid.add(imagePathField, 1, 6);
 
-        // Champ Description
         Label descriptionLabel = new Label("Description:");
         TextField descriptionField = new TextField(product.getDescription());
         grid.add(descriptionLabel, 0, 7);
@@ -351,7 +338,6 @@ public class AdminCatalogController extends BaseController {
                 return;
             }
             
-            // Mise à jour des informations du produit
             product.setName(nameField.getText());
             product.setCreator(creatorField.getText());
             product.setColor(colorComboBox.getValue());
@@ -363,7 +349,7 @@ public class AdminCatalogController extends BaseController {
             boolean updated = DataSingleton.getInstance().getProductDAO().updateProduct(product);
             if (updated) {
                 popupStage.close();
-                afficherProduits();
+                displayProducts();
             } else {
                 errorLabel.setText("Failed to update product.");
             }
@@ -377,18 +363,16 @@ public class AdminCatalogController extends BaseController {
     }
     
     /**
-     * Méthode utilitaire pour initialiser une ComboBox d'énumération
-     * sans proposer d'option nulle. La valeur courante est positionnée en tête
-     * de liste et sélectionnée par défaut.
+     * Utility method to initialize an enumeration ComboBox without null options.
+     * Places the current value at the top of the list and selects it by default.
      *
-     * @param comboBox La ComboBox à initialiser.
-     * @param values   Le tableau de valeurs de l'énumération.
-     * @param currentValue La valeur actuelle à sélectionner.
-     * @param <T>      Le type d'énumération.
+     * @param comboBox The ComboBox to initialize.
+     * @param values The array of enumeration values.
+     * @param currentValue The current value to select.
+     * @param <T> The enum type.
      */
     private <T extends Enum<T>> void initializeComboBoxWithoutNull(ComboBox<T> comboBox, T[] values, T currentValue) {
         List<T> items = new ArrayList<>(Arrays.asList(values));
-        // Positionne la valeur actuelle en tête de liste
         items.remove(currentValue);
         items.add(0, currentValue);
         comboBox.getItems().setAll(items);

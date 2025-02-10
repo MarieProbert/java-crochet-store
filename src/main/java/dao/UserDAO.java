@@ -13,12 +13,15 @@ import tables.User;
 import util.DatabaseConnection;
 import util.HashUtils;
 
+/**
+ * Data Access Object for user-related operations.
+ */
 public class UserDAO {
 
     /**
      * Retrieves all active users from the database.
-     * 
-     * @return A list of active users.
+     *
+     * @return a list of active users.
      */
     public List<User> getAllUsers() {
         String queryUser = "SELECT * FROM user WHERE active = 1";
@@ -40,24 +43,21 @@ public class UserDAO {
 
                 User user = new User(id, email, password, firstName, lastName, role, active);
 
-                // If the user is a client, fetch the associated address
                 if ("client".equalsIgnoreCase(role)) {
                     try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
                         stmtAddress.setInt(1, id);
-                        ResultSet rsAddress = stmtAddress.executeQuery();
-
-                        if (rsAddress.next()) {
-                            String street = rsAddress.getString("street");
-                            String city = rsAddress.getString("city");
-                            String postCode = rsAddress.getString("postcode");
-                            String country = rsAddress.getString("country");
-
-                            Address address = new Address(id, street, city, postCode, country, user);
-                            user.setAddress(address);
+                        try (ResultSet rsAddress = stmtAddress.executeQuery()) {
+                            if (rsAddress.next()) {
+                                String street = rsAddress.getString("street");
+                                String city = rsAddress.getString("city");
+                                String postCode = rsAddress.getString("postcode");
+                                String country = rsAddress.getString("country");
+                                Address address = new Address(id, street, city, postCode, country, user);
+                                user.setAddress(address);
+                            }
                         }
                     }
                 }
-
                 users.add(user);
             }
 
@@ -67,13 +67,12 @@ public class UserDAO {
 
         return users;
     }
-    
-    
+
     /**
-     * Retrieves a user by their ID from the database.
-     * 
-     * @param id The ID of the user to retrieve.
-     * @return The corresponding user, or null if not found.
+     * Retrieves a user by their ID.
+     *
+     * @param id the user ID.
+     * @return the user if found, or null otherwise.
      */
     public User getUserById(int id) {
         String queryUser = "SELECT * FROM user WHERE id = ? AND active = 1";
@@ -83,36 +82,34 @@ public class UserDAO {
              PreparedStatement stmtUser = conn.prepareStatement(queryUser)) {
             
             stmtUser.setInt(1, id);
-            ResultSet rsUser = stmtUser.executeQuery();
-            
-            if (rsUser.next()) {
-                String email = rsUser.getString("email");
-                String password = rsUser.getString("password");
-                String firstName = rsUser.getString("firstname");
-                String lastName = rsUser.getString("lastname");
-                String role = rsUser.getString("role");
-                int active = rsUser.getInt("active");
-                
-                User user = new User(id, email, password, firstName, lastName, role, active);
-                
-                // If the user is a client, fetch the associated address
-                if ("client".equalsIgnoreCase(role)) {
-                    try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
-                        stmtAddress.setInt(1, id);
-                        ResultSet rsAddress = stmtAddress.executeQuery();
-                        
-                        if (rsAddress.next()) {
-                            String street = rsAddress.getString("street");
-                            String city = rsAddress.getString("city");
-                            String postCode = rsAddress.getString("postcode");
-                            String country = rsAddress.getString("country");
-                            
-                            Address address = new Address(id, street, city, postCode, country, user);
-                            user.setAddress(address);
+            try (ResultSet rsUser = stmtUser.executeQuery()) {
+                if (rsUser.next()) {
+                    String email = rsUser.getString("email");
+                    String password = rsUser.getString("password");
+                    String firstName = rsUser.getString("firstname");
+                    String lastName = rsUser.getString("lastname");
+                    String role = rsUser.getString("role");
+                    int active = rsUser.getInt("active");
+                    
+                    User user = new User(id, email, password, firstName, lastName, role, active);
+                    
+                    if ("client".equalsIgnoreCase(role)) {
+                        try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
+                            stmtAddress.setInt(1, id);
+                            try (ResultSet rsAddress = stmtAddress.executeQuery()) {
+                                if (rsAddress.next()) {
+                                    String street = rsAddress.getString("street");
+                                    String city = rsAddress.getString("city");
+                                    String postCode = rsAddress.getString("postcode");
+                                    String country = rsAddress.getString("country");
+                                    Address address = new Address(id, street, city, postCode, country, user);
+                                    user.setAddress(address);
+                                }
+                            }
                         }
                     }
+                    return user;
                 }
-                return user;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,9 +119,9 @@ public class UserDAO {
 
     /**
      * Inserts a new user into the database.
-     * 
-     * @param user The user to be inserted.
-     * @return The generated user ID after insertion.
+     *
+     * @param user the user to insert.
+     * @return the generated user ID, or -1 if insertion failed.
      */
     public int insertUser(User user) {
         String sqlUser = "INSERT INTO user (email, password, firstname, lastname, role) VALUES (?, ?, ?, ?, ?)";
@@ -134,10 +131,7 @@ public class UserDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Hash the password before insertion
             String hashedPassword = HashUtils.sha256(user.getPassword());
-
-            // Insert user with the hashed password
             stmtUser.setString(1, user.getEmail());
             stmtUser.setString(2, hashedPassword);
             stmtUser.setString(3, user.getFirstName());
@@ -156,7 +150,6 @@ public class UserDAO {
                 throw new SQLException("User insertion failed, no rows affected.");
             }
 
-            // If the user is a client and an address is provided, insert the address as well
             if ("client".equalsIgnoreCase(user.getRole())) {
                 Address address = user.getAddress();
                 try (PreparedStatement stmtAddress = conn.prepareStatement(sqlAddress)) {
@@ -165,7 +158,6 @@ public class UserDAO {
                     stmtAddress.setString(3, address.getCity());
                     stmtAddress.setString(4, address.getPostCode());
                     stmtAddress.setString(5, address.getCountry());
-
                     stmtAddress.executeUpdate();
                 }
             }
@@ -174,29 +166,27 @@ public class UserDAO {
             e.printStackTrace();
         }
 
-        return generatedID; // Return the generated ID
+        return generatedID;
     }
 
     /**
-     * Verifies if the login credentials are valid.
-     * 
-     * @param testEmail    The email to be verified.
-     * @param testPassword The password to be verified.
-     * @return true if login is valid, false otherwise.
+     * Validates the login credentials.
+     *
+     * @param testEmail    the email to check.
+     * @param testPassword the password to check.
+     * @return true if credentials are valid, false otherwise.
      */
     public boolean isLoginValid(String testEmail, String testPassword) {
         String query = "SELECT password FROM user WHERE email = ? AND active = 1";
-        // Hash the provided password to compare with the stored hashed password
         String hashedTestPassword = HashUtils.sha256(testPassword);
 
-        System.out.println(hashedTestPassword);
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, testEmail);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String storedPassword = rs.getString("password"); // Stored hashed password
+                    String storedPassword = rs.getString("password");
                     return hashedTestPassword.equals(storedPassword);
                 }
             }
@@ -209,10 +199,10 @@ public class UserDAO {
     }
 
     /**
-     * Retrieves a user based on their email.
-     * 
-     * @param email The email of the user to be fetched.
-     * @return The user object if found, null otherwise.
+     * Retrieves a user by email.
+     *
+     * @param email the email of the user.
+     * @return the corresponding user, or null if not found.
      */
     public User setUser(String email) {
         String queryUser = "SELECT * FROM user WHERE email = ?";
@@ -222,37 +212,35 @@ public class UserDAO {
              PreparedStatement stmtUser = conn.prepareStatement(queryUser)) {
 
             stmtUser.setString(1, email);
-            ResultSet rsUser = stmtUser.executeQuery();
+            try (ResultSet rsUser = stmtUser.executeQuery()) {
+                if (rsUser.next()) {
+                    int id = rsUser.getInt("id");
+                    String emailDB = rsUser.getString("email");
+                    String password = rsUser.getString("password");
+                    String firstName = rsUser.getString("firstname");
+                    String lastName = rsUser.getString("lastname");
+                    String role = rsUser.getString("role");
+                    int active = rsUser.getInt("active");
 
-            if (rsUser.next()) {
-                int id = rsUser.getInt("id");
-                String emailDB = rsUser.getString("email");
-                String password = rsUser.getString("password");
-                String firstName = rsUser.getString("firstname");
-                String lastName = rsUser.getString("lastname");
-                String role = rsUser.getString("role");
-                int active = rsUser.getInt("active");
+                    User user = new User(id, emailDB, password, firstName, lastName, role, active);
 
-                User user = new User(id, emailDB, password, firstName, lastName, role, active);
-
-                // If the user is a client, fetch the associated address
-                if ("client".equalsIgnoreCase(role)) {
-                    try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
-                        stmtAddress.setInt(1, id);
-                        ResultSet rsAddress = stmtAddress.executeQuery();
-
-                        if (rsAddress.next()) {
-                            String street = rsAddress.getString("street");
-                            String city = rsAddress.getString("city");
-                            String postCode = rsAddress.getString("postCode");
-                            String country = rsAddress.getString("country");
-
-                            Address address = new Address(id, street, city, postCode, country, user);
-                            user.setAddress(address);
+                    if ("client".equalsIgnoreCase(role)) {
+                        try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
+                            stmtAddress.setInt(1, id);
+                            try (ResultSet rsAddress = stmtAddress.executeQuery()) {
+                                if (rsAddress.next()) {
+                                    String street = rsAddress.getString("street");
+                                    String city = rsAddress.getString("city");
+                                    String postCode = rsAddress.getString("postCode");
+                                    String country = rsAddress.getString("country");
+                                    Address address = new Address(id, street, city, postCode, country, user);
+                                    user.setAddress(address);
+                                }
+                            }
                         }
                     }
+                    return user;
                 }
-                return user;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -262,10 +250,10 @@ public class UserDAO {
     }
 
     /**
-     * Updates the details of an existing user in the database.
-     * 
-     * @param user The user with updated information.
-     * @return true if the update was successful, false otherwise.
+     * Updates the specified user's details in the database.
+     *
+     * @param user the user with updated information.
+     * @return true if update succeeded, false otherwise.
      */
     public boolean updateUser(User user) {
         String queryUser = "UPDATE user SET email = ?, password = ?, firstname = ?, lastname = ?, role = ? WHERE id = ?";
@@ -274,17 +262,15 @@ public class UserDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmtUser = conn.prepareStatement(queryUser)) {
 
-            // Update user details
             stmtUser.setString(1, user.getEmail());
             stmtUser.setString(2, user.getPassword());
             stmtUser.setString(3, user.getFirstName());
             stmtUser.setString(4, user.getLastName());
             stmtUser.setString(5, user.getRole());
-            stmtUser.setInt(6, user.getId()); // User ID to be updated
+            stmtUser.setInt(6, user.getId());
 
             int affectedRowsUser = stmtUser.executeUpdate();
 
-            // If user is a client, update the address as well
             if (affectedRowsUser > 0 && "client".equalsIgnoreCase(user.getRole())) {
                 Address address = user.getAddress();
                 try (PreparedStatement stmtAddress = conn.prepareStatement(queryAddress)) {
@@ -293,12 +279,10 @@ public class UserDAO {
                     stmtAddress.setString(3, address.getPostCode());
                     stmtAddress.setString(4, address.getCountry());
                     stmtAddress.setInt(5, user.getId());
-
                     int affectedRowsAddress = stmtAddress.executeUpdate();
                     return affectedRowsAddress > 0;
                 }
             }
-
             return affectedRowsUser > 0;
 
         } catch (SQLException e) {
@@ -308,10 +292,10 @@ public class UserDAO {
     }
 
     /**
-     * Marks a user as inactive (soft delete) in the database.
-     * 
-     * @param user The user to be deactivated.
-     * @return true if the user was successfully deactivated, false otherwise.
+     * Performs a soft delete of the specified user by marking them as inactive.
+     *
+     * @param user the user to deactivate.
+     * @return true if deactivation succeeded, false otherwise.
      */
     public boolean deleteUser(User user) {
         String deactivateUserQuery = "UPDATE user SET active = 0 WHERE id = ?";
@@ -319,21 +303,14 @@ public class UserDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmtUser = conn.prepareStatement(deactivateUserQuery)) {
 
-            // Begin transaction
             conn.setAutoCommit(false);
-
-            // Deactivate the user instead of deleting
             stmtUser.setInt(1, user.getId());
             int affectedRowsUser = stmtUser.executeUpdate();
-
-            // Commit the transaction
             conn.commit();
-
             return affectedRowsUser > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            // Rollback transaction in case of error
             try (Connection conn = DatabaseConnection.getConnection()) {
                 conn.rollback();
             } catch (SQLException ex) {
@@ -341,7 +318,6 @@ public class UserDAO {
             }
             return false;
         } finally {
-            // Reset auto-commit
             try (Connection conn = DatabaseConnection.getConnection()) {
                 conn.setAutoCommit(true);
             } catch (SQLException e) {
