@@ -13,7 +13,6 @@
    
         <HBox alignment="BOTTOM_RIGHT">
 
-        <!-- Icône de profil -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
@@ -23,7 +22,6 @@
     </top>
 
 
-    <!-- Grille de produits au centre -->
     <center>
     	<VBox  alignment="CENTER">
     		<Label fx:id="messageLabel" styleClass="message-label" />

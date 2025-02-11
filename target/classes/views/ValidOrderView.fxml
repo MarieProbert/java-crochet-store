@@ -8,7 +8,6 @@
 
     <top>
         <VBox alignment="CENTER">
-            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
@@ -17,8 +16,6 @@
    
         <HBox alignment="BOTTOM_RIGHT">
        
-        	
-        <!-- Icône de profil -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         

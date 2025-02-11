@@ -7,7 +7,6 @@
 
     <top>
         <VBox alignment="CENTER">
-            <!-- Conteneur avec la classe 'banner' pour afficher la couleur de fond sur toute la largeur -->
             <HBox styleClass="banner">
                 <Label text="Delivery under two weeks" styleClass="delivery" />
             </HBox>
@@ -18,7 +17,6 @@
         
         	<Button text="Cart" onAction="#handleCart"/>
         	
-        <!-- Icône de profil -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
@@ -30,9 +28,7 @@
     <center>
         <HBox spacing="50" alignment="TOP_LEFT">
             
-            
-            
-            <!-- Informations client à gauche -->
+             <!-- Client information on the left -->
             <VBox alignment="TOP_LEFT" spacing="15" maxWidth="500">
                 <Label fx:id="messageLabel" styleClass="message-label" />
                 
@@ -62,7 +58,7 @@
                 </GridPane>
             </VBox>
             
-            <!-- Grille des produits à droite avec plus d'espace -->
+            <!-- Product grid on the right with extra space -->
             <VBox alignment="TOP_RIGHT" spacing="15" maxWidth="600">
                 <ScrollPane fitToWidth="true" fitToHeight="true">
                     <content>

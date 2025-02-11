@@ -6,7 +6,6 @@
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" 
             fx:controller="controllers.ProductController" stylesheets="@../style.css">
 
-    <!-- Top area remains unchanged -->
     <top>
         <VBox alignment="CENTER">
             <!-- Banner container -->

@@ -18,7 +18,7 @@
         <HBox alignment="BOTTOM_RIGHT">
         
         <Button text="Return to menu" onAction="#handleReturnMenu"/>
-        <!-- Icône de profil -->
+        <!-- Profile icon -->
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
@@ -28,10 +28,10 @@
     </top>
 
 
-    <!-- Grille de produits au centre avec ScrollPane -->
+    <!-- Center: Account information form -->
     <center>
 		<VBox alignment="CENTER">
-            <!-- Message display -->
+            
             <Label fx:id="messageLabel" styleClass="message-label" />
 
             <!-- Email and Password input fields -->

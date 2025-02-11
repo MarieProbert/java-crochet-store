@@ -18,7 +18,7 @@
         <HBox alignment="BOTTOM_RIGHT">
         
         <Button text="Return to menu" onAction="#handleReturnMenu"/>
-        <!-- Icône de profil -->
+        
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
@@ -31,10 +31,10 @@
     </top>
 
 
-    <!-- Grille de produits au centre avec ScrollPane -->
+    <!-- Center: Product grid with ScrollPane -->
     <center>
     		
-            <!-- Grille de produits au centre avec ScrollPane -->
+            <!-- Scrollable product grid -->
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <content>
                     <GridPane fx:id="productGrid" hgap="10" vgap="10" />

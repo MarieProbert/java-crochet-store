@@ -19,6 +19,7 @@
 
             <!-- User options: Catalog button and profile icon -->
             <HBox alignment="BOTTOM_RIGHT">
+            	<Button text="Cart" onAction="#handleCart"/>
                 <Button text="Catalog" onAction="#handleCatalog"/>
 
                 <!-- Profile icon -->

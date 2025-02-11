@@ -18,7 +18,7 @@
         <HBox alignment="BOTTOM_RIGHT">
         
         <Button text="Return to menu" onAction="#handleReturnMenu"/>
-        <!-- Icône de profil -->
+        
         <ImageView fx:id="personIcon" fitWidth="40" fitHeight="40" preserveRatio="true"/>
 
         </HBox>         
@@ -28,13 +28,13 @@
     </top>
 
 
-    <!-- Grille de produits au centre avec ScrollPane -->
+    <!-- Center: Client grid with ScrollPane -->
     <center>
         <VBox alignment="CENTER">
-            <!-- Bouton Add User centré en haut -->
+            <!-- Centered Add User button -->
             <Button text="Add User" onAction="#handleAddUser" />
 
-            <!-- Grille de produits au centre avec ScrollPane -->
+            <!-- Scrollable client grid -->
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <content>
                     <GridPane fx:id="clientGrid" hgap="10" vgap="10" />
