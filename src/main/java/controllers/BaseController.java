@@ -23,8 +23,8 @@ import util.UserSession;
  */
 public class BaseController {
 
-    protected String defaultImagePath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/no_picture.jpg";
-    protected String bannerPath = "C:/Users/marie/eclipse-workspace/projet-java/pictures/others/banniere.jpg";
+	protected String defaultImagePath = "/pictures/no_picture.jpg";
+	protected String bannerPath = "/pictures/banniere.jpg";
 
     @FXML 
     protected ImageView bannerImage;
@@ -46,7 +46,8 @@ public class BaseController {
     public void initialize() {
         clearMessage();
         bannerImage.setImage(loadImage(bannerPath, defaultImagePath));
-        personIcon.setImage(loadImage("C:/Users/marie/eclipse-workspace/projet-java/pictures/others/user_icon.png", defaultImagePath));
+        personIcon.setImage(loadImage("/pictures/user_icon.png", defaultImagePath));
+        
         createTooltipPopup();
 
         personIcon.setOnMouseEntered(event -> showTooltip());
@@ -57,23 +58,46 @@ public class BaseController {
         });
     }
 
+    
     /**
-     * Loads an image from the specified path, returning a default image if not found.
+     * Loads an image from an absolute path (if the file exists) or from the resource folder.
+     * If neither is found, falls back to the default image.
      *
-     * @param imagePath   the path to the image
-     * @param defaultPath the default image path if the image is not found
+     * @param imagePath   the path to the image (absolute or resource)
+     * @param defaultPath the resource path to the default image (e.g., "/pictures/no_picture.jpg")
      * @return the loaded Image
+     * @throws IllegalArgumentException if neither imagePath nor defaultPath can be loaded
      */
     protected Image loadImage(String imagePath, String defaultPath) {
-        if (imagePath != null && new File(imagePath).exists()) {
-            try {
-                return new Image("file:" + imagePath);
-            } catch (Exception e) {
-                return new Image("file:" + defaultPath);
+        // Try to load as an absolute file if the path is not empty.
+        if (imagePath != null && !imagePath.isEmpty()) {
+            File file = new File(imagePath);
+            if (file.exists()) {
+                return new Image("file:" + file.getAbsolutePath());
+            }
+            // If the file does not exist on disk, try to load it as a resource.
+            java.net.URL url = getClass().getResource(imagePath);
+            if (url != null) {
+                return new Image(url.toExternalForm());
             }
         }
-        return new Image("file:" + defaultPath);
+        
+        // If imagePath failed, try the default image.
+        // First, check if defaultPath points to an absolute file.
+        File defaultFile = new File(defaultPath);
+        if (defaultFile.exists()) {
+            return new Image("file:" + defaultFile.getAbsolutePath());
+        }
+        // Otherwise, load it as a resource.
+        java.net.URL defaultUrl = getClass().getResource(defaultPath);
+        if (defaultUrl != null) {
+            return new Image(defaultUrl.toExternalForm());
+        }
+        
+        throw new IllegalArgumentException("Resource not found: " + imagePath + " or " + defaultPath);
     }
+
+
 
     /**
      * Creates the tooltip popup for the user icon.

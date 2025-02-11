@@ -1,18 +1,25 @@
 package controllers;
 
 import java.util.List;
+
+import enums.Status;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.scene.control.Separator;
 import tables.Order;
 import tables.Product;
+import tables.User;
 import util.DataSingleton;
+import util.InvoicePDFGenerator;
+import util.SceneManager;
 import util.UserSession;
 
 /**
@@ -34,9 +41,13 @@ public class OrderHistoryController extends BaseController {
 
     /**
      * Retrieves and displays all orders for the current user.
+     * For orders with status CONFIRMED or DELIVERED, a "Generate Invoice" button is added to allow
+     * PDF invoice generation. The purchase date and delivery date are displayed; if the delivery date
+     * is not set, "N/A" is shown.
      */
     private void displayOrders() {
-        List<Order> orders = DataSingleton.getInstance().getOrderDAO()
+        List<Order> orders = DataSingleton.getInstance()
+                .getOrderDAO()
                 .getOrdersByClientId(UserSession.getInstance().getUser().getId());
 
         orderGrid.getChildren().clear();
@@ -50,13 +61,16 @@ public class OrderHistoryController extends BaseController {
 
             Label orderIDLabel = new Label("Order ID: " + order.getOrderID());
             Label statusLabel = new Label("Status: " + order.getStatus());
+            Label purchaseDateLabel = new Label("Purchase Date: " + order.getPurchaseDate().toString());
+            String deliveryDateStr = (order.getDeliveryDate() != null) ? order.getDeliveryDate().toString() : "N/A";
+            Label deliveryDateLabel = new Label("Delivery Date: " + deliveryDateStr);
 
             HBox headerBox = new HBox(5);
             headerBox.setPadding(new Insets(10));
-            headerBox.getChildren().addAll(orderIDLabel, statusLabel);
+            headerBox.getChildren().addAll(orderIDLabel, statusLabel, purchaseDateLabel, deliveryDateLabel);
             orderBox.getChildren().add(headerBox);
-
-            // Display each product in the order.
+            
+            // Display each product in the order
             for (Product product : order.getCart().keySet()) {
                 HBox productBox = new HBox(10);
                 productBox.setPadding(new Insets(10));
@@ -78,8 +92,26 @@ public class OrderHistoryController extends BaseController {
                 orderBox.getChildren().add(productBox);
             }
 
-            Label totalPriceLabel = new Label("Total price: " + String.format("%.2f €", totalPrice));
+            Label totalPriceLabel = new Label("Total Price: " + String.format("%.2f €", totalPrice));
             orderBox.getChildren().add(totalPriceLabel);
+
+            // Add "Generate Invoice" button for orders with CONFIRMED or DELIVERED status
+            if (order.getStatus() == Status.CONFIRMED || order.getStatus() == Status.DELIVERED) {
+                Button generateInvoiceBtn = new Button("Generate Invoice");
+                generateInvoiceBtn.setOnAction(e -> {
+                    Stage stage = SceneManager.getInstance().getStage();
+                    User user = DataSingleton.getInstance().getUserDAO().getUserById(order.getClientID());
+                    tables.Invoice invoice = DataSingleton.getInstance()
+                            .getInvoiceDAO()
+                            .getOrCreateInvoiceByOrderId(order.getOrderID());
+                    try {
+                        InvoicePDFGenerator.generateInvoicePDF(stage, user, order, invoice);
+                    } catch (Exception ex) {
+                        showErrorMessage("Error: Failed to generate the invoice.");
+                    }
+                });
+                orderBox.getChildren().add(generateInvoiceBtn);
+            }
 
             Separator separator = new Separator();
             separator.setPadding(new Insets(10, 0, 10, 0));

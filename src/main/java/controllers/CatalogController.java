@@ -365,16 +365,22 @@ public class CatalogController extends BaseController {
         Label priceLabel = new Label(String.format("%.2f €", product.getPrice()));
         vbox.getChildren().add(priceLabel);
 
-        Button addToCartButton = new Button("Add to cart");
-        addToCartButton.setOnAction(e -> {
-            boolean success = UserSession.getInstance().getOrder().addToCart(product, 1);
-            if (success) {
-                showInfoMessage("Product added to cart");
-            } else {
-                showErrorMessage("Not enough stock");
-            }
-        });
-        vbox.getChildren().add(addToCartButton);
+        if (product.getStock() > 0) {
+            Button addToCartButton = new Button("Add to cart");
+            addToCartButton.setOnAction(e -> {
+                boolean success = UserSession.getInstance().getOrder().addToCart(product, 1);
+                if (success) {
+                    showInfoMessage("Product added to cart");
+                } else {
+                    showErrorMessage("Not enough stock");
+                }
+            });
+            vbox.getChildren().add(addToCartButton);
+        } else {
+            Label outOfStockLabel = new Label("Out of stock");
+            outOfStockLabel.setStyle("-fx-text-fill: red;");
+            vbox.getChildren().add(outOfStockLabel);
+        }
 
         return vbox;
     }

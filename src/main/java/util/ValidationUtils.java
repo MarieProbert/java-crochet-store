@@ -177,15 +177,8 @@ public class ValidationUtils {
         java.util.regex.Matcher m = p.matcher(email);
 
         if (!m.matches()) {
-            return "The email format is invalid!";
+            return "There is a problem with the email choosen (format invalid or already used)";
         }
-        
-        
-        //User user = DataSingleton.getInstance().getUserDAO().setUser(email); // Méthode qui récupère un utilisateur par son email
-        //if (user != null) {
-        //    return "This email address already exists!";
-        //}
-        
         
         return null;
     }

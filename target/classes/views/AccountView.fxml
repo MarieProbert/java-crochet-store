@@ -36,7 +36,7 @@
             <!-- Email and Password input fields -->
             <HBox alignment="CENTER">
                 <Label text="Email : "/>
-                <TextField fx:id="emailField" maxWidth="200" />
+                <Label fx:id="emailField" maxWidth="200" />
             </HBox>
 
             <HBox alignment="CENTER">

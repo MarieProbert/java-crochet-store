@@ -138,6 +138,8 @@ public class OrderDAO {
                     order.setOrderID(orderId);
                     order.setClientID(clientId);
                     order.setStatusFromString(rs.getString("orderStatus"));
+                    order.setPurchaseDate(rs.getTimestamp("purchaseDate"));
+                    order.setDeliveryDate(rs.getTimestamp("deliveryDate"));
 
                     // Retrieve products associated with the order
                     orderXProductStmt.setInt(1, orderId);
@@ -145,11 +147,12 @@ public class OrderDAO {
                         while (rsProducts.next()) {
                             int productId = rsProducts.getInt("productID");
                             int quantity = rsProducts.getInt("quantity");
+                            double priceAtPurchase = rsProducts.getDouble("priceAtPurchase");
 
                             // Fetch product and add to order's cart
                             Product product = DataSingleton.getInstance().getProductDAO().getProductById(productId);
                             if (product != null) {
-                                order.addToCart(product, quantity);
+                                order.addToFinalisedCart(product, quantity, priceAtPurchase);
                             }
                         }
                     }

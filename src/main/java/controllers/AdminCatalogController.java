@@ -140,6 +140,7 @@ public class AdminCatalogController extends BaseController {
                 price = Double.parseDouble(priceField.getText());
             } catch (NumberFormatException ex) {
                 errorLabel.setText("Invalid price format.");
+                ex.printStackTrace();
                 return;
             }
 
@@ -152,6 +153,7 @@ public class AdminCatalogController extends BaseController {
                 }
             } catch (NumberFormatException ex) {
                 errorLabel.setText("Invalid stock format.");
+                ex.printStackTrace();
                 return;
             }
 
@@ -169,9 +171,11 @@ public class AdminCatalogController extends BaseController {
             boolean inserted = DataSingleton.getInstance().getProductDAO().insertProduct(newProduct);
             if (inserted) {
                 popupStage.close();
+                DataSingleton.getInstance().getCatalog().addProduct(newProduct);
                 displayProducts();
             } else {
                 errorLabel.setText("Failed to add product.");
+                System.err.println("Failed to add product: " + newProduct);
             }
         });
 
@@ -249,6 +253,7 @@ public class AdminCatalogController extends BaseController {
                 displayProducts();
             } catch (NumberFormatException ex) {
                 errorLabel.setText("Invalid number format.");
+                ex.printStackTrace();
             }
         });
         cancelButton.setOnAction(e -> popupStage.close());
@@ -335,6 +340,7 @@ public class AdminCatalogController extends BaseController {
                 product.setPrice(price);
             } catch (NumberFormatException ex) {
                 errorLabel.setText("Invalid price format.");
+                ex.printStackTrace();
                 return;
             }
             
@@ -352,6 +358,7 @@ public class AdminCatalogController extends BaseController {
                 displayProducts();
             } else {
                 errorLabel.setText("Failed to update product.");
+                System.err.println("Failed to update product: " + product);
             }
         });
 

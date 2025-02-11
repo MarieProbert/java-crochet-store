@@ -108,6 +108,13 @@ public class CartController extends BaseController {
      */
     @FXML
     private void handleValidate() {
+        // Vérifier si le panier est vide
+        if (UserSession.getInstance().getOrder().getCart().isEmpty()) {
+            showErrorMessage("The cart is empty !");
+            return;
+        }
+
+        // Sinon, poursuivre le processus de validation
         UserSession.getInstance().setValidate(true);
         String sceneToShow = (UserSession.getInstance().getUser().getId() == -1)
                 ? "Login"
@@ -118,4 +125,5 @@ public class CartController extends BaseController {
             showErrorMessage("There was an issue loading the next scene.");
         }
     }
+
 }

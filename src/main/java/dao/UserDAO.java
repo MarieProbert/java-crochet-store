@@ -116,58 +116,89 @@ public class UserDAO {
         }
         return null;
     }
-
+    
+    
     /**
-     * Inserts a new user into the database.
+     * Inserts a new user into the database or reactivates an existing inactive user.
      *
      * @param user the user to insert.
-     * @return the generated user ID, or -1 if insertion failed.
+     * @return the generated user ID.
      */
     public int insertUser(User user) {
-        String sqlUser = "INSERT INTO user (email, password, firstname, lastname, role) VALUES (?, ?, ?, ?, ?)";
-        String sqlAddress = "INSERT INTO address (user_id, street, city, postcode, country) VALUES (?, ?, ?, ?, ?)";
         int generatedID = -1;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
-
-            String hashedPassword = HashUtils.sha256(user.getPassword());
-            stmtUser.setString(1, user.getEmail());
-            stmtUser.setString(2, hashedPassword);
-            stmtUser.setString(3, user.getFirstName());
-            stmtUser.setString(4, user.getLastName());
-            stmtUser.setString(5, user.getRole());
-
-            int affectedRows = stmtUser.executeUpdate();
-
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = stmtUser.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        generatedID = generatedKeys.getInt(1);
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String checkQuery = "SELECT id FROM user WHERE email = ? AND active = 0";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                checkStmt.setString(1, user.getEmail());
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        int existingUserId = rs.getInt("id");
+                        String updateQuery = "UPDATE user SET password = ?, firstname = ?, lastname = ?, role = ?, active = 1 WHERE id = ?";
+                        try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+                            String hashedPassword = HashUtils.sha256(user.getPassword());
+                            updateStmt.setString(1, hashedPassword);
+                            updateStmt.setString(2, user.getFirstName());
+                            updateStmt.setString(3, user.getLastName());
+                            updateStmt.setString(4, user.getRole());
+                            updateStmt.setInt(5, existingUserId);
+                            int updatedRows = updateStmt.executeUpdate();
+                            if (updatedRows > 0) {
+                                generatedID = existingUserId;
+                            }
+                        }
+                        if ("client".equalsIgnoreCase(user.getRole())) {
+                            String updateAddressQuery = "UPDATE address SET street = ?, city = ?, postcode = ?, country = ? WHERE user_id = ?";
+                            try (PreparedStatement stmtAddress = conn.prepareStatement(updateAddressQuery)) {
+                                Address address = user.getAddress();
+                                stmtAddress.setString(1, address.getStreet());
+                                stmtAddress.setString(2, address.getCity());
+                                stmtAddress.setString(3, address.getPostCode());
+                                stmtAddress.setString(4, address.getCountry());
+                                stmtAddress.setInt(5, generatedID);
+                                stmtAddress.executeUpdate();
+                            }
+                        }
+                        return generatedID;
                     }
                 }
-            } else {
-                throw new SQLException("User insertion failed, no rows affected.");
             }
-
-            if ("client".equalsIgnoreCase(user.getRole())) {
-                Address address = user.getAddress();
-                try (PreparedStatement stmtAddress = conn.prepareStatement(sqlAddress)) {
-                    stmtAddress.setInt(1, generatedID);
-                    stmtAddress.setString(2, address.getStreet());
-                    stmtAddress.setString(3, address.getCity());
-                    stmtAddress.setString(4, address.getPostCode());
-                    stmtAddress.setString(5, address.getCountry());
-                    stmtAddress.executeUpdate();
+            String sqlUser = "INSERT INTO user (email, password, firstname, lastname, role) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
+                String hashedPassword = HashUtils.sha256(user.getPassword());
+                stmtUser.setString(1, user.getEmail());
+                stmtUser.setString(2, hashedPassword);
+                stmtUser.setString(3, user.getFirstName());
+                stmtUser.setString(4, user.getLastName());
+                stmtUser.setString(5, user.getRole());
+                int affectedRows = stmtUser.executeUpdate();
+                if (affectedRows > 0) {
+                    try (ResultSet generatedKeys = stmtUser.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            generatedID = generatedKeys.getInt(1);
+                        }
+                    }
+                } else {
+                    throw new SQLException("L'insertion de l'utilisateur a échoué, aucune ligne affectée.");
+                }
+                if ("client".equalsIgnoreCase(user.getRole())) {
+                    String sqlAddress = "INSERT INTO address (user_id, street, city, postcode, country) VALUES (?, ?, ?, ?, ?)";
+                    try (PreparedStatement stmtAddress = conn.prepareStatement(sqlAddress)) {
+                        stmtAddress.setInt(1, generatedID);
+                        Address address = user.getAddress();
+                        stmtAddress.setString(2, address.getStreet());
+                        stmtAddress.setString(3, address.getCity());
+                        stmtAddress.setString(4, address.getPostCode());
+                        stmtAddress.setString(5, address.getCountry());
+                        stmtAddress.executeUpdate();
+                    }
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return generatedID;
     }
+
 
     /**
      * Validates the login credentials.
