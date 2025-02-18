@@ -54,14 +54,12 @@
       </dependency>
   </dependencies>
     
- 	<!-- Configuration du processus de construction -->
 
     
 <build>
-	<finalName>marie-probert</finalName> <!-- Nom du JAR -->
+	<finalName>marie-probert</finalName> 
 	
     <plugins>
-        <!-- Plugin JavaFX (gardé pour la compilation) -->
         <plugin>
         
             <groupId>org.openjfx</groupId>
@@ -72,7 +70,6 @@
             </configuration>
         </plugin>
 
-        <!-- Plugin Shade pour le JAR exécutable -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
